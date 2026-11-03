@@ -1,0 +1,15 @@
+// The trace data model and the tracer that mints spans: nothing here reads a
+// clock, opens a socket or looks at a header. Times and ids are handed in, and
+// spans leave through the `Sink` seam, so the same code serves a test, a batch
+// job and a server.
+//
+// OpenTelemetry specification v1.62.0, trace API and SDK:
+// https://github.com/open-telemetry/opentelemetry-specification/tree/v1.62.0/specification/trace
+import {
+  "moonbitstack/moonbase/base16",
+}
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moonbase/base16",
+} for "test"

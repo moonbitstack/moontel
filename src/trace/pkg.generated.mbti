@@ -1,0 +1,284 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/trace"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
+}
+
+// Values
+pub let always : Always
+
+pub let discard : Discard
+
+pub let dropped_nothing : Dropped
+
+pub let empty_trace_state : TraceState
+
+pub let never : Never
+
+pub fn parent_based(root~ : &Sampler) -> ParentBased
+
+pub let random_flag : Byte
+
+pub fn ratio(ratio~ : Double) -> Ratio
+
+pub let sampled_flag : Byte
+
+pub let trace_limits : Limits
+
+pub let tracestate_limit : Int32
+
+// Errors
+pub(all) suberror Refused {
+  Field(at~ : Int32, want~ : String)
+  NotHex(at~ : Int32)
+  Zero(at~ : Int32)
+  TooMany(limit~ : Int32, got~ : Int32)
+  TooLong(limit~ : Int32, got~ : Int32)
+  Ids(want~ : Int32, got~ : Int32)
+} derive(Eq, @debug.Debug)
+pub fn Refused::equal(Self, Self) -> Bool
+pub fn Refused::not_equal(Self, Self) -> Bool
+pub fn Refused::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) struct Always {
+}
+pub fn Always::description(Self) -> String
+pub fn Always::should_sample(Self, SampleRequest) -> Decision
+pub impl Sampler for Always
+
+pub(all) enum Decision {
+  Drop
+  RecordOnly
+  RecordAndSample
+} derive(Eq, @debug.Debug)
+pub fn Decision::equal(Self, Self) -> Bool
+pub fn Decision::not_equal(Self, Self) -> Bool
+pub fn Decision::recording(Self) -> Bool
+pub fn Decision::sampled(Self) -> Bool
+pub fn Decision::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Discard {
+}
+pub fn Discard::accept(Self, SpanData) -> Unit
+pub impl Sink for Discard
+
+pub(all) struct Dropped {
+  attributes : Int32
+  events : Int32
+  links : Int32
+} derive(Eq, @debug.Debug)
+pub fn Dropped::equal(Self, Self) -> Bool
+pub fn Dropped::not_equal(Self, Self) -> Bool
+pub fn Dropped::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Event {
+  name : String
+  at : Int64
+  attributes : Array[(String, Value)]
+} derive(Eq, @debug.Debug)
+pub fn Event::equal(Self, Self) -> Bool
+pub fn Event::not_equal(Self, Self) -> Bool
+pub fn Event::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Limits {
+  attributes : Int32
+  events : Int32
+  links : Int32
+  attributes_per_event : Int32
+  attribute_value_length : Int32?
+} derive(Eq, @debug.Debug)
+pub fn Limits::equal(Self, Self) -> Bool
+pub fn Limits::new(attributes? : Int32, events? : Int32, links? : Int32, attributes_per_event? : Int32, attribute_value_length? : Int32?) -> Self
+pub fn Limits::not_equal(Self, Self) -> Bool
+pub fn Limits::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Link {
+  context : TraceContext
+  attributes : Array[(String, Value)]
+} derive(Eq, @debug.Debug)
+pub fn Link::equal(Self, Self) -> Bool
+pub fn Link::not_equal(Self, Self) -> Bool
+pub fn Link::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Never {
+}
+pub fn Never::description(Self) -> String
+pub fn Never::should_sample(Self, SampleRequest) -> Decision
+pub impl Sampler for Never
+
+pub(all) struct ParentBased {
+  root : &Sampler
+}
+pub fn ParentBased::description(Self) -> String
+pub fn ParentBased::should_sample(Self, SampleRequest) -> Decision
+pub impl Sampler for ParentBased
+
+pub(all) struct Ratio {
+  ratio : Double
+} derive(@debug.Debug)
+pub fn Ratio::description(Self) -> String
+pub fn Ratio::should_sample(Self, SampleRequest) -> Decision
+pub fn Ratio::to_repr(Self) -> @debug.Repr
+pub impl Sampler for Ratio
+
+pub struct Recorder {
+  spans : @ref.Ref[Array[SpanData]]
+}
+pub fn Recorder::accept(Self, SpanData) -> Unit
+pub fn Recorder::len(Self) -> Int32
+pub fn Recorder::new() -> Self
+pub fn Recorder::spans(Self) -> Array[SpanData]
+pub fn Recorder::take(Self) -> Array[SpanData]
+pub impl Sink for Recorder
+
+pub(all) struct SampleRequest {
+  parent : TraceContext?
+  trace_id : Bytes
+  name : String
+  kind : SpanKind
+}
+
+pub struct Span {
+  context : TraceContext
+  parent : Bytes?
+  kind : SpanKind
+  start : Int64
+  recording : Bool
+  sink : &Sink
+  limits : Limits
+  span_name : @ref.Ref[String]
+  attribute_list : @ref.Ref[Array[(String, Value)]]
+  event_list : @ref.Ref[Array[Event]]
+  link_list : @ref.Ref[Array[Link]]
+  span_status : @ref.Ref[Status]
+  end_time : @ref.Ref[Int64?]
+  dropped : @ref.Ref[Dropped]
+}
+pub fn Span::add_event(Self, String, attributes? : Array[(String, Value)], at~ : Int64) -> Unit
+pub fn Span::add_link(Self, Link) -> Unit
+pub fn Span::attributes(Self) -> Array[(String, Value)]
+pub fn Span::context(Self) -> TraceContext
+pub fn Span::events(Self) -> Array[Event]
+pub fn Span::finish(Self, at~ : Int64) -> Unit
+pub fn Span::is_ended(Self) -> Bool
+pub fn Span::is_recording(Self) -> Bool
+pub fn Span::links(Self) -> Array[Link]
+pub fn Span::name(Self) -> String
+pub fn Span::record_exception(Self, message~ : String, at~ : Int64, type_? : String, stacktrace? : String, attributes? : Array[(String, Value)]) -> Unit
+pub fn Span::set_attribute(Self, String, Value) -> Unit
+pub fn Span::set_attributes(Self, Array[(String, Value)]) -> Unit
+pub fn Span::set_name(Self, String) -> Unit
+pub fn Span::set_status(Self, Status) -> Unit
+pub fn Span::status(Self) -> Status
+
+pub(all) struct SpanData {
+  context : TraceContext
+  parent : Bytes?
+  name : String
+  kind : SpanKind
+  start : Int64
+  end : Int64
+  attributes : Array[(String, Value)]
+  events : Array[Event]
+  links : Array[Link]
+  status : Status
+  dropped : Dropped
+} derive(Eq, @debug.Debug)
+pub fn SpanData::duration(Self) -> Int64
+pub fn SpanData::equal(Self, Self) -> Bool
+pub fn SpanData::not_equal(Self, Self) -> Bool
+pub fn SpanData::sampled(Self) -> Bool
+pub fn SpanData::to_repr(Self) -> @debug.Repr
+
+pub(all) enum SpanKind {
+  Internal
+  Server
+  Client
+  Producer
+  Consumer
+} derive(Eq, @debug.Debug)
+pub fn SpanKind::equal(Self, Self) -> Bool
+pub fn SpanKind::not_equal(Self, Self) -> Bool
+pub fn SpanKind::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Status {
+  Unset
+  Ok
+  Error(String)
+} derive(Eq, @debug.Debug)
+pub fn Status::equal(Self, Self) -> Bool
+pub fn Status::not_equal(Self, Self) -> Bool
+pub fn Status::output(Self, &Logger) -> Unit
+pub fn Status::to_repr(Self) -> @debug.Repr
+pub fn Status::to_string(Self) -> String
+pub impl Show for Status
+
+pub(all) struct TraceContext {
+  trace_id : Bytes
+  span_id : Bytes
+  flags : Byte
+  state : TraceState
+} derive(Eq, @debug.Debug)
+pub fn TraceContext::equal(Self, Self) -> Bool
+pub fn TraceContext::is_valid(Self) -> Bool
+pub fn TraceContext::new(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState) -> Self
+pub fn TraceContext::not_equal(Self, Self) -> Bool
+pub fn TraceContext::sampled(Self) -> Bool
+pub fn TraceContext::to_repr(Self) -> @debug.Repr
+pub fn TraceContext::to_traceparent(Self) -> String
+pub fn TraceContext::with_sampled(Self, sampled~ : Bool) -> Self
+
+pub(all) struct TraceState {
+  members : Array[(String, String)]
+} derive(Eq, @debug.Debug)
+pub fn TraceState::delete(Self, String) -> Self
+pub fn TraceState::equal(Self, Self) -> Bool
+pub fn TraceState::get(Self, String) -> String?
+pub fn TraceState::insert(Self, key~ : String, value~ : String) -> Self raise Refused
+pub fn TraceState::is_empty(Self) -> Bool
+pub fn TraceState::len(Self) -> Int32
+pub fn TraceState::not_equal(Self, Self) -> Bool
+pub fn TraceState::parse(StringView) -> Self raise Refused
+pub fn TraceState::to_header(Self) -> String
+pub fn TraceState::to_repr(Self) -> @debug.Repr
+
+pub struct Tracer {
+  rand : (Int32) -> Bytes
+  sink : &Sink
+  sampler : &Sampler
+  limits : Limits
+}
+pub fn Tracer::new(rand~ : (Int32) -> Bytes, sink~ : &Sink, sampler~ : &Sampler, limits? : Limits) -> Self
+pub fn Tracer::start(Self, String, parent? : TraceContext, kind? : SpanKind, at~ : Int64, attributes? : Array[(String, Value)], links? : Array[Link]) -> Span raise Refused
+
+pub(all) enum Value {
+  Bool(Bool)
+  Int(Int64)
+  Double(Double)
+  Str(String)
+  Bools(Array[Bool])
+  Ints(Array[Int64])
+  Doubles(Array[Double])
+  Strs(Array[String])
+} derive(Eq, @debug.Debug)
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::output(Self, &Logger) -> Unit
+pub fn Value::to_repr(Self) -> @debug.Repr
+pub fn Value::to_string(Self) -> String
+pub impl Show for Value
+
+// Type aliases
+
+// Traits
+pub(open) trait Sampler {
+  fn should_sample(Self, SampleRequest) -> Decision
+  fn description(Self) -> String
+}
+
+pub(open) trait Sink {
+  fn accept(Self, SpanData) -> Unit
+}
