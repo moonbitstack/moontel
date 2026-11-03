@@ -372,7 +372,9 @@ body.is-dragging .ruler {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto 1fr auto;
   gap: 0 var(--pad);
-  padding: calc(var(--pad) + 8px) 0 var(--pad);
+  /* The top margin lives on `.topline` itself, so the front plate and every
+     inner plate put the header at the same height. */
+  padding: 0 0 var(--pad);
   position: relative;
 }
 
@@ -387,7 +389,7 @@ body.is-dragging .ruler {
   align-items: baseline;
   gap: 18px clamp(16px, 3vw, 40px);
   flex-wrap: wrap;
-  padding-bottom: 12px;
+  padding: calc(var(--pad) + 8px) 0 12px;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -2838,6 +2840,29 @@ kbd {
   }
 }
 
+/* The index rows need two lines before the phone breakpoint as well: at 700px a
+   long name plus a long signature overflows the sheet. */
+@media (width <= 760px) {
+  .index-row {
+    flex-wrap: wrap;
+    line-height: 1.6;
+    padding-bottom: 8px;
+  }
+  .index-row .leader {
+    display: none;
+  }
+  .index-row .name {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .index-row .sig {
+    text-align: left;
+    white-space: normal;
+    width: 100%;
+    color: var(--ink-faint);
+  }
+}
+
 @media (width <= 640px) {
   .masthead {
     min-height: auto;
@@ -2850,20 +2875,6 @@ kbd {
   }
   .hero-line {
     height: 64px;
-  }
-  .index-row {
-    flex-wrap: wrap;
-    line-height: 1.6;
-    padding-bottom: 8px;
-  }
-  .index-row .leader {
-    display: none;
-  }
-  .index-row .sig {
-    text-align: left;
-    white-space: normal;
-    width: 100%;
-    color: var(--ink-faint);
   }
   .strip {
     height: 96px;
