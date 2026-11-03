@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>moontel — OpenTelemetry tracing for MoonBit</title>
+    <meta
+      name="description"
+      content="OpenTelemetry tracing for MoonBit: spans, samplers, and the W3C headers that carry a trace between services."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0c0e'/%3E%3Cpath d='M2 8h12' stroke='%237fe7d6' stroke-width='1'/%3E%3Cpath d='M6 8v-3M10 8v3' stroke='%23edeae3' stroke-width='1'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      // The plate is chosen before the first paint, or a reader who asked for paper
+      // sees a black flash on the way to it.
+      (() => {
+        const asked = new URLSearchParams(location.search).get("plate");
+        const stored = localStorage.getItem("moontel-plate");
+        const preferred = matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark";
+        document.documentElement.dataset.theme =
+          asked === "paper"
+            ? "light"
+            : asked === "ink"
+              ? "dark"
+              : stored === "light" || stored === "dark"
+                ? stored
+                : preferred;
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- The page's scrollbar: a measuring scale, fixed, so it costs no layout. -->
+      <div class="ruler is-top" id="ruler" aria-hidden="true">
+      <div class="ruler-thumb" id="ruler-thumb"></div>
+    </div>
+    <div class="ruler-readout" aria-hidden="true">
+      <span id="readout-plate">01 / 05</span>
+      <b id="readout-time">T+0.0 ms</b>
+    </div>
+
+    <div class="sheet">
+      <header class="masthead">
+        <div class="topline">
+          <span class="marginalia"
+            ><span class="wide-only"
+              >OpenTelemetry trace API · W3C Trace Context · MoonBit</span
+            ><span class="narrow-only">OpenTelemetry · MoonBit</span></span
+          >
+          <span class="toplinks">
+            <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
+            <button class="theme" id="theme" type="button" aria-label="Switch plate">
+              paper
+            </button>
+          </span>
+        </div>
+
+        <div class="masthead-body">
+          <h1 class="display">One request,<br /><em>drawn to scale.</em></h1>
+          <p class="lede">
+            moontel is OpenTelemetry tracing for MoonBit. It builds the spans,
+            decides which traces to keep, and reads and writes the two headers
+            that carry a trace from one service to the next.
+          </p>
+
+          <svg
+            class="hero-line"
+            id="hero-line"
+            viewBox="0 0 1200 96"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <line class="draw" x1="0" y1="42" x2="1200" y2="42" />
+            <g class="tick" style="--i: 0">
+              <line x1="168" y1="34" x2="168" y2="54" />
+            </g>
+            <g class="tick" style="--i: 1">
+              <line x1="330" y1="40" x2="330" y2="76" />
+            </g>
+            <g class="tick" style="--i: 2">
+              <line x1="520" y1="26" x2="520" y2="46" />
+            </g>
+            <g class="tick" style="--i: 3">
+              <line x1="700" y1="36" x2="700" y2="66" />
+            </g>
+            <g class="tick" style="--i: 4">
+              <line class="done" x1="1188" y1="30" x2="1188" y2="56" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="masthead-foot">
+          <div class="facts" id="facts">
+            <span class="fact"><b>—</b> ns</span>
+            <span class="fact"><b>—</b> spans</span>
+            <span class="fact"><b>—</b> services</span>
+            <span class="fact"><b>0</b> dropped</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="plate" id="plate-1">
+        <div class="plate-head">
+          <span class="plate-no">01 / 05</span>
+          <h2>Six spans, measured in nanoseconds.</h2>
+          <p class="note">
+            The library made this trace; the page only draws it. Times are handed
+            in, because nothing in moontel reads a clock — so the same request
+            comes out the same, here and in a test.
+          </p>
+        </div>
+        <div class="plate-body trace" id="trace">
+          <svg id="trace-svg" viewBox="0 0 1200 380" aria-label="The trace, as spans"></svg>
+          <div class="trace-readout" id="trace-readout">
+            <span><b>Rest the pointer on a span.</b></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" id="plate-2">
+        <div class="plate-head">
+          <span class="plate-no">02 / 05</span>
+          <h2>Fifty-five characters carry the whole thing.</h2>
+          <p class="note">
+            One header, four fields. Every hop keeps the trace id, replaces the
+            span id, and passes the vendor state on untouched.
+          </p>
+        </div>
+        <div class="plate-body">
+          <div class="specimen-wrap">
+            <p class="specimen" id="specimen" aria-label="The traceparent header">
+              <span class="field" data-field="version">00</span><span class="dash">-</span><span class="field" data-field="trace">—</span><span class="dash">-</span><span class="field" data-field="span">—</span><span class="dash">-</span><span class="field flags" data-field="flags">01</span>
+            </p>
+            <div class="annotations" id="annotations">
+              <div class="annotation" data-for="version"><b>version</b>2 characters</div>
+              <div class="annotation" data-for="trace"><b>trace id</b>32 characters · one per trace</div>
+              <div class="annotation" data-for="span"><b>span id</b>16 characters · one per hop</div>
+              <div class="annotation" data-for="flags"><b>flags</b>2 characters · bit 0 is sampled</div>
+            </div>
+          </div>
+          <div class="header-note">
+            <p>
+              <b>Id is octets, not text.</b> Sixteen for the trace and eight for
+              the span, as W3C Trace Context lays them out; hexadecimal is a
+              spelling produced at the wire and in a log, never stored. A parser
+              that accepted upper and lower case would let two spellings of one
+              trace id into the same backend, so it refuses the upper one.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" id="plate-3">
+        <div class="plate-head">
+          <span class="plate-no">03 / 05</span>
+          <h2>One decision, for the whole trace.</h2>
+          <p class="note">
+            A sampler decides once, at the root, and every later hop obeys. The
+            decision reads the trace id — not a clock, not a counter — so the same
+            trace gets the same answer in every process. Raise the rate and every
+            trace the lower rate kept is still kept.
+          </p>
+        </div>
+        <div class="plate-body">
+          <div class="strip" id="strip" aria-hidden="true"></div>
+          <div class="controls">
+            <div class="stops" role="group" aria-label="Sampling ratio">
+              <button class="stop" type="button" data-ratio="1" aria-pressed="false">1</button>
+              <button class="stop" type="button" data-ratio="0.5" aria-pressed="true">1/2</button>
+              <button class="stop" type="button" data-ratio="0.1" aria-pressed="false">1/10</button>
+            </div>
+            <span class="counter" id="counter"><b>—</b> of — sampled</span>
+          </div>
+          <p class="strip-readout" id="strip-readout">
+            <b>512 requests</b> · each a trace id this library sampled for real
+          </p>
+        </div>
+      </section>
+
+      <section class="plate" id="plate-4">
+        <div class="plate-head">
+          <span class="plate-no">04 / 05</span>
+          <h2>Three things moontel will not invent for itself.</h2>
+          <p class="note">
+            Where ids come from, what time it is, and where finished spans go. All
+            three are handed in, which is why the same code serves a server, a batch
+            job replaying last night's events, and a test that needs the timeline to
+            be exact.
+          </p>
+        </div>
+        <div class="plate-body seams">
+          <div class="seam">
+            <h3>Randomness</h3>
+            <p>
+              A function from a width to that many octets. Sixteen is a trace id,
+              eight is a span id. A generator that returns three, or sixteen zeros, is
+              refused rather than papered over.
+            </p>
+            <!-- nocheck: a fragment, not a program -->
+            <pre><code>let tracer = <span class="a">@trace.Tracer</span>::new(
+  rand=random_bytes,
+  sink=recorder,
+  sampler=<span class="a">@trace.parent_based</span>(
+    root=<span class="a">@trace.always</span>,
+  ),
+)</code></pre>
+          </div>
+          <div class="seam">
+            <h3>The clock</h3>
+            <p>
+              Every call that needs a time is handed one, in nanoseconds: the start of
+              a span, its end, the instant of an event. Nothing here reads a clock, so
+              a replay of last night is not a replay with different timings.
+            </p>
+            <!-- nocheck: a fragment, not a program -->
+            <pre><code>let span = tracer.<span class="a">start</span>(
+  "GET /orders",
+  at=now_ns(),
+)
+span.<span class="a">finish</span>(at=now_ns())</code></pre>
+          </div>
+          <div class="seam">
+            <h3>A sink</h3>
+            <p>
+              Where a finished span goes. A recorder for a test, a queue for a service,
+              nothing at all for a program that only wants trace ids for its logs.
+            </p>
+            <!-- nocheck: a fragment, not a program -->
+            <pre><code>impl <span class="a">@trace.Sink</span> for Printer with fn accept(_, span) {
+  println("\{span.name} took \{span.duration()} ns")
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" id="plate-5">
+        <div class="plate-head">
+          <span class="plate-no">05 / 05</span>
+          <h2>The index.</h2>
+          <p class="note">
+            Three packages and a facade. Import the package that owns the type you
+            construct: a re-exported type arrives without its constructors.
+          </p>
+        </div>
+        <div class="plate-body">
+          <div class="index-group">
+            <h3>trace — spans, samplers, the sink seam</h3>
+            <div class="index-row"><span class="name">Tracer::new</span><span class="leader"></span><span class="sig">(rand~, sink~, sampler~, limits?) → Tracer</span></div>
+            <div class="index-row"><span class="name">Tracer::start</span><span class="leader"></span><span class="sig">(name, parent? , kind?, at~, attributes?, links?) → Span raise</span></div>
+            <div class="index-row"><span class="name">Span::finish</span><span class="leader"></span><span class="sig">(at~) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::set_attribute</span><span class="leader"></span><span class="sig">(key, Value) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::set_attributes</span><span class="leader"></span><span class="sig">(Array[(String, Value)]) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::add_event</span><span class="leader"></span><span class="sig">(name, attributes?, at~) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::record_exception</span><span class="leader"></span><span class="sig">(message~, at~, type_?, stacktrace?, attributes?) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::set_status</span><span class="leader"></span><span class="sig">(Status) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::set_name</span><span class="leader"></span><span class="sig">(String) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::add_link</span><span class="leader"></span><span class="sig">(Link) → Unit</span></div>
+            <div class="index-row"><span class="name">Span::context</span><span class="leader"></span><span class="sig">() → TraceContext</span></div>
+            <div class="index-row"><span class="name">Span::is_recording, is_ended</span><span class="leader"></span><span class="sig">() → Bool</span></div>
+            <div class="index-row"><span class="name">SpanData</span><span class="leader"></span><span class="sig">context, parent, name, kind, start, end, attributes, events, links, status, dropped</span></div>
+            <div class="index-row"><span class="name">SpanData::sampled, duration</span><span class="leader"></span><span class="sig">() → Bool, () → Int64</span></div>
+            <div class="index-row"><span class="name">TraceContext</span><span class="leader"></span><span class="sig">trace_id, span_id, flags, state</span></div>
+            <div class="index-row"><span class="name">TraceContext::to_traceparent</span><span class="leader"></span><span class="sig">() → String</span></div>
+            <div class="index-row"><span class="name">TraceContext::sampled, is_valid</span><span class="leader"></span><span class="sig">() → Bool</span></div>
+            <div class="index-row"><span class="name">TraceState::parse</span><span class="leader"></span><span class="sig">(StringView) → TraceState raise</span></div>
+            <div class="index-row"><span class="name">TraceState::to_header, get, insert, delete</span><span class="leader"></span><span class="sig">read a member, add one closest to this hop, drop one</span></div>
+            <div class="index-row"><span class="name">Sampler</span><span class="leader"></span><span class="sig">should_sample(SampleRequest) → Decision · description() → String</span></div>
+            <div class="index-row"><span class="name">Sink</span><span class="leader"></span><span class="sig">accept(SpanData) → Unit</span></div>
+            <div class="index-row"><span class="name">always, never, ratio, parent_based</span><span class="leader"></span><span class="sig">the four samplers</span></div>
+            <div class="index-row"><span class="name">Recorder, Discard</span><span class="leader"></span><span class="sig">spans in memory · spans thrown away</span></div>
+            <div class="index-row"><span class="name">Limits</span><span class="leader"></span><span class="sig">attributes, events, links, attributes_per_event, attribute_value_length</span></div>
+            <div class="index-row"><span class="name">Value</span><span class="leader"></span><span class="sig">Bool · Int · Double · Str · and the four typed arrays</span></div>
+            <div class="index-row"><span class="name">Status, SpanKind, Decision</span><span class="leader"></span><span class="sig">Unset / Ok / Error · Internal / Server / Client / Producer / Consumer</span></div>
+            <div class="index-row"><span class="name">Refused</span><span class="leader"></span><span class="sig">Field · NotHex · Zero · TooMany · TooLong · Ids</span></div>
+          </div>
+
+          <div class="index-group">
+            <h3>propagate — the W3C headers</h3>
+            <div class="index-row"><span class="name">extract</span><span class="leader"></span><span class="sig">(Array[(String, String)]) → Extracted</span></div>
+            <div class="index-row"><span class="name">inject</span><span class="leader"></span><span class="sig">(Array[(String, String)], Extracted) → Array[(String, String)]</span></div>
+            <div class="index-row"><span class="name">parse</span><span class="leader"></span><span class="sig">(traceparent, tracestate?) → TraceContext raise</span></div>
+            <div class="index-row"><span class="name">parse_traceparent, parse_tracestate</span><span class="leader"></span><span class="sig">the fields, and the refusal</span></div>
+            <div class="index-row"><span class="name">Baggage</span><span class="leader"></span><span class="sig">members · parse · to_header · get · len · add</span></div>
+            <div class="index-row"><span class="name">Extracted, Member, Property</span><span class="leader"></span><span class="sig">one hop in and out · a bag entry · its metadata</span></div>
+            <div class="index-row"><span class="name">traceparent_header, tracestate_header, baggage_header</span><span class="leader"></span><span class="sig">the three names, lowercase</span></div>
+          </div>
+
+          <div class="index-group">
+            <h3>asgi — the middleware</h3>
+            <div class="index-row"><span class="name">Tracing::new</span><span class="leader"></span><span class="sig">(tracer~, now~, name?, baggage?, ignore?) → Tracing</span></div>
+            <div class="index-row"><span class="name">Tracing::wrap</span><span class="leader"></span><span class="sig">(AsgiApp) → AsgiApp, and Layer for stacking</span></div>
+            <div class="index-row"><span class="name">method_and_path</span><span class="leader"></span><span class="sig">(http_method, path) → String</span></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="colophon">
+        <p class="end">The line ends here.<br /><em>Thirty-eight milliseconds.</em></p>
+        <div class="meta">
+          <span>Apache-2.0</span>
+          <a href="https://github.com/moonbitstack/moontel">github.com/moonbitstack/moontel</a>
+          <span>Built by running the library</span>
+          <span id="colophon-time">38.4 ms · 6 spans</span>
+        </div>
+        <div class="end-tick" aria-hidden="true"></div>
+      </footer>
+    </div>
+
+    <script type="module" src="engine/moontel.js"></script>
+    <script type="module" src="home.js"></script>
+  </body>
+</html>

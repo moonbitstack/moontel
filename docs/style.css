@@ -1,0 +1,1136 @@
+/* Copyright 2026 Leo Cheng
+   SPDX-License-Identifier: Apache-2.0
+
+   One sheet: a dark field and a paper field, three faces, one accent, rules only.
+   Nothing here is a card, a shadow or a gradient mesh. */
+
+/* ---------------------------------------------------------------- tokens */
+
+:root {
+  --pad: clamp(16px, 3.4vw, 56px);
+  --max: 1280px;
+  --serif: "Instrument Serif", "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --sans: "Inter Tight", -apple-system, "Segoe UI", system-ui, sans-serif;
+
+  /* The dark plate: developed film, a little blue in the base. */
+  --field: #0a0c0e;
+  --field-soft: #101315;
+  --ink: #edeae3;
+  --ink-dim: #9aa0a1;
+  --ink-faint: #5b6265;
+  --rule: rgba(237, 234, 227, 0.12);
+  --rule-strong: rgba(237, 234, 227, 0.26);
+  --grid: rgba(237, 234, 227, 0.05);
+  --accent: #7fe7d6;
+  --accent-dim: rgba(127, 231, 214, 0.38);
+  --accent-ink: #06201c;
+}
+
+:root[data-theme="light"] {
+  /* The paper plate: uncoated stock, warm, printed in a colder ink than it looks. */
+  --field: #f3f0e8;
+  --field-soft: #eae6dc;
+  --ink: #14161a;
+  --ink-dim: #5e6467;
+  --ink-faint: #8b9092;
+  --rule: rgba(20, 22, 26, 0.14);
+  --rule-strong: rgba(20, 22, 26, 0.3);
+  --grid: rgba(20, 22, 26, 0.07);
+  --accent: #0f7d6e;
+  --accent-dim: rgba(15, 125, 110, 0.34);
+  --accent-ink: #f3f0e8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--field);
+  /* The page scrollbar is drawn as the ruler on the right edge: a fixed element,
+     so hiding the native one costs no layout. Chrome reads the webkit rules
+     below; the standard properties are behind the feature query so they cannot
+     win in Chrome and turn the check in `docs.md` into a false pass. */
+}
+
+@supports selector(::-webkit-scrollbar) {
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  pre::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  pre::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  pre::-webkit-scrollbar-thumb {
+    background: var(--rule-strong);
+    border-radius: 99px;
+  }
+  pre:hover::-webkit-scrollbar-thumb {
+    background: var(--ink-faint);
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: none;
+  }
+  pre {
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule-strong) transparent;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.62;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 240ms ease, color 240ms ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ---------------------------------------------------------------- type */
+
+.display,
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.display {
+  font-size: clamp(54px, 10.4vw, 146px);
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+}
+
+.display em {
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+.lede {
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.55;
+  max-width: 34ch;
+  color: var(--ink-dim);
+}
+
+.mono,
+.marginalia,
+.plate-no,
+.stop,
+.readout,
+.index-row,
+pre,
+code {
+  font-family: var(--mono);
+  font-variant-ligatures: no-contextual;
+}
+
+.marginalia {
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-strong);
+  padding-bottom: 1px;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- frame */
+
+.sheet {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+/* the ruler: the page's own scrollbar, drawn as a measuring scale */
+.ruler {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 4;
+  width: 34px;
+  height: 100vh;
+  pointer-events: none;
+  border-left: 1px solid var(--rule);
+  background:
+    repeating-linear-gradient(
+        to bottom,
+        var(--rule) 0 1px,
+        transparent 1px 9px
+      )
+      no-repeat right 9px top 0 / 6px 100%,
+    repeating-linear-gradient(
+        to bottom,
+        var(--rule-strong) 0 1px,
+        transparent 1px 45px
+      )
+      no-repeat right 0 top 0 / 12px 100%;
+}
+
+.ruler-thumb {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 68px;
+  border-right: 1px solid var(--accent);
+  background: var(--accent-dim);
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+
+.ruler.is-top .ruler-thumb {
+  opacity: 0;
+}
+
+.ruler-readout {
+  position: fixed;
+  right: 44px;
+  bottom: 18px;
+  z-index: 4;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  line-height: 1.9;
+  pointer-events: none;
+}
+
+.ruler-readout b {
+  display: block;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 10px;
+}
+
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto 1fr auto;
+  gap: 0 var(--pad);
+  padding: calc(var(--pad) + 8px) 0 var(--pad);
+  position: relative;
+}
+
+.narrow-only {
+  display: none;
+}
+
+.topline {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.masthead-body {
+  grid-column: 1 / -1;
+  align-self: end;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 var(--pad);
+  padding: clamp(24px, 5vw, 56px) 0 clamp(8px, 1.2vw, 18px);
+}
+
+.masthead-body h1 {
+  grid-column: 1 / span 8;
+}
+
+.masthead-body .lede {
+  grid-column: 9 / span 4;
+  align-self: end;
+  padding-bottom: 6px;
+}
+
+.masthead-foot {
+  grid-column: 1 / -1;
+  padding-right: 84px;
+  border-top: 1px solid var(--rule);
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.facts {
+  display: flex;
+  gap: clamp(14px, 2.4vw, 34px);
+  flex-wrap: wrap;
+}
+
+.fact {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.fact b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* the hairline under the type, with the marks where the request forks */
+.hero-line {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 96px;
+  display: block;
+  overflow: visible;
+  margin-top: clamp(20px, 4vw, 44px);
+}
+
+.hero-line line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  fill: none;
+}
+
+.hero-line .done {
+  stroke: var(--accent);
+}
+
+.trace .event-stem {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+
+/* ---------------------------------------------------------------- plates */
+
+.plate {
+  position: relative;
+  border-top: 1px solid var(--rule);
+  padding: clamp(72px, 12vw, 168px) 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 var(--pad);
+}
+
+.plate-head {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 var(--pad);
+  align-items: end;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+.plate-no {
+  grid-column: 1 / span 1;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  padding-top: 6px;
+}
+
+.plate-head h2 {
+  grid-column: 2 / span 6;
+  font-size: clamp(30px, 4.4vw, 62px);
+  line-height: 0.98;
+}
+
+.plate-head .note {
+  grid-column: 9 / span 4;
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.65;
+  padding-bottom: 6px;
+}
+
+.plate-body {
+  grid-column: 1 / -1;
+}
+
+/* ---------------------------------------------------------------- trace plate */
+
+.trace {
+  position: relative;
+}
+
+.trace svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.trace text {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  fill: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+.trace .row-name {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  fill: var(--ink);
+  text-transform: none;
+}
+
+.trace .row-kind {
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-faint);
+  opacity: 0.9;
+}
+
+.trace .row-time {
+  font-size: 10px;
+  fill: var(--ink-dim);
+}
+
+.trace .grid-line {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+.trace .axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.trace .bar {
+  stroke: var(--ink);
+  stroke-width: 1;
+  fill: none;
+  transition: stroke 180ms ease, stroke-width 180ms ease;
+}
+
+.trace .bar-body {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.trace .event {
+  fill: var(--ink-dim);
+}
+
+.trace .row {
+  transition: opacity 200ms ease;
+}
+
+.trace.has-active .row {
+  opacity: 0.22;
+}
+
+.trace.has-active .row.is-active {
+  opacity: 1;
+}
+
+.trace.has-active .row.is-active .bar,
+.trace.has-active .row.is-active .bar-body {
+  stroke: var(--accent);
+}
+
+.trace.has-active .row.is-active .event {
+  fill: var(--accent);
+}
+
+.trace.has-active .row.is-active .row-name {
+  fill: var(--accent);
+}
+
+.trace-readout {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  gap: clamp(12px, 2.4vw, 30px);
+  flex-wrap: wrap;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+  min-height: 40px;
+}
+
+.trace-readout b {
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.trace-readout .attrs {
+  color: var(--ink-faint);
+}
+
+/* ---------------------------------------------------------------- header plate */
+
+.specimen-wrap {
+  position: relative;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(14px, 2vw, 26px) 0 0;
+}
+
+.specimen {
+  position: relative;
+  font-family: var(--mono);
+  font-size: clamp(15px, 2.15vw, 29px);
+  letter-spacing: -0.005em;
+  word-break: break-all;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.specimen .field {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.specimen .dash {
+  color: var(--ink-faint);
+  padding: 0 0.12em;
+}
+
+.specimen .flags {
+  color: var(--accent);
+  border-bottom-color: var(--accent-dim);
+}
+
+.annotations {
+  position: relative;
+  height: 52px;
+  margin-top: 2px;
+}
+
+.annotation {
+  position: absolute;
+  top: 0;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  line-height: 1.7;
+  white-space: nowrap;
+  padding-top: 12px;
+}
+
+.annotation.is-lifted {
+  top: 26px;
+}
+
+.annotations .tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 8px;
+  background: var(--rule-strong);
+}
+
+.annotations .tick:first-of-type {
+  height: 8px;
+}
+
+.annotation b {
+  display: block;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.header-note {
+  margin-top: clamp(28px, 4vw, 44px);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 var(--pad);
+}
+
+.header-note p {
+  grid-column: 2 / span 6;
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.header-note p b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------- decision plate */
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  align-items: flex-end;
+  height: 128px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+/* A dropped request is a speck on the rule; a kept one is a mark standing on it. The
+   proportion is then read by eye, which is the whole point of the plate. */
+.strip i {
+  flex: 1 1 0;
+  min-width: 1px;
+  height: 7px;
+  background: var(--ink-faint);
+  opacity: 0.45;
+  transition: height 460ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 460ms ease, opacity 460ms ease;
+}
+
+.strip i.kept {
+  height: 104px;
+  background: var(--accent);
+  opacity: 1;
+}
+
+.strip:hover i.kept {
+  opacity: 0.82;
+}
+
+.strip i.is-pointed {
+  background: var(--ink);
+  height: 128px;
+  opacity: 1;
+}
+
+.strip i.kept.is-pointed {
+  background: var(--accent);
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: clamp(14px, 2.6vw, 36px);
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.stops {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+}
+
+.stop {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--rule-strong);
+  color: var(--ink-faint);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 8px 14px 6px 0;
+  margin: 0;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+  border-radius: 0;
+}
+
+.stop + .stop {
+  padding-left: 14px;
+  border-left: 1px solid var(--rule);
+}
+
+.stop:hover {
+  color: var(--ink);
+}
+
+.stop[aria-pressed="true"] {
+  color: var(--accent);
+  border-top-color: var(--accent);
+  box-shadow: inset 0 1px 0 var(--accent);
+}
+
+.counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+
+.counter b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.strip-readout {
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+  min-height: 18px;
+}
+
+.strip-readout b {
+  color: var(--ink-dim);
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------- seams plate */
+
+.seams {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 44px);
+}
+
+.seam {
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.seam h3 {
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.seam p {
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  max-width: 42ch;
+}
+
+.seam pre {
+  margin-top: auto;
+}
+
+pre {
+  margin: 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  overflow-x: auto;
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  tab-size: 2;
+}
+
+pre .k {
+  color: var(--ink-dim);
+}
+
+pre .a {
+  color: var(--accent);
+}
+
+code {
+  font-size: 0.92em;
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- index plate */
+
+.index-group {
+  border-top: 1px solid var(--rule-strong);
+  padding: 12px 0 4px;
+}
+
+.index-group + .index-group {
+  margin-top: 40px;
+}
+
+.index-group h3 {
+  font-size: 13px;
+  font-family: var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 14px;
+}
+
+.index-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 2.35;
+  letter-spacing: 0.01em;
+}
+
+.index-row .name {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* A rule, not a dot leader: a dotted leader has to be coaxed onto the baseline and
+   sits a pixel wrong at some size or another, and this sheet is nothing but rules. */
+.index-row .leader {
+  flex: 1 1 auto;
+  min-width: 12px;
+  border-bottom: 1px solid var(--rule);
+  transform: translateY(-4px);
+}
+
+.index-row .sig {
+  color: var(--ink-dim);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.index-row .sig em {
+  color: var(--ink-faint);
+  font-style: normal;
+}
+
+/* ---------------------------------------------------------------- colophon */
+
+.colophon {
+  border-top: 1px solid var(--rule-strong);
+  padding: clamp(36px, 6vw, 72px) 0 clamp(56px, 8vw, 96px);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 var(--pad);
+  align-items: start;
+}
+
+.colophon .end {
+  grid-column: 2 / span 4;
+  font-family: var(--serif);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.05;
+}
+
+.colophon .end em {
+  font-style: italic;
+  color: var(--ink-dim);
+}
+
+.colophon .meta {
+  grid-column: 9 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.colophon .meta a {
+  border-bottom: 0;
+  color: var(--ink-dim);
+}
+
+.colophon .meta a:hover {
+  color: var(--accent);
+}
+
+/* the end of the line: one tick, where the trace stopped */
+.end-tick {
+  grid-column: 1 / -1;
+  height: 1px;
+  margin-top: clamp(36px, 6vw, 64px);
+  background: linear-gradient(90deg, var(--rule-strong), var(--rule) 60%, transparent);
+  position: relative;
+}
+
+.end-tick::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: var(--accent);
+}
+
+.toplinks {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+
+.toplink {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 0;
+}
+
+.toplink:hover {
+  color: var(--ink);
+  border-bottom: 0;
+}
+
+/* theme switch, in the topline, as a printed caption */
+.theme {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid transparent;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.theme:hover {
+  color: var(--ink);
+  border-bottom-color: var(--rule-strong);
+}
+
+/* ---------------------------------------------------------------- narrow */
+
+@media (width <= 980px) {
+  .masthead-body h1 {
+    grid-column: 1 / -1;
+  }
+  .masthead-body .lede {
+    grid-column: 1 / span 7;
+    margin-top: 24px;
+  }
+  .plate-head h2,
+  .plate-head .note {
+    grid-column: 1 / -1;
+  }
+  .plate-no {
+    grid-column: 1 / -1;
+    padding-bottom: 10px;
+  }
+  .plate-head h2 {
+    margin-bottom: 14px;
+  }
+  .header-note p {
+    grid-column: 1 / -1;
+  }
+  .colophon .end,
+  .colophon .meta {
+    grid-column: 1 / -1;
+  }
+  .colophon .meta {
+    margin-top: 24px;
+  }
+  .seams {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ruler {
+    display: none;
+  }
+  .ruler-readout {
+    display: none;
+  }
+}
+
+@media (width <= 760px) {
+  /* A specimen that wraps cannot carry notes hung under it: they become a list, and
+     the fields wrap as whole fields with the dashes dropped. */
+  .specimen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    font-size: 13px;
+    line-height: 1.9;
+    word-break: normal;
+  }
+  .specimen .dash {
+    display: none;
+  }
+  .specimen .field {
+    padding-bottom: 4px;
+  }
+  .annotations {
+    position: static;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 0 14px;
+  }
+  .annotation {
+    position: static;
+    white-space: normal;
+    padding-top: 0;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .annotation::before {
+    display: none;
+  }
+  .annotation b {
+    display: inline;
+    min-width: 74px;
+  }
+}
+
+@media (width <= 640px) {
+  .masthead {
+    min-height: auto;
+  }
+  .masthead-body .lede {
+    grid-column: 1 / -1;
+  }
+  .display {
+    font-size: clamp(44px, 15vw, 74px);
+  }
+  .hero-line {
+    height: 64px;
+  }
+  .index-row {
+    flex-wrap: wrap;
+    line-height: 1.6;
+    padding-bottom: 8px;
+  }
+  .index-row .leader {
+    display: none;
+  }
+  .index-row .sig {
+    text-align: left;
+    white-space: normal;
+    width: 100%;
+    color: var(--ink-faint);
+  }
+  .strip {
+    height: 96px;
+  }
+  .strip i.kept {
+    height: 72px;
+  }
+  .strip i {
+    height: 28px;
+  }
+  .strip i.is-pointed {
+    height: 96px;
+  }
+  .plate {
+    padding: 56px 0;
+  }
+  .wide-only {
+    display: none;
+  }
+  .narrow-only {
+    display: inline;
+  }
+  .facts {
+    gap: 6px 16px;
+  }
+  .fact {
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+  }
+  .trace-readout {
+    font-size: 9px;
+  }
+}
+
+/* ---------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .hero-line .draw {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* The one entrance: the line is drawn, once, when it comes into view. */
+.hero-line .draw {
+  stroke-dasharray: var(--len, 1200);
+  stroke-dashoffset: var(--len, 1200);
+}
+
+.hero-line.is-drawn .draw {
+  animation: draw 1400ms cubic-bezier(0.16, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.hero-line .tick {
+  opacity: 0;
+}
+
+.hero-line.is-drawn .tick {
+  animation: appear 400ms ease forwards;
+  animation-delay: calc(var(--i, 0) * 170ms + 220ms);
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
