@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/asgi"
+
+import {
+  "moonbitstack/moonasgi/mid",
+  "moonbitstack/moonasgi/spec",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub fn method_and_path(String, String) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct Tracing {
+  tracer : @trace.Tracer
+  now : () -> Int64
+  name : (String, String) -> String
+  baggage : Bool
+  ignore : Array[String]
+}
+pub fn Tracing::new(tracer~ : @trace.Tracer, now~ : () -> Int64, name? : (String, String) -> String, baggage? : Bool, ignore? : Array[String]) -> Self
+pub fn Tracing::wrap(Self, async (@spec.Scope, async () -> @spec.Event, async (@spec.Event) -> Unit) -> Unit) -> async (@spec.Scope, async () -> @spec.Event, async (@spec.Event) -> Unit) -> Unit
+pub impl @mid.Layer for Tracing
+
+// Type aliases
+
+// Traits

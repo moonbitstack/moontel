@@ -1,0 +1,18 @@
+// An ASGI middleware: one server span per request, joined to the trace the
+// request arrived with, and the context written back on the response.
+//
+// ASGI 3.0: https://asgi.readthedocs.io/en/latest/specs/main.html
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/propagate",
+  "moonbitstack/moonasgi/spec",
+  "moonbitstack/moonasgi/mid",
+}
+
+// The middleware's shape is framework-neutral: it implements `@mid.Layer` and uses
+// only the language's async function types. The tests drive it with
+// moonbitlang/async's event loop on all three backends, so the import has to be
+// named here rather than reached through moonasgi.
+import {
+  "moonbitlang/async",
+} for "wbtest"
