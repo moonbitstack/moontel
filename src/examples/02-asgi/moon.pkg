@@ -18,7 +18,7 @@ import {
 options(
   targets: {
     "main.mbt": [ "native", "wasm", "js" ],
-    "elsewhere.mbt": [ "wasm-gc" ],
+    "wasm_gc.mbt": [ "wasm-gc" ],
   },
 )
 
