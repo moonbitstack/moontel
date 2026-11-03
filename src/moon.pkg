@@ -1,0 +1,16 @@
+// The library in one import: `trace`, `propagate` and `asgi` re-exported, so a
+// program that wants all three spells the module name once. A caller that wants
+// only the span model imports `moonbitstack/moontel/trace` and pulls in neither
+// the ASGI types nor the async runtime behind them.
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/propagate",
+  "moonbitstack/moontel/asgi",
+}
+
+// The cross-check at the root replays a recorded run of another implementation, so
+// it reads hexadecimal ids and parses the record with the core JSON reader.
+import {
+  "moonbitstack/moonbase/base16",
+  "moonbitlang/core/json",
+} for "wbtest"

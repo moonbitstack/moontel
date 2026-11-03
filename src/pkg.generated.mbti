@@ -1,0 +1,116 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel"
+
+import {
+  "moonbitstack/moontel/asgi",
+  "moonbitstack/moontel/propagate",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub let always : @trace.Always
+
+pub let baggage_byte_limit : Int32
+
+pub let baggage_header : String
+
+pub let baggage_member_limit : Int32
+
+pub let discard : @trace.Discard
+
+pub let dropped_nothing : @trace.Dropped
+
+pub let empty_baggage : @propagate.Baggage
+
+pub let empty_trace_state : @trace.TraceState
+
+pub fn extract(Array[(String, String)]) -> @propagate.Extracted
+
+pub fn inject(Array[(String, String)], @propagate.Extracted) -> Array[(String, String)]
+
+pub fn method_and_path(String, String) -> String
+
+pub let never : @trace.Never
+
+pub fn parent_based(root~ : &@trace.Sampler) -> @trace.ParentBased
+
+pub fn parse(StringView, tracestate? : StringView) -> @trace.TraceContext raise @trace.Refused
+
+pub fn parse_traceparent(StringView) -> @trace.TraceContext raise @trace.Refused
+
+pub fn parse_tracestate(StringView) -> @trace.TraceState raise @trace.Refused
+
+pub let random_flag : Byte
+
+pub fn ratio(ratio~ : Double) -> @trace.Ratio
+
+pub let sampled_flag : Byte
+
+pub let trace_limits : @trace.Limits
+
+pub let traceparent_header : String
+
+pub let tracestate_header : String
+
+pub let tracestate_limit : Int32
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @trace {type Always}
+
+pub using @propagate {type Baggage}
+
+pub using @trace {type Decision}
+
+pub using @trace {type Discard}
+
+pub using @trace {type Dropped}
+
+pub using @trace {type Event}
+
+pub using @propagate {type Extracted}
+
+pub using @trace {type Limits}
+
+pub using @trace {type Link}
+
+pub using @propagate {type Member}
+
+pub using @trace {type Never}
+
+pub using @trace {type ParentBased}
+
+pub using @propagate {type Property}
+
+pub using @trace {type Ratio}
+
+pub using @trace {type Recorder}
+
+pub using @trace {type Refused}
+
+pub using @trace {type SampleRequest}
+
+pub using @trace {type Span}
+
+pub using @trace {type SpanData}
+
+pub using @trace {type SpanKind}
+
+pub using @trace {type Status}
+
+pub using @trace {type TraceContext}
+
+pub using @trace {type TraceState}
+
+pub using @asgi {type Tracing}
+
+pub using @trace {type Value}
+
+pub using @trace {trait Sampler}
+
+pub using @trace {trait Sink}
+
+// Traits
