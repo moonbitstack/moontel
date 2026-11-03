@@ -7,6 +7,7 @@
 /// One error type for the whole module: a caller parsing an inbound
 /// `traceparent` and a caller handing the tracer a broken source of randomness
 /// both have one thing to catch.
+#derive(Eq, Debug)
 pub(all) suberror Refused {
   /// A field that is not what the grammar asks for, at this offset in the input.
   Field(at~ : Int32, want~ : String)
@@ -25,7 +26,7 @@ pub(all) suberror Refused {
   /// for: `rand(16)` owes sixteen, and anything else is a broken generator rather
   /// than an id this library can guess at.
   Ids(want~ : Int32, got~ : Int32)
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Refused with Eq::{equal, not_equal}
@@ -49,12 +50,13 @@ pub let random_flag : Byte = b'\x02'
 /// Ids are octets, not text: sixteen for the trace and eight for the span, as
 /// W3C Trace Context lays them out. Hexadecimal is a spelling used at the wire
 /// and in logs, and it is produced there rather than stored here.
+#derive(Eq, Debug)
 pub(all) struct TraceContext {
   trace_id : Bytes
   span_id : Bytes
   flags : Byte
   state : TraceState
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend TraceContext with Eq::{equal, not_equal}
@@ -132,9 +134,10 @@ pub fn TraceContext::to_traceparent(self : TraceContext) -> String {
 /// belongs to the closest hop, and two members may not share a key. The update
 /// operations return a new state rather than editing this one, so that a caller
 /// holding the state that arrived cannot change what it arrived as.
+#derive(Eq, Debug)
 pub(all) struct TraceState {
   members : Array[(String, String)]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend TraceState with Eq::{equal, not_equal}

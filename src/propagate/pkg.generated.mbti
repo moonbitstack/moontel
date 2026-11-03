@@ -32,9 +32,10 @@ pub let tracestate_header : String
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct Baggage {
   members : Array[Member]
-} derive(Eq, @debug.Debug)
+}
 pub fn Baggage::add(Self, Member) -> Self
 pub fn Baggage::equal(Self, Self) -> Bool
 pub fn Baggage::get(Self, String) -> String?
@@ -46,27 +47,30 @@ pub fn Baggage::parse(StringView) -> Self raise @trace.Refused
 pub fn Baggage::to_header(Self) -> String
 pub fn Baggage::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Extracted {
   context : @trace.TraceContext?
   baggage : Baggage
-} derive(Eq, @debug.Debug)
+}
 pub fn Extracted::equal(Self, Self) -> Bool
 pub fn Extracted::not_equal(Self, Self) -> Bool
 pub fn Extracted::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Member {
   key : String
   value : String
   properties : Array[Property]
-} derive(Eq, @debug.Debug)
+}
 pub fn Member::equal(Self, Self) -> Bool
 pub fn Member::not_equal(Self, Self) -> Bool
 pub fn Member::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Property {
   key : String
   value : String?
-} derive(Eq, @debug.Debug)
+}
 pub fn Property::equal(Self, Self) -> Bool
 pub fn Property::not_equal(Self, Self) -> Bool
 pub fn Property::to_repr(Self) -> @debug.Repr

@@ -6,11 +6,12 @@
 /// a list-member (W3C Baggage §3.2.2.3). The specification gives properties no
 /// meaning of their own; they are carried so a hop that does not understand one
 /// can pass it on unchanged.
+#derive(Eq, Debug)
 pub(all) struct Property {
   key : String
   /// `None` for a property written as a bare key.
   value : String?
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Property with Eq::{equal, not_equal}
@@ -23,11 +24,12 @@ pub extend Property with Debug::{to_repr}
 ///
 /// The value is stored decoded, as text. The wire form is percent-encoded ASCII,
 /// and decoding is where a hop stops caring how the value was spelled.
+#derive(Eq, Debug)
 pub(all) struct Member {
   key : String
   value : String
   properties : Array[Property]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Member with Eq::{equal, not_equal}
@@ -42,9 +44,10 @@ pub extend Member with Debug::{to_repr}
 /// duplicate entries when it mutates the list, so this is an array rather than a
 /// map. `get` answers with the first member carrying a key, which is the one a
 /// reader asking "what did the caller say" wants.
+#derive(Eq, Debug)
 pub(all) struct Baggage {
   members : Array[Member]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Baggage with Eq::{equal, not_equal}

@@ -8,13 +8,14 @@
 /// One value rather than two calls, because a hop that reads one and forgets the
 /// other is a bug this shape makes hard to write: `inject` puts back exactly what
 /// `extract` found, changed only where the caller changed it.
+#derive(Eq, Debug)
 pub(all) struct Extracted {
   /// The parent context, or `None` when the request carried no context or carried
   /// one this library refused. A refused context is not an error here: W3C Trace
   /// Context says a hop starts a new trace rather than failing the request.
   context : @trace.TraceContext?
   baggage : Baggage
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Extracted with Eq::{equal, not_equal}

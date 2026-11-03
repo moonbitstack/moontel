@@ -30,6 +30,7 @@ pub(open) trait Sampler {
 
 ///|
 /// The three answers a sampler can give.
+#derive(Eq, Debug)
 pub(all) enum Decision {
   /// Not recorded at all: the tracer hands back a span that forgets everything,
   /// so instrumented code needs no branch of its own.
@@ -39,7 +40,7 @@ pub(all) enum Decision {
   RecordOnly
   /// Recorded and sent on.
   RecordAndSample
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Decision with Eq::{equal, not_equal}
@@ -110,9 +111,10 @@ pub extend Never with Sampler::{should_sample, description}
 /// The fraction is read off the low 64 bits of the trace id, which the
 /// specification asks for so that two rates nest: raising the rate keeps every
 /// trace the lower rate kept.
+#derive(Debug)
 pub(all) struct Ratio {
   ratio : Double
-} derive(Debug)
+}
 
 ///|
 pub extend Ratio with Debug::{to_repr}

@@ -8,6 +8,7 @@
 /// attributes on an event, and no limit on the length of a value. They exist to
 /// keep instrumentation that loops over user data from taking the process down
 /// with it, so the counts are per span and fixed when the span starts.
+#derive(Eq, Debug)
 pub(all) struct Limits {
   attributes : Int32
   events : Int32
@@ -16,7 +17,7 @@ pub(all) struct Limits {
   /// `None` keeps values of any length. A number cuts every string attribute to
   /// that many characters, counting each as one.
   attribute_value_length : Int32?
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Limits with Eq::{equal, not_equal}

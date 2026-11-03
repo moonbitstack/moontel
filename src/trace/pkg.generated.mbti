@@ -30,6 +30,7 @@ pub let trace_limits : Limits
 pub let tracestate_limit : Int32
 
 // Errors
+#derive(Eq, @debug.Debug)
 pub(all) suberror Refused {
   Field(at~ : Int32, want~ : String)
   NotHex(at~ : Int32)
@@ -37,7 +38,7 @@ pub(all) suberror Refused {
   TooMany(limit~ : Int32, got~ : Int32)
   TooLong(limit~ : Int32, got~ : Int32)
   Ids(want~ : Int32, got~ : Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn Refused::equal(Self, Self) -> Bool
 pub fn Refused::not_equal(Self, Self) -> Bool
 pub fn Refused::to_repr(Self) -> @debug.Repr
@@ -49,11 +50,12 @@ pub fn Always::description(Self) -> String
 pub fn Always::should_sample(Self, SampleRequest) -> Decision
 pub impl Sampler for Always
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Decision {
   Drop
   RecordOnly
   RecordAndSample
-} derive(Eq, @debug.Debug)
+}
 pub fn Decision::equal(Self, Self) -> Bool
 pub fn Decision::not_equal(Self, Self) -> Bool
 pub fn Decision::recording(Self) -> Bool
@@ -65,40 +67,44 @@ pub(all) struct Discard {
 pub fn Discard::accept(Self, SpanData) -> Unit
 pub impl Sink for Discard
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Dropped {
   attributes : Int32
   events : Int32
   links : Int32
-} derive(Eq, @debug.Debug)
+}
 pub fn Dropped::equal(Self, Self) -> Bool
 pub fn Dropped::not_equal(Self, Self) -> Bool
 pub fn Dropped::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Event {
   name : String
   at : Int64
   attributes : Array[(String, Value)]
-} derive(Eq, @debug.Debug)
+}
 pub fn Event::equal(Self, Self) -> Bool
 pub fn Event::not_equal(Self, Self) -> Bool
 pub fn Event::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Limits {
   attributes : Int32
   events : Int32
   links : Int32
   attributes_per_event : Int32
   attribute_value_length : Int32?
-} derive(Eq, @debug.Debug)
+}
 pub fn Limits::equal(Self, Self) -> Bool
 pub fn Limits::new(attributes? : Int32, events? : Int32, links? : Int32, attributes_per_event? : Int32, attribute_value_length? : Int32?) -> Self
 pub fn Limits::not_equal(Self, Self) -> Bool
 pub fn Limits::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Link {
   context : TraceContext
   attributes : Array[(String, Value)]
-} derive(Eq, @debug.Debug)
+}
 pub fn Link::equal(Self, Self) -> Bool
 pub fn Link::not_equal(Self, Self) -> Bool
 pub fn Link::to_repr(Self) -> @debug.Repr
@@ -116,9 +122,10 @@ pub fn ParentBased::description(Self) -> String
 pub fn ParentBased::should_sample(Self, SampleRequest) -> Decision
 pub impl Sampler for ParentBased
 
+#derive(@debug.Debug)
 pub(all) struct Ratio {
   ratio : Double
-} derive(@debug.Debug)
+}
 pub fn Ratio::description(Self) -> String
 pub fn Ratio::should_sample(Self, SampleRequest) -> Decision
 pub fn Ratio::to_repr(Self) -> @debug.Repr
@@ -174,6 +181,7 @@ pub fn Span::set_name(Self, String) -> Unit
 pub fn Span::set_status(Self, Status) -> Unit
 pub fn Span::status(Self) -> Status
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SpanData {
   context : TraceContext
   parent : Bytes?
@@ -186,29 +194,31 @@ pub(all) struct SpanData {
   links : Array[Link]
   status : Status
   dropped : Dropped
-} derive(Eq, @debug.Debug)
+}
 pub fn SpanData::duration(Self) -> Int64
 pub fn SpanData::equal(Self, Self) -> Bool
 pub fn SpanData::not_equal(Self, Self) -> Bool
 pub fn SpanData::sampled(Self) -> Bool
 pub fn SpanData::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum SpanKind {
   Internal
   Server
   Client
   Producer
   Consumer
-} derive(Eq, @debug.Debug)
+}
 pub fn SpanKind::equal(Self, Self) -> Bool
 pub fn SpanKind::not_equal(Self, Self) -> Bool
 pub fn SpanKind::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Status {
   Unset
   Ok
   Error(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn Status::equal(Self, Self) -> Bool
 pub fn Status::not_equal(Self, Self) -> Bool
 pub fn Status::output(Self, &Logger) -> Unit
@@ -216,12 +226,13 @@ pub fn Status::to_repr(Self) -> @debug.Repr
 pub fn Status::to_string(Self) -> String
 pub impl Show for Status
 
+#derive(Eq, @debug.Debug)
 pub(all) struct TraceContext {
   trace_id : Bytes
   span_id : Bytes
   flags : Byte
   state : TraceState
-} derive(Eq, @debug.Debug)
+}
 pub fn TraceContext::equal(Self, Self) -> Bool
 pub fn TraceContext::is_valid(Self) -> Bool
 pub fn TraceContext::new(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState) -> Self
@@ -231,9 +242,10 @@ pub fn TraceContext::to_repr(Self) -> @debug.Repr
 pub fn TraceContext::to_traceparent(Self) -> String
 pub fn TraceContext::with_sampled(Self, sampled~ : Bool) -> Self
 
+#derive(Eq, @debug.Debug)
 pub(all) struct TraceState {
   members : Array[(String, String)]
-} derive(Eq, @debug.Debug)
+}
 pub fn TraceState::delete(Self, String) -> Self
 pub fn TraceState::equal(Self, Self) -> Bool
 pub fn TraceState::get(Self, String) -> String?
@@ -254,6 +266,7 @@ pub struct Tracer {
 pub fn Tracer::new(rand~ : (Int32) -> Bytes, sink~ : &Sink, sampler~ : &Sampler, limits? : Limits) -> Self
 pub fn Tracer::start(Self, String, parent? : TraceContext, kind? : SpanKind, at~ : Int64, attributes? : Array[(String, Value)], links? : Array[Link]) -> Span raise Refused
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Value {
   Bool(Bool)
   Int(Int64)
@@ -263,7 +276,7 @@ pub(all) enum Value {
   Ints(Array[Int64])
   Doubles(Array[Double])
   Strs(Array[String])
-} derive(Eq, @debug.Debug)
+}
 pub fn Value::equal(Self, Self) -> Bool
 pub fn Value::not_equal(Self, Self) -> Bool
 pub fn Value::output(Self, &Logger) -> Unit

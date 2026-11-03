@@ -102,8 +102,13 @@ def collect_docs(directory: pathlib.Path) -> dict[str, str]:
                 index += 1
                 continue
             doc, index = read_doc(lines, index)
+            # Attributes (`#derive(...)`, `#coverage.skip`, …) sit between a doc
+            # block and the declaration it documents; the formatter moves them
+            # there, so they must not break the link.
             look = index
-            while look < len(lines) and not lines[look].strip():
+            while look < len(lines) and (
+                not lines[look].strip() or lines[look].lstrip().startswith("#")
+            ):
                 look += 1
             if look >= len(lines):
                 break
@@ -143,7 +148,9 @@ def collect_docs(directory: pathlib.Path) -> dict[str, str]:
                 if body.lstrip().startswith("///"):
                     doc, after = read_doc(lines, index)
                     look = after
-                    while look < len(lines) and not lines[look].strip():
+                    while look < len(lines) and (
+                        not lines[look].strip() or lines[look].lstrip().startswith("#")
+                    ):
                         look += 1
                     if look < len(lines):
                         member = re.match(
@@ -233,6 +240,7 @@ def parse_mbti(path: pathlib.Path, docs: dict[str, str]) -> dict[str, list[Entry
                 index += 1
                 continue
             kind, name = declaration.group(1), declaration.group(2)
+            decl_index = index
             body: list[str] = []
             depth = 1
             index += 1
@@ -246,11 +254,23 @@ def parse_mbti(path: pathlib.Path, docs: dict[str, str]) -> dict[str, list[Entry
                 body.append(current)
                 index += 1
 
+            # `moon info` prints a derived trait set as `#derive(...)` on the line
+            # above the declaration rather than after the closing brace; read both
+            # spellings so the meta line survives a formatter run.
+            derives = split_derive(closing)
+            probe = decl_index - 1
+            while probe >= 0 and not lines[probe].strip():
+                probe -= 1
+            if probe >= 0 and lines[probe].lstrip().startswith("#derive("):
+                for trait in split_derive(lines[probe]):
+                    if trait not in derives:
+                        derives.append(trait)
+
             entry = Entry(
                 kind="suberror" if kind == "suberror" else kind,
                 name=name,
                 doc=docs.get(f"{kind} {name}", ""),
-                derives=split_derive(closing),
+                derives=derives,
             )
             for member in body:
                 text = member.strip()

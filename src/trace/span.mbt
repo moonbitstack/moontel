@@ -5,13 +5,14 @@
 /// What a span is about, from the point of view of the process that made it.
 /// The kind is part of the sampling input and of what a backend draws, so it is
 /// settled when the span starts.
+#derive(Eq, Debug)
 pub(all) enum SpanKind {
   Internal
   Server
   Client
   Producer
   Consumer
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend SpanKind with Eq::{equal, not_equal}
@@ -30,11 +31,12 @@ pub extend SpanKind with Debug::{to_repr}
 /// `Unset` means "the caller has no opinion", which is not a failure: an
 /// instrumentation library leaves it alone unless the semantic conventions say
 /// otherwise.
+#derive(Eq, Debug)
 pub(all) enum Status {
   Unset
   Ok
   Error(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Status with Eq::{equal, not_equal}
@@ -65,6 +67,7 @@ pub extend Status with Show::{to_string, output}
 /// The arrays are separate variants rather than one array of `Value` because
 /// OpenTelemetry requires an array attribute to be homogeneous, and because that is
 /// what an exporter has to write: a mixed array has no single type tag.
+#derive(Eq, Debug)
 pub(all) enum Value {
   Bool(Bool)
   /// A signed 64-bit integer. Nanosecond timestamps and byte counts both fit; a
@@ -76,7 +79,7 @@ pub(all) enum Value {
   Ints(Array[Int64])
   Doubles(Array[Double])
   Strs(Array[String])
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Value with Eq::{equal, not_equal}
@@ -119,11 +122,12 @@ fn text_of(items : Array[String]) -> String {
 /// Something that happened during a span: a name, when it happened, and what it
 /// carried. Events keep the order they were added in, which for timestamps handed
 /// in by the caller is not necessarily the order of those timestamps.
+#derive(Eq, Debug)
 pub(all) struct Event {
   name : String
   at : Int64
   attributes : Array[(String, Value)]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Event with Eq::{equal, not_equal}
@@ -135,10 +139,11 @@ pub extend Event with Debug::{to_repr}
 /// A causal relationship to another span that is not this one's parent — a batch
 /// item, a message consumed later, a fan-in. The linked context travels with the
 /// link so a reader can join the two traces.
+#derive(Eq, Debug)
 pub(all) struct Link {
   context : TraceContext
   attributes : Array[(String, Value)]
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Link with Eq::{equal, not_equal}
@@ -150,11 +155,12 @@ pub extend Link with Debug::{to_repr}
 /// How much a span gave up at its limits. OpenTelemetry asks for the counts rather
 /// than for the dropped values, so a reader can tell "this span had no attributes"
 /// from "this span had three hundred and we kept 128".
+#derive(Eq, Debug)
 pub(all) struct Dropped {
   attributes : Int32
   events : Int32
   links : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend Dropped with Eq::{equal, not_equal}
@@ -172,6 +178,7 @@ pub let dropped_nothing : Dropped = { attributes: 0, events: 0, links: 0, }
 /// It is a value, not a handle: everything in it is settled, and a sink may keep
 /// it, queue it or throw it away. Nothing here is normalised — a span may begin and
 /// end at the same nanosecond, and an event may carry a time outside the span.
+#derive(Eq, Debug)
 pub(all) struct SpanData {
   context : TraceContext
   /// The parent's span id, or `None` for the first span of a trace. The parent's
@@ -187,7 +194,7 @@ pub(all) struct SpanData {
   links : Array[Link]
   status : Status
   dropped : Dropped
-} derive(Eq, Debug)
+}
 
 ///|
 pub extend SpanData with Eq::{equal, not_equal}

@@ -28,6 +28,7 @@
   --accent: #7fe7d6;
   --accent-dim: rgba(127, 231, 214, 0.38);
   --accent-raise: rgba(127, 231, 214, 0.58);
+  --accent-faint: rgba(127, 231, 214, 0.16);
   --accent-ink: #06201c;
 }
 
@@ -44,6 +45,7 @@
   --accent: #0f7d6e;
   --accent-dim: rgba(15, 125, 110, 0.3);
   --accent-raise: rgba(15, 125, 110, 0.5);
+  --accent-faint: rgba(15, 125, 110, 0.16);
   --accent-ink: #f3f0e8;
 }
 
@@ -285,32 +287,46 @@ button:focus-visible {
       no-repeat right 0 top 0 / 12px 100%;
 }
 
-/* The thumb is the only part that moves, and it moves with the pointer: no
-   transition on the transform, or a drag would lag behind the hand. */
-/* A slider on a scale: a hairline at the very edge, with just enough body to be
-   seen. The whole 34px rail is the target, so the mark itself can stay thin. */
+/* The thumb is the moving band: the full width of the rail, a wash of accent
+   carrying its own graduations, and a solid accent edge on the right. It is the
+   only part that moves, and it moves with the pointer, so the transform has no
+   transition — a drag must not lag behind the hand. Only the tone eases. */
 .ruler-thumb {
   position: absolute;
   right: 0;
   top: 0;
-  width: 7px;
+  width: 100%;
   height: 68px;
   border-right: 1px solid var(--accent);
-  background: var(--accent-dim);
-  opacity: 0.9;
-  transition: opacity 200ms ease, background-color 200ms ease, width 160ms ease;
+  background-color: var(--accent-dim);
+  /* Two graduations on the same nine-pixel beat: a faint one across the whole band
+     so the mark reads as a scale, and a brighter one in the minor-tick column so a
+     glance can find the exact position. */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      var(--accent-faint) 0 1px,
+      transparent 1px 9px
+    ),
+    repeating-linear-gradient(to bottom, var(--accent) 0 1px, transparent 1px 9px);
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0 0, right 9px top 0;
+  background-size: 100% 100%, 6px 100%;
+  opacity: 0.92;
+  transition: opacity 200ms ease, background-color 200ms ease;
 }
 
+/* Coming up the sheet, the mark is dimmed but never gone: a scrollbar that hides
+   itself at the top reads as a scrollbar that is not there. */
 .ruler.is-top .ruler-thumb {
-  opacity: 0.42;
+  opacity: 0.5;
 }
 
 .ruler:hover .ruler-thumb,
 .ruler:focus-visible .ruler-thumb,
 body.is-dragging .ruler-thumb {
   opacity: 1;
-  width: 11px;
-  background: var(--accent-raise);
+  background-color: var(--accent-raise);
 }
 
 .ruler:hover {
@@ -1733,7 +1749,6 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  border-bottom: 1px solid var(--rule-strong);
   padding-bottom: 8px;
   margin-bottom: 16px;
 }
@@ -1750,13 +1765,15 @@ kbd {
   appearance: none;
   background: none;
   border: 0;
+  border-bottom: 1px solid var(--rule-strong);
   border-radius: 0;
-  padding: 4px 0;
+  padding: 4px 0 6px;
   margin: 0;
   font-family: var(--mono);
   font-size: 13px;
   color: var(--ink);
   outline: none;
+  transition: border-color 160ms ease;
 }
 
 #api-filter::placeholder {
@@ -1764,7 +1781,7 @@ kbd {
 }
 
 #api-filter:focus {
-  box-shadow: inset 0 -1px 0 var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .api-filter-wrap .api-count {
