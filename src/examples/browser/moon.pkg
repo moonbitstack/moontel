@@ -1,0 +1,13 @@
+// The glue the home page runs: this program executes the library and leaves what it
+// produced on `globalThis` for the page to draw.
+//
+// It is a JS-only package because its whole job is to reach the page: on any other
+// target the FFI below has nowhere to write. The docs workflow builds it into
+// `docs/engine/moontel.js`, which is a build product and not in the repository.
+pkgtype(kind: "executable")
+
+supported_targets = "js"
+
+import {
+  "moonbitstack/moontel/trace",
+}
