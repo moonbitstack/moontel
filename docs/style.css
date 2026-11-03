@@ -389,8 +389,18 @@ body.is-dragging .ruler {
   align-items: baseline;
   gap: 18px clamp(16px, 3vw, 40px);
   flex-wrap: wrap;
-  padding: calc(var(--pad) + 8px) 0 12px;
+  /* Inner plates keep a compact head; only the front plate is tall. */
+  padding: 0 0 12px;
   border-bottom: 1px solid var(--rule);
+  /* The one element that survives a navigation, so a cross-page view
+     transition can carry it between the tall front plate and the compact
+     plates instead of jumping. */
+  view-transition-name: site-header;
+}
+
+/* The front plate is allowed the extra drop: the same header, set lower. */
+.masthead .topline {
+  padding-top: calc(var(--pad) + 8px);
 }
 
 .brand {
@@ -2969,5 +2979,34 @@ kbd {
 @keyframes appear {
   to {
     opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- crossing */
+
+/* The header is the one named element, so moving between the tall front plate
+   and a compact inner plate morphs its box rather than swapping it. Same-origin
+   navigations only; a browser without view transitions just lands on the page. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(site-header) {
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(0.16, 0.8, 0.2, 1);
+}
+
+/* The sheet as a whole only cross-fades briefly: the header carries the motion,
+   and a long page fade would compete with it. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
