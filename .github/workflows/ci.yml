@@ -62,6 +62,15 @@ jobs:
           python3 scripts/gen_trace_crosscheck.py
           git diff --exit-code src/crosscheck_expected_wbtest.mbt
 
+      # The reference is generated from what `moon info` prints, so a public name
+      # cannot be added to a package without appearing on the page.
+      - name: the reference and the version are up to date
+        if: runner.os == 'Linux'
+        run: |
+          python3 scripts/gen_api.py
+          python3 scripts/gen_version.py
+          git diff --exit-code docs/api.html docs/version.js
+
       - name: lint (fmt is clean)
         run: |
           moon fmt && git diff --exit-code

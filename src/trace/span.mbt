@@ -283,6 +283,7 @@ pub fn Span::links(self : Span) -> Array[Link] {
 }
 
 ///|
+/// The status as it stands: `Unset` until a caller sets one.
 pub fn Span::status(self : Span) -> Status {
   self.span_status.val
 }

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showcase — moontel</title>
+    <meta
+      name="description"
+      content="Take a traceparent apart: parse it, break it, and send it on a hop. Every answer comes from moontel compiled to JavaScript."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0c0e'/%3E%3Cpath d='M2 8h12' stroke='%237fe7d6' stroke-width='1'/%3E%3Cpath d='M6 8v-3M10 8v3' stroke='%23edeae3' stroke-width='1'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="theme.js"></script>
+    <script src="version.js"></script>
+  </head>
+  <body data-ruler="page">
+    <a class="skip" href="#main">Skip to the text</a>
+
+    <div
+      class="ruler"
+      id="ruler"
+      role="scrollbar"
+      aria-controls="main"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-label="Position in the sheet"
+      tabindex="0"
+    >
+      <div class="ruler-thumb" id="ruler-thumb"></div>
+    </div>
+    <div class="ruler-readout" aria-hidden="true">
+      <span id="readout-plate">01 / 03</span>
+      <b id="readout-time">0%</b>
+    </div>
+
+    <div class="sheet" id="main">
+      <header class="topline">
+        <span class="brand">
+          <a class="wordmark" href="./">moontel</a>
+          <span class="marginalia wide-only">Showcase · the header, in your hands</span>
+          <span class="marginalia narrow-only">Showcase</span>
+        </span>
+        <nav class="nav" aria-label="Sections">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html" aria-current="page">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <span class="toplinks">
+          <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
+          <button class="theme" id="theme" type="button" aria-label="Switch plate">paper</button>
+        </span>
+      </header>
+
+      <main>
+        <section class="page-head">
+          <span class="marginalia page-kicker">Showcase</span>
+          <h1 class="page-title">A header you<br /><em>can take apart.</em></h1>
+          <p class="page-lede">
+            Fifty-five characters, four fields, and a rule for each. Type one, break
+            one, or send it on a hop — every answer on this page comes from the
+            library, compiled to JavaScript and running in this tab.
+          </p>
+          <dl class="page-facts">
+            <div><dt>Fields</dt><dd>four, separated by dashes</dd></div>
+            <div><dt>Ids</dt><dd>16 and 8 octets, lowercase hex</dd></div>
+            <div><dt>Answers</dt><dd>from <code>parse</code>, <code>start</code>, <code>inject</code></dd></div>
+          </dl>
+        </section>
+
+        <section class="plate lab" id="lab" data-ruler-section="The header">
+          <div class="lab-specimen">
+            <span class="marginalia">The header</span>
+            <div class="segments" id="segments" aria-hidden="true"></div>
+            <p class="seg-legend" aria-hidden="true">version · trace id · span id · flags</p>
+          </div>
+          <div class="lab-grid">
+            <div class="lab-control">
+              <label for="tp-input">traceparent</label>
+              <input
+                id="tp-input"
+                type="text"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="off"
+                value="00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+              />
+              <p class="lab-hint">
+                Edit it, or start from one of these:
+              </p>
+              <div class="presets" role="group" aria-label="Example headers">
+                <button class="preset" type="button" data-tp="00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01">valid</button>
+                <button class="preset" type="button" data-tp="00-4BF92F3577B34DA6A3CE929D0E0E4736-00f067aa0ba902b7-01">uppercase</button>
+                <button class="preset" type="button" data-tp="00-4bf92f3577b34da6a3ce929d0e0e4736">too short</button>
+                <button class="preset" type="button" data-tp="00-00000000000000000000000000000000-00f067aa0ba902b7-01">zero trace id</button>
+                <button class="preset" type="button" data-tp="ff-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01">version ff</button>
+              </div>
+
+              <label for="ts-input" class="ts-label">tracestate <span>optional</span></label>
+              <input
+                id="ts-input"
+                type="text"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="off"
+                value="vendor=abc"
+              />
+
+              <button class="lab-send" id="hop-button" type="button">
+                Send it to the next hop <span aria-hidden="true">→</span>
+              </button>
+            </div>
+
+            <div class="lab-read" aria-live="polite">
+              <span class="marginalia">What the library read</span>
+              <p class="lab-status" id="lab-status">Reading…</p>
+              <dl class="lab-fields" id="fields"></dl>
+            </div>
+          </div>
+        </section>
+
+        <section class="plate hop" id="hop" data-ruler-section="The next hop">
+          <div class="hop-head">
+            <span class="plate-no">02</span>
+            <h2>What the next hop sends.</h2>
+            <p class="note">
+              The same trace id, a new span id. One header is replaced, the other
+              travels as it arrived.
+            </p>
+          </div>
+          <div class="hop-body">
+            <p class="hop-header" id="hop-header">Press “send it to the next hop”.</p>
+            <dl class="compare" id="hop-compare"></dl>
+          </div>
+        </section>
+
+        <section class="plate steps" id="steps" data-ruler-section="Three steps">
+          <div class="plate-head">
+            <span class="plate-no">03</span>
+            <h2>Three steps, in this order.</h2>
+            <p class="note">
+              A hop reads, joins and writes. The page above calls the same three
+              functions a server does; nothing in the browser reimplements them.
+            </p>
+          </div>
+          <div class="plate-body steps-grid">
+            <div class="step">
+              <span class="step-no">01</span>
+              <h3>Read</h3>
+              <p>
+                <code>parse</code> accepts the header or refuses it with the offset
+                and the shape it wanted. A hop that only wants to get on with the
+                request calls <code>extract</code>, which starts a new trace instead
+                of failing.
+              </p>
+              <pre><code><span class="k">fn</span> read(header : StringView) -&gt; <span class="a">@trace.TraceContext</span> <span class="k">raise</span> {
+  <span class="a">@propagate.parse</span>(header)
+}</code></pre>
+            </div>
+            <div class="step">
+              <span class="step-no">02</span>
+              <h3>Join</h3>
+              <p>
+                The new span takes the trace id and the vendor state from the parent.
+                Its own span id is minted, and the sampler is asked once, with the
+                parent in hand.
+              </p>
+              <pre><code><span class="k">fn</span> join(
+  tracer : <span class="a">@trace.Tracer</span>,
+  parent : <span class="a">@trace.TraceContext</span>,
+  now : () -&gt; Int64,
+) -&gt; <span class="a">@trace.Span</span> <span class="k">raise</span> {
+  tracer.<span class="a">start</span>(
+    <span class="s">"GET /orders/42"</span>,
+    parent=parent,
+    kind=<span class="a">@trace.Server</span>,
+    at=now(),
+  )
+}</code></pre>
+            </div>
+            <div class="step">
+              <span class="step-no">03</span>
+              <h3>Write</h3>
+              <p>
+                <code>inject</code> replaces the two propagation headers on the
+                outgoing request, so the sender's context cannot survive beside the
+                one this hop decided on.
+              </p>
+              <pre><code><span class="k">fn</span> write(
+  request_headers : Array[(String, String)],
+  span : <span class="a">@trace.Span</span>,
+) -&gt; Array[(String, String)] {
+  <span class="a">@propagate.inject</span>(request_headers, {
+    context: <span class="a">Some</span>(span.<span class="a">context</span>()),
+    baggage: <span class="a">@propagate.empty_baggage</span>,
+  })
+}</code></pre>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <span>moontel <span data-version>—</span> · Apache-2.0</span>
+        <nav aria-label="Footer">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <a href="https://github.com/moonbitstack/moontel">source</a>
+        <a href="https://mooncakes.io/docs/moonbitstack/moontel">mooncakes</a>
+      </footer>
+    </div>
+
+    <script type="module" src="engine/moontel.js"></script>
+    <script type="module" src="site.js"></script>
+    <script type="module" src="showcase.js"></script>
+  </body>
+</html>

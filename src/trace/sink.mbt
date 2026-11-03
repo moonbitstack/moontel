@@ -15,12 +15,14 @@
 /// from the trace: `SpanData::sampled` is the bit that separates "keep for
 /// counting" from "send to the backend".
 pub(open) trait Sink {
+  /// Take one finished span. Called on the task that finished it, so an
+  /// implementation that writes to a socket should queue rather than block.
   fn accept(Self, SpanData) -> Unit
 }
 
 ///|
 /// Throws spans away. The default for a tracer whose owner has not decided where
-/// they go yet, and the sink a test uses when it only cares that nothing crashes.
+/// they go yet, and the sink a replay uses when it only cares that nothing crashes.
 pub(all) struct Discard {}
 
 ///|
@@ -37,7 +39,7 @@ pub extend Discard with Sink::{accept}
 ///|
 /// Keeps spans in memory, in the order they finished.
 ///
-/// Meant for tests, examples and the debugging of a single request; a service
+/// Meant for replays, examples and the debugging of a single request; a service
 /// wants a sink that ships spans off the process, because this one grows without
 /// bound.
 pub struct Recorder {
@@ -45,6 +47,7 @@ pub struct Recorder {
 }
 
 ///|
+/// An empty recorder.
 pub fn Recorder::new() -> Recorder {
   { spans: Ref([]), }
 }
@@ -70,7 +73,7 @@ pub fn Recorder::len(self : Recorder) -> Int32 {
 }
 
 ///|
-/// The spans kept so far, and an empty recorder afterwards. Use this when a test
+/// The spans kept so far, and an empty recorder afterwards. Use this when a replay
 /// drives several requests through one tracer and reads one request's spans at a
 /// time.
 pub fn Recorder::take(self : Recorder) -> Array[SpanData] {

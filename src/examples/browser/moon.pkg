@@ -10,4 +10,5 @@ supported_targets = "js"
 
 import {
   "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/propagate",
 }

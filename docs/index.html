@@ -17,29 +17,25 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <script>
-      // The plate is chosen before the first paint, or a reader who asked for paper
-      // sees a black flash on the way to it.
-      (() => {
-        const asked = new URLSearchParams(location.search).get("plate");
-        const stored = localStorage.getItem("moontel-plate");
-        const preferred = matchMedia("(prefers-color-scheme: light)").matches
-          ? "light"
-          : "dark";
-        document.documentElement.dataset.theme =
-          asked === "paper"
-            ? "light"
-            : asked === "ink"
-              ? "dark"
-              : stored === "light" || stored === "dark"
-                ? stored
-                : preferred;
-      })();
-    </script>
+    <script src="theme.js"></script>
+    <script src="version.js"></script>
   </head>
-  <body>
+  <body data-ruler="trace">
+    <a class="skip" href="#main">Skip to the text</a>
+
     <!-- The page's scrollbar: a measuring scale, fixed, so it costs no layout. -->
-      <div class="ruler is-top" id="ruler" aria-hidden="true">
+    <div
+      class="ruler"
+      id="ruler"
+      role="scrollbar"
+      aria-controls="main"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-label="Position in the sheet"
+      tabindex="0"
+    >
       <div class="ruler-thumb" id="ruler-thumb"></div>
     </div>
     <div class="ruler-readout" aria-hidden="true">
@@ -47,14 +43,23 @@
       <b id="readout-time">T+0.0 ms</b>
     </div>
 
-    <div class="sheet">
+    <div class="sheet" id="main">
       <header class="masthead">
         <div class="topline">
-          <span class="marginalia"
-            ><span class="wide-only"
+          <span class="brand">
+            <a class="wordmark" href="./">moontel</a>
+            <span class="marginalia wide-only"
               >OpenTelemetry trace API · W3C Trace Context · MoonBit</span
-            ><span class="narrow-only">OpenTelemetry · MoonBit</span></span
-          >
+            >
+            <span class="marginalia narrow-only">OpenTelemetry · MoonBit</span>
+          </span>
+          <nav class="nav" aria-label="Sections">
+          <a href="./" aria-current="page">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
           <span class="toplinks">
             <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
             <button class="theme" id="theme" type="button" aria-label="Switch plate">
@@ -95,26 +100,37 @@
               <line class="done" x1="1188" y1="30" x2="1188" y2="56" />
             </g>
           </svg>
+          <div class="hero-legend" aria-hidden="true">
+            <span>0 ns</span>
+            <span id="hero-end">—</span>
+          </div>
         </div>
 
         <div class="masthead-foot">
           <div class="facts" id="facts">
             <span class="fact"><b>—</b> ns</span>
             <span class="fact"><b>—</b> spans</span>
-            <span class="fact"><b>—</b> services</span>
-            <span class="fact"><b>0</b> dropped</span>
+            <span class="fact"><b>—</b> levels</span>
+            <span class="fact"><b>—</b> dropped</span>
           </div>
+          <nav class="masthead-index" aria-label="Plates">
+            <a href="#plate-1"><span>01</span>the request</a>
+            <a href="#plate-2"><span>02</span>the header</a>
+            <a href="#plate-3"><span>03</span>the decision</a>
+            <a href="#plate-4"><span>04</span>the seams</a>
+            <a href="#plate-5"><span>05</span>the index</a>
+          </nav>
         </div>
       </header>
 
-      <section class="plate" id="plate-1">
+      <section class="plate" id="plate-1" data-ruler-section="the request">
         <div class="plate-head">
           <span class="plate-no">01 / 05</span>
           <h2>Six spans, measured in nanoseconds.</h2>
           <p class="note">
             The library made this trace; the page only draws it. Times are handed
             in, because nothing in moontel reads a clock — so the same request
-            comes out the same, here and in a test.
+            comes out the same, here and in a replay.
           </p>
         </div>
         <div class="plate-body trace" id="trace">
@@ -125,7 +141,7 @@
         </div>
       </section>
 
-      <section class="plate" id="plate-2">
+      <section class="plate" id="plate-2" data-ruler-section="the header">
         <div class="plate-head">
           <span class="plate-no">02 / 05</span>
           <h2>Fifty-five characters carry the whole thing.</h2>
@@ -136,9 +152,12 @@
         </div>
         <div class="plate-body">
           <div class="specimen-wrap">
-            <p class="specimen" id="specimen" aria-label="The traceparent header">
-              <span class="field" data-field="version">00</span><span class="dash">-</span><span class="field" data-field="trace">—</span><span class="dash">-</span><span class="field" data-field="span">—</span><span class="dash">-</span><span class="field flags" data-field="flags">01</span>
-            </p>
+            <div class="specimen-head">
+              <p class="specimen" id="specimen" aria-label="The traceparent header">
+                <span class="field" data-field="version">00</span><span class="dash">-</span><span class="field" data-field="trace">—</span><span class="dash">-</span><span class="field" data-field="span">—</span><span class="dash">-</span><span class="field flags" data-field="flags">01</span>
+              </p>
+              <button class="copy" type="button" data-copy="#specimen">copy the header</button>
+            </div>
             <div class="annotations" id="annotations">
               <div class="annotation" data-for="version"><b>version</b>2 characters</div>
               <div class="annotation" data-for="trace"><b>trace id</b>32 characters · one per trace</div>
@@ -146,6 +165,7 @@
               <div class="annotation" data-for="flags"><b>flags</b>2 characters · bit 0 is sampled</div>
             </div>
           </div>
+          <p class="specimen-note marginalia">Written by this library, not typed here</p>
           <div class="header-note">
             <p>
               <b>Id is octets, not text.</b> Sixteen for the trace and eight for
@@ -158,7 +178,7 @@
         </div>
       </section>
 
-      <section class="plate" id="plate-3">
+      <section class="plate" id="plate-3" data-ruler-section="the decision">
         <div class="plate-head">
           <span class="plate-no">03 / 05</span>
           <h2>One decision, for the whole trace.</h2>
@@ -180,19 +200,22 @@
             <span class="counter" id="counter"><b>—</b> of — sampled</span>
           </div>
           <p class="strip-readout" id="strip-readout">
-            <b>512 requests</b> · each a trace id this library sampled for real
+            <b>— requests</b> · each a trace id this library sampled for real
+          </p>
+          <p class="formula" aria-hidden="true">
+            keeps a trace when <b>low64(id) ÷ 2⁶⁴ &lt; r</b>
           </p>
         </div>
       </section>
 
-      <section class="plate" id="plate-4">
+      <section class="plate" id="plate-4" data-ruler-section="the seams">
         <div class="plate-head">
           <span class="plate-no">04 / 05</span>
           <h2>Three things moontel will not invent for itself.</h2>
           <p class="note">
             Where ids come from, what time it is, and where finished spans go. All
             three are handed in, which is why the same code serves a server, a batch
-            job replaying last night's events, and a test that needs the timeline to
+            job replaying last night's events, and a replay that needs the timeline to
             be exact.
           </p>
         </div>
@@ -205,13 +228,18 @@
               refused rather than papered over.
             </p>
             <!-- nocheck: a fragment, not a program -->
-            <pre><code>let tracer = <span class="a">@trace.Tracer</span>::new(
-  rand=random_bytes,
-  sink=recorder,
-  sampler=<span class="a">@trace.parent_based</span>(
-    root=<span class="a">@trace.always</span>,
-  ),
-)</code></pre>
+            <pre><code><span class="k">fn</span> tracer_to(
+  rand : (Int32) -&gt; Bytes,
+  sink : &amp;<span class="a">@trace.Sink</span>,
+) -&gt; <span class="a">@trace.Tracer</span> {
+  <span class="a">@trace.Tracer</span>::new(
+    rand~,
+    sink~,
+    sampler=<span class="a">@trace.parent_based</span>(
+      root=<span class="a">@trace.always</span>,
+    ),
+  )
+}</code></pre>
           </div>
           <div class="seam">
             <h3>The clock</h3>
@@ -221,33 +249,42 @@
               a replay of last night is not a replay with different timings.
             </p>
             <!-- nocheck: a fragment, not a program -->
-            <pre><code>let span = tracer.<span class="a">start</span>(
-  "GET /orders",
-  at=now_ns(),
-)
-span.<span class="a">finish</span>(at=now_ns())</code></pre>
+            <pre><code><span class="k">fn</span> span_around(
+  tracer : <span class="a">@trace.Tracer</span>,
+  now : () -&gt; Int64,
+) -&gt; Unit <span class="k">raise</span> {
+  <span class="k">let</span> span = tracer.<span class="a">start</span>(
+    "GET /orders",
+    at=now(),
+  )
+  span.<span class="a">finish</span>(at=now())
+}</code></pre>
           </div>
           <div class="seam">
             <h3>A sink</h3>
             <p>
-              Where a finished span goes. A recorder for a test, a queue for a service,
+              Where a finished span goes. A recorder for a replay, a queue for a service,
               nothing at all for a program that only wants trace ids for its logs.
             </p>
             <!-- nocheck: a fragment, not a program -->
-            <pre><code>impl <span class="a">@trace.Sink</span> for Printer with fn accept(_, span) {
+            <pre><code><span class="k">struct</span> Printer {}
+
+<span class="k">impl</span> <span class="a">@trace.Sink</span> for Printer with fn accept(_, span) {
   println("\{span.name} took \{span.duration()} ns")
 }</code></pre>
           </div>
         </div>
       </section>
 
-      <section class="plate" id="plate-5">
+      <section class="plate" id="plate-5" data-ruler-section="the index">
         <div class="plate-head">
           <span class="plate-no">05 / 05</span>
           <h2>The index.</h2>
           <p class="note">
             Three packages and a facade. Import the package that owns the type you
-            construct: a re-exported type arrives without its constructors.
+            construct: a re-exported type arrives without its constructors. The
+            complete reference, down to the last derived method, is on
+            <a href="api.html">the API plate</a>.
           </p>
         </div>
         <div class="plate-body">
@@ -303,18 +340,21 @@ span.<span class="a">finish</span>(at=now_ns())</code></pre>
       </section>
 
       <footer class="colophon">
-        <p class="end">The line ends here.<br /><em>Thirty-eight milliseconds.</em></p>
+        <p class="end">The line ends here.<br /><em><span id="end-duration">— milliseconds.</span></em></p>
         <div class="meta">
           <span>Apache-2.0</span>
           <a href="https://github.com/moonbitstack/moontel">github.com/moonbitstack/moontel</a>
+          <a href="https://mooncakes.io/docs/moonbitstack/moontel">mooncakes.io</a>
           <span>Built by running the library</span>
-          <span id="colophon-time">38.4 ms · 6 spans</span>
+          <span id="colophon-time">—</span>
+          <span>Set in Instrument Serif, IBM Plex Mono, Inter Tight</span>
         </div>
         <div class="end-tick" aria-hidden="true"></div>
       </footer>
     </div>
 
     <script type="module" src="engine/moontel.js"></script>
+    <script type="module" src="site.js"></script>
     <script type="module" src="home.js"></script>
   </body>
 </html>

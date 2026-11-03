@@ -1,4 +1,15 @@
-# moontel
+<h1 align="center">moontel</h1>
+
+<p align="center"><em>OpenTelemetry tracing for MoonBit.</em></p>
+
+<p align="center">
+  <a href="https://moonbitstack.github.io/moontel/"><b>Home</b></a> ·
+  <a href="https://moonbitstack.github.io/moontel/guide.html"><b>Guide</b></a> ·
+  <a href="https://moonbitstack.github.io/moontel/api.html"><b>API</b></a> ·
+  <a href="https://mooncakes.io/docs/moonbitstack/moontel"><b>mooncakes</b></a>
+</p>
+
+---
 
 Distributed tracing for MoonBit: spans, the samplers that decide which of them to
 keep, and the headers that carry a trace from one service to the next.
@@ -9,6 +20,9 @@ that to be readable. This library is that agreement: it builds the spans, decide
 what to keep, and reads and writes the headers the agreement is written in —
 `traceparent` and `tracestate` from W3C Trace Context, and `baggage` from W3C
 Baggage.
+
+The [documentation site](https://moonbitstack.github.io/moontel/) has a guide, the
+complete reference, a showcase you can play with, and three runnable examples.
 
 ```moonbit
 fn traced_request(rand : (Int32) -> Bytes, at : Int64) -> @trace.Span raise {
@@ -27,7 +41,7 @@ fn traced_request(rand : (Int32) -> Bytes, at : Int64) -> @trace.Span raise {
 Nothing here reads a clock, opens a socket or parses an HTTP request. Ids come from a
 function you pass, times from the caller, and finished spans leave through a trait you
 implement. That is what makes the same code serve a server, a batch job replaying last
-night's events, and a test that needs the timeline to be exact.
+night's events, and a replay that needs the timeline to be exact.
 
 ## Install
 
@@ -62,7 +76,7 @@ fn traced_with_printer(rand : (Int32) -> Bytes, at : Int64) -> Unit raise {
 }
 ```
 
-`Recorder` keeps spans in memory, which is what tests and examples want. `Discard`
+`Recorder` keeps spans in memory, which is what examples and debugging want. `Discard`
 throws them away, which is what a program that only wants trace ids for its logs
 wants. Anything else — OTLP over HTTP, a file, a queue a background task drains — is a
 `Sink` of your own, and the transport stays yours.

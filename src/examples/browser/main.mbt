@@ -133,9 +133,17 @@ fn hero_trace() -> (@trace.Recorder, String) {
 fn trace_json() -> Json {
   let (recorder, header) = hero_trace()
   let spans = recorder.spans()
+  let mut dropped = 0
+  for span in spans {
+    dropped = dropped +
+      span.dropped.attributes +
+      span.dropped.events +
+      span.dropped.links
+  }
   Json::object({
     "traceparent": Json::string(header),
     "duration_us": Json::number(38_400.0),
+    "dropped": Json::number(dropped.to_double()),
     "spans": Json::array(
       spans.map(fn(span) {
         let attributes : Array[Json] = span.attributes.map(fn(pair) {
@@ -295,4 +303,159 @@ fn value_text(value : @trace.Value) -> String {
 fn main {
   publish(trace_json().stringify())
   expose_sampler(kept_json)
+  expose_parse(parse_json)
+  expose_hop(hop_json)
+}
+
+///|
+/// Hands the page the strict parser: one header in, what the library read or why it
+/// refused it out.
+extern "js" fn expose_parse(f : (String) -> String) -> Unit =
+  #|(f) => { globalThis.moontelParse = (text) => JSON.parse(f(text)) }
+
+///|
+/// Hands the page one hop: a parent header and vendor state in, the headers this hop
+/// would send on out.
+extern "js" fn expose_hop(f : (String, String) -> String) -> Unit =
+  #|(f) => { globalThis.moontelHop = (parent, state) => JSON.parse(f(parent, state)) }
+
+///|
+/// The parser's answer as the showcase reads it: the ids and flags, or the offset and
+/// shape that made it refuse.
+fn parse_json(text : String) -> String {
+  let context = @propagate.parse(text[:]) catch {
+    error => return refusal_json(error)
+  }
+  Json::object({
+    "ok": Json::boolean(true),
+    "trace_id": Json::string(encode_id(context.trace_id)),
+    "span_id": Json::string(encode_id(context.span_id)),
+    "flags": Json::string(hex_byte(context.flags)),
+    "sampled": Json::boolean(context.sampled()),
+    "random": Json::boolean((context.flags & @trace.random_flag) != b'\x00'),
+    "valid": Json::boolean(context.is_valid()),
+  }).stringify()
+}
+
+///|
+/// A refusal, with the offset and the shape the parser wanted. The variants without a
+/// position report -1 so the page has one number to place in every case.
+fn refusal_json(error : @trace.Refused) -> String {
+  let (kind, at, want, got, limit) = match error {
+    Field(at~, want~) => ("field", at, want, 0, 0)
+    NotHex(at~) =>
+      ("not hexadecimal", at, "a lowercase hexadecimal digit", 0, 0)
+    Zero(at~) => ("zero id", at, "an id that is not all zero", 0, 0)
+    TooMany(limit~, got~) => ("too many", -1, "fewer members", got, limit)
+    TooLong(limit~, got~) => ("too long", -1, "a shorter header", got, limit)
+    Ids(want~, got~) =>
+      ("bad id source", -1, "an id of the width asked for", got, want)
+  }
+  Json::object({
+    "ok": Json::boolean(false),
+    "kind": Json::string(kind),
+    "at": Json::number(at.to_double()),
+    "want": Json::string(want),
+    "got": Json::number(got.to_double()),
+    "limit": Json::number(limit.to_double()),
+  }).stringify()
+}
+
+///|
+/// One hop, through the library: take the context off the request, open a server span
+/// under it, and inject the headers this hop would send on.
+fn hop_json(parent : String, state : String) -> String {
+  let headers : Array[(String, String)] = [("traceparent", parent)]
+  if state.length() > 0 {
+    headers.push(("tracestate", state))
+  }
+  let extracted = @propagate.extract(headers)
+  let tracer = @trace.Tracer::new(
+    rand=hop_rand(),
+    sink=@trace.Discard::{ },
+    sampler=@trace.parent_based(root=@trace.always),
+  )
+  let span = match extracted.context {
+    Some(context) =>
+      tracer.start("GET /orders/42", parent=context, kind=@trace.Server, at=0L) catch {
+        _ =>
+          return hop_failed(
+            "\{parent} did not carry a context this tracer could join",
+          )
+      }
+    None =>
+      tracer.start("GET /orders/42", kind=@trace.Server, at=0L) catch {
+        _ =>
+          return hop_failed(
+            "\{parent} did not carry a context this tracer could join",
+          )
+      }
+  }
+  let outgoing = @propagate.inject([], {
+    context: Some(span.context()),
+    baggage: extracted.baggage,
+  })
+  span.finish(at=1L)
+  let sent = header_value(outgoing, "traceparent")
+  let sent_state = header_value(outgoing, "tracestate")
+  Json::object({
+    "ok": Json::boolean(true),
+    "traceparent": Json::string(sent),
+    "trace_id": Json::string(encode_id(span.context().trace_id)),
+    "span_id": Json::string(encode_id(span.context().span_id)),
+    "parent_span_id": match extracted.context {
+      Some(context) => Json::string(encode_id(context.span_id))
+      None => Json::null()
+    },
+    "linked": Json::boolean(extracted.context is Some(_)),
+    "tracestate": Json::string(sent_state),
+    "tracestate_kept": Json::boolean(state.length() > 0 && sent_state == state),
+    "headers": Json::array(
+      outgoing.map(fn(pair) {
+        Json::array([Json::string(pair.0), Json::string(pair.1)])
+      }),
+    ),
+  }).stringify()
+}
+
+///|
+fn hop_failed(reason : String) -> String {
+  Json::object({ "ok": Json::boolean(false), "reason": Json::string(reason) }).stringify()
+}
+
+///|
+/// The one header of `name` in a list, or "" when it is not there.
+fn header_value(headers : Array[(String, String)], name : String) -> String {
+  for pair in headers {
+    if pair.0 == name {
+      return pair.1
+    }
+  }
+  ""
+}
+
+///|
+/// A byte as the two lowercase hexadecimal characters the header uses.
+fn hex_byte(value : Byte) -> String {
+  let n = value.to_int()
+  let out = StringBuilder()
+  out.write_char(hex_char(n >> 4))
+  out.write_char(hex_char(n & 0x0f))
+  out.to_string()
+}
+
+///|
+/// A source of ids for one hop: fixed, so the outgoing span id is the same on every
+/// visit and the page can point at what changed. The width is honoured, because a hop
+/// with no parent needs a trace id as well as a span id.
+fn hop_rand() -> (Int32) -> Bytes {
+  let call = Ref(0)
+  width => {
+    call.val = call.val + 1
+    let bytes : Array[Byte] = []
+    for i in 0..<width {
+      bytes.push((0x40 + call.val * 7 + i).to_byte())
+    }
+    Bytes::from_array(bytes)
+  }
 }

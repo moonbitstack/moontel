@@ -13,86 +13,43 @@ const kept = globalThis.moontelKept;
 const $ = (selector) => document.querySelector(selector);
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ------------------------------------------------------------ the plate */
-
-const THEME_KEY = "moontel-plate";
-
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  const button = $("#theme");
-  button.textContent = theme === "dark" ? "paper" : "ink";
-  button.setAttribute(
-    "aria-label",
-    theme === "dark" ? "Print this sheet on paper" : "Print this sheet on the dark plate",
-  );
-}
-
-(function startTheme() {
-  // A link can name the plate it was printed on: `?plate=paper` or `?plate=ink`.
-  // The stored choice comes next, then whatever the reader's system prefers.
-  const asked = new URLSearchParams(location.search).get("plate");
-  const stored = localStorage.getItem(THEME_KEY);
-  const preferred = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-  if (asked === "paper") applyTheme("light");
-  else if (asked === "ink") applyTheme("dark");
-  else applyTheme(stored === "light" || stored === "dark" ? stored : preferred);
-  $("#theme").addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    localStorage.setItem(THEME_KEY, next);
-    applyTheme(next);
-  });
-})();
-
-/* ------------------------------------------------------------ the ruler */
-
-// The page scrollbar, drawn as a measuring scale: the thumb is the only thing that
-// moves, and it is a fixed element, so nothing reflows when it appears.
-const ruler = $("#ruler");
-const thumb = $("#ruler-thumb");
-const readoutPlate = $("#readout-plate");
-const readoutTime = $("#readout-time");
-const plates = [...document.querySelectorAll(".plate")];
-const durationMs = data ? data.duration_us / 1000 : 38.4;
-
-function follow() {
-  const scrolled = scrollY;
-  const room = document.documentElement.scrollHeight - innerHeight;
-  const progress = room > 0 ? Math.min(1, Math.max(0, scrolled / room)) : 0;
-  const travel = innerHeight - thumb.offsetHeight;
-  thumb.style.transform = `translateY(${progress * travel}px)`;
-  ruler.classList.toggle("is-top", scrolled < 8);
-
-  readoutTime.textContent = `T+${(progress * durationMs).toFixed(1)} ms`;
-  let current = 1;
-  const middle = scrolled + innerHeight * 0.4;
-  plates.forEach((plate, index) => {
-    if (plate.offsetTop <= middle) current = index + 1;
-  });
-  readoutPlate.textContent = `${String(current).padStart(2, "0")} / 05`;
-}
-
-addEventListener("scroll", follow, { passive: true });
-addEventListener("resize", follow);
-
 /* ------------------------------------------------------------ the facts */
 
 function fillFacts() {
   if (!data) return;
   const spans = data.spans;
-  const services = new Set(
-    spans.map((span) => {
-      const address = span.attributes.find(([key]) => key === "server.address");
-      const system = span.attributes.find(([key]) => key === "db.system");
-      return address ? address[1] : system ? system[1] : span.name;
-    }),
-  );
+  // How deep the tree goes, which is a fact about the trace; how many "services" it
+  // touched is not, because a span name is not a service and the sample carries no
+  // `service.name` attribute.
+  const byId = new Map(spans.map((span) => [span.id, span]));
+  const depth = (span) => {
+    let steps = 0;
+    let cursor = span;
+    const seen = new Set();
+    while (cursor.parent && byId.has(cursor.parent) && !seen.has(cursor.id)) {
+      seen.add(cursor.id);
+      cursor = byId.get(cursor.parent);
+      steps += 1;
+    }
+    return steps;
+  };
+  const levels = Math.max(...spans.map(depth)) + 1;
   const cells = document.querySelectorAll("#facts .fact");
   cells[0].innerHTML = `<b>${(data.duration_us / 1000).toFixed(1)}</b> ms`;
   cells[1].innerHTML = `<b>${spans.length}</b> spans`;
-  cells[2].innerHTML = `<b>${services.size}</b> services`;
+  cells[2].innerHTML = `<b>${levels}</b> levels`;
+  cells[3].innerHTML = `<b>${data.dropped ?? 0}</b> dropped`;
   const colophon = $("#colophon-time");
   if (colophon) {
     colophon.textContent = `${(data.duration_us / 1000).toFixed(1)} ms · ${spans.length} spans`;
+  }
+  const end = $("#end-duration");
+  if (end) {
+    end.textContent = `${(data.duration_us / 1000).toFixed(1)} milliseconds.`;
+  }
+  const heroEnd = $("#hero-end");
+  if (heroEnd) {
+    heroEnd.textContent = `${(data.duration_us / 1000).toFixed(1)} ms · ${spans.length} spans`;
   }
 }
 
@@ -173,9 +130,9 @@ function renderTrace() {
   };
   svg.replaceChildren();
 
-  // the axis: five-millisecond steps, then the end of the request where it actually
-  // stops, so the last label is the duration and not a rounded one
-  const step = 5;
+  // the axis: five-millisecond steps on a wide sheet, ten when the labels would
+  // start to run into each other, then the end of the request where it stops.
+  const step = narrow ? 10 : 5;
   for (let t = 0; t <= data.duration_us / 1000; t += step) {
     const at = x(t * 1000);
     svg.append(make("line", { x1: at, y1: axis - 5, x2: at, y2: height - 4, class: "grid-line" }));
@@ -279,6 +236,9 @@ function fillSpecimen() {
   ]) {
     specimen.querySelector(`[data-field="${name}"]`).textContent = value;
   }
+  // The copy caption reads this, so what leaves the page is the header the library
+  // wrote rather than the text nodes a reader happens to drag over.
+  specimen.dataset.copyText = data.traceparent;
   // The notes hang under the field they name: measuring the fields after the text is
   // set is the only way they stay aligned. Two notes that would collide are stacked on
   // two levels, the way a drawing labels a narrow part, and each gets a rule of its
@@ -298,7 +258,7 @@ function fillSpecimen() {
     tick.className = "tick";
     tick.style.left = `${field.offsetLeft}px`;
     // A lifted note keeps its rule reaching all the way up to the specimen.
-    tick.style.height = level === 1 ? "30px" : "8px";
+    tick.style.height = level === 1 ? "44px" : "8px";
     ticks.push(tick);
     previousRight = field.offsetLeft + Math.max(40, note.offsetWidth);
   });
@@ -386,7 +346,6 @@ buildStrip();
 const asked = Number(new URLSearchParams(location.search).get("rate"));
 applyRatio(stops.some((stop) => Number(stop.dataset.ratio) === asked) ? asked : ratio);
 renderTrace();
-follow();
 
 // A deep link to a plate would land short: the trace is drawn after the first layout,
 // which moves everything below it. Once the sheet is drawn, the plate the link named

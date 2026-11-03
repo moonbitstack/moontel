@@ -22,6 +22,7 @@ pub(all) struct SampleRequest {
 /// names, and anything with a decision — a rate limit read from configuration, a
 /// list of paths that must never be dropped — is another implementation of this.
 pub(open) trait Sampler {
+  /// Decide whether the span is wanted, and how much of it to record.
   fn should_sample(Self, SampleRequest) -> Decision
   /// A short name for logs and debug pages, e.g. `TraceIdRatioBased{0.25}`.
   fn description(Self) -> String

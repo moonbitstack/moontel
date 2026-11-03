@@ -16,7 +16,7 @@
 /// the error is passed on to the server, which is what an ASGI server keeps.
 pub(all) struct Tracing {
   tracer : @trace.Tracer
-  /// The clock. This library never reads one itself, so a test can drive a request
+  /// The clock. This library never reads one itself, so a replay can drive a request
   /// through a timeline it chose and a service can hand in whichever clock it
   /// already trusts. Nanoseconds since any fixed origin.
   now : () -> Int64
@@ -52,6 +52,9 @@ pub fn method_and_path(http_method : String, path : String) -> String {
 }
 
 ///|
+/// Wraps an application in a server span per request. `wrap` is the `Layer` method,
+/// so the middleware can sit in a stack beside the framework's own layers as well as
+/// around a single application.
 pub impl @mid.Layer for Tracing with fn wrap(self, app) {
   (scope, receive, send) => {
     guard scope is Http(http) else {

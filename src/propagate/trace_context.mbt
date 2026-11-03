@@ -52,7 +52,7 @@ pub fn parse(
 /// specification, as is an all-zero id.
 ///
 /// Whitespace around the value is dropped. HTTP allows OWS around a field value,
-/// and the interoperability suite sends it; whitespace anywhere inside is refused
+/// and W3C Trace Context's examples send it; whitespace anywhere inside is refused
 /// as the illegal character it is.
 pub fn parse_traceparent(
   input : StringView,

@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guide — moontel</title>
+    <meta
+      name="description"
+      content="Install moontel, build a first trace, choose a sampler, and carry the context across a service boundary."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0c0e'/%3E%3Cpath d='M2 8h12' stroke='%237fe7d6' stroke-width='1'/%3E%3Cpath d='M6 8v-3M10 8v3' stroke='%23edeae3' stroke-width='1'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="theme.js"></script>
+    <script src="version.js"></script>
+  </head>
+  <body data-ruler="page">
+    <a class="skip" href="#main">Skip to the text</a>
+
+    <div
+      class="ruler"
+      id="ruler"
+      role="scrollbar"
+      aria-controls="main"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-label="Position in the sheet"
+      tabindex="0"
+    >
+      <div class="ruler-thumb" id="ruler-thumb"></div>
+    </div>
+    <div class="ruler-readout" aria-hidden="true">
+      <span id="readout-plate">01 / 09</span>
+      <b id="readout-time">0%</b>
+    </div>
+
+    <div class="sheet" id="main">
+      <header class="topline">
+        <span class="brand">
+          <a class="wordmark" href="./">moontel</a>
+          <span class="marginalia wide-only">Guide · <span data-version>—</span> · nine sections</span>
+          <span class="marginalia narrow-only">Guide · <span data-version>—</span></span>
+        </span>
+        <nav class="nav" aria-label="Sections">
+          <a href="./">Home</a>
+          <a href="guide.html" aria-current="page">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <span class="toplinks">
+          <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
+          <button class="theme" id="theme" type="button" aria-label="Switch plate">paper</button>
+        </span>
+      </header>
+
+      <main>
+        <section class="page-head">
+          <span class="marginalia page-kicker">Guide</span>
+          <h1 class="page-title">From a request<br /><em>to a span.</em></h1>
+          <p class="page-lede">
+            A tracer, a clock and a sink: enough to put a request on a timeline and
+            hand it to wherever your traces live. This is the whole route, in the
+            order you will need it.
+          </p>
+          <dl class="page-facts">
+            <div><dt>Install</dt><dd>moon add moonbitstack/moontel</dd></div>
+            <div><dt>Targets</dt><dd>native · js · wasm · wasm-gc</dd></div>
+            <div><dt>Companion</dt><dd><a href="api.html">the API plate</a></dd></div>
+          </dl>
+        </section>
+
+        <nav class="doc-toc" aria-label="Contents">
+          <a href="#install"><span>01</span>Install</a>
+          <a href="#first-trace"><span>02</span>The first trace</a>
+          <a href="#span-life"><span>03</span>A span's life</a>
+          <a href="#sampling"><span>04</span>Sampling</a>
+          <a href="#propagation"><span>05</span>Propagation</a>
+          <a href="#asgi"><span>06</span>The middleware</a>
+          <a href="#replay"><span>07</span>Replay</a>
+          <a href="#limits"><span>08</span>Limits</a>
+          <a href="#absent"><span>09</span>Not here</a>
+        </nav>
+
+        <section class="doc-section" id="install" data-ruler-section="Install">
+          <div class="doc-mark"><span class="plate-no">01</span></div>
+          <div class="doc-body">
+            <h2>Install.</h2>
+            <p>
+              The module is one dependency. It has no build step, no code generation
+              and no global state: adding it adds a few thousand lines and nothing
+              that runs until you call it.
+            </p>
+<pre><code>moon add moonbitstack/moontel</code></pre>
+            <p>
+              Then name the packages you use in <code>moon.pkg</code>. A program that
+              only builds spans imports <code>trace</code> and nothing else; the ASGI
+              middleware is a separate package so that a batch job does not compile a
+              web framework.
+            </p>
+<pre><code>import {
+  <span class="s">"moonbitstack/moontel/trace"</span>,
+  <span class="s">"moonbitstack/moontel/propagate"</span>,
+  <span class="s">"moonbitstack/moontel/asgi"</span>,
+  <span class="c">// The entropy source below, only for these examples;</span>
+  <span class="c">// your runtime may have one of its own.</span>
+  <span class="s">"moonbitstack/moonrand"</span>,
+  <span class="s">"moonbitstack/moonrand/system"</span>,
+}</code></pre>
+            <p>
+              A type is reached through the package that defines it:
+              <code>@trace.Tracer</code>, <code>@propagate.extract</code>,
+              <code>@asgi.Tracing</code>. The facade <code>moonbitstack/moontel</code>
+              re-exports all three, but a re-exported type arrives without its
+              constructors — so building an attribute value still means
+              <code>@trace.Str(…)</code>.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>No setup</b>
+            <p>
+              There is nothing to register, no provider to install and no exporter
+              to configure. A tracer is a value you make, and it does nothing until
+              you start a span.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="first-trace" data-ruler-section="First trace">
+          <div class="doc-mark"><span class="plate-no">02</span></div>
+          <div class="doc-body">
+            <h2>The first trace.</h2>
+            <p>
+              Three things go in: a source of randomness, a sink, and a sampler. The
+              first two are the seams this library refuses to guess; the third is a
+              policy, and <code>always</code> is the one to start with.
+            </p>
+<pre><code><span class="k">fn</span> main {
+  <span class="k">let</span> recorder = <span class="a">@trace.Recorder</span>::new()
+  <span class="k">let</span> tracer = <span class="a">@trace.Tracer</span>::new(
+    rand=random_bytes,
+    sink=recorder,
+    sampler=<span class="a">@trace.always</span>,
+  )
+  <span class="k">let</span> started = 1_700_000_000_000_000_000L
+  <span class="k">let</span> span = tracer.<span class="a">start</span>(
+    <span class="s">"GET /orders/{id}"</span>,
+    kind=<span class="a">@trace.Server</span>,
+    at=started,
+    attributes=[(<span class="s">"http.request.method"</span>, <span class="a">@trace.Str</span>(<span class="s">"GET"</span>))],
+  ) <span class="k">catch</span> {
+    _ =&gt; abort(<span class="s">"the platform has no entropy source"</span>)
+  }
+  span.<span class="a">set_attribute</span>(<span class="s">"http.response.status_code"</span>, <span class="a">@trace.Int</span>(200L))
+  span.<span class="a">finish</span>(at=started + 38_400_000L)
+
+  <span class="k">for</span> data <span class="k">in</span> recorder.<span class="a">spans</span>() {
+    println(<span class="s">"\{data.name} · \{data.duration()} ns · sampled=\{data.sampled()}"</span>)
+  }
+}
+
+<span class="k">fn</span> random_bytes(width : Int32) -&gt; Bytes {
+  <span class="a">@moonrand.bytes</span>(width, <span class="a">@system.source</span>) <span class="k">catch</span> {
+    _ =&gt; abort(<span class="s">"the platform has no entropy source"</span>)
+  }
+}</code></pre>
+            <p class="output-label">One run</p>
+            <pre class="output">GET /orders/{id} · 38400000 ns · sampled=true</pre>
+            <p>
+              The span is not finished when <code>start</code> returns, and the sink
+              is not called until <code>finish</code> does. Between the two, the span
+              is yours: attributes, events, a status, a better name.
+            </p>
+            <p>
+              <code>at</code> is a nanosecond timestamp, and it is a parameter
+              because nothing in moontel reads a clock. A server hands in its runtime's
+              clock; a replay hands in a number. <code>start</code> refuses an id source
+              that returns the wrong number of octets, or sixteen zero octets, which is
+              why it raises.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Why a recorder</b>
+            <p>
+              <code>Recorder</code> keeps finished spans in memory. It is meant for
+              replays and examples: a service wants a sink that ships spans out of the
+              process, because a recorder grows without bound.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="span-life" data-ruler-section="A span's life">
+          <div class="doc-mark"><span class="plate-no">03</span></div>
+          <div class="doc-body">
+            <h2>A span's life.</h2>
+            <p>
+              A span records four kinds of thing: attributes, events, a status and
+              links. All four are cheap, all four are bounded, and all four are ignored
+              after the span ends.
+            </p>
+            <h3>Attributes and events</h3>
+<pre><code><span class="k">fn</span> mark(span : <span class="a">@trace.Span</span>, started : Int64) -&gt; Unit {
+  span.<span class="a">set_attribute</span>(<span class="s">"order.total"</span>, <span class="a">@trace.Double</span>(42.5))
+  span.<span class="a">set_attributes</span>([
+    (<span class="s">"order.items"</span>, <span class="a">@trace.Int</span>(3L)),
+    (<span class="s">"order.paid"</span>, <span class="a">@trace.Bool</span>(true)),
+  ])
+  span.<span class="a">add_event</span>(
+    <span class="s">"cache.miss"</span>,
+    at=started + 1_000_000L,
+    attributes=[(<span class="s">"key"</span>, <span class="a">@trace.Str</span>(<span class="s">"cart:A-1024"</span>))],
+  )
+}
+
+<span class="k">fn</span> end_badly(span : <span class="a">@trace.Span</span>, started : Int64) -&gt; Unit {
+  span.<span class="a">set_status</span>(<span class="a">@trace.Error</span>(<span class="s">"card declined"</span>))
+  span.<span class="a">record_exception</span>(
+    message=<span class="s">"card declined"</span>,
+    at=started + 2_000_000L,
+    type_=<span class="s">"PaymentError"</span>,
+  )
+  span.<span class="a">finish</span>(at=started + 3_000_000L)
+  span.<span class="a">finish</span>(at=started + 4_000_000L) <span class="c">// ignored: a span ends once</span>
+}</code></pre>
+            <p>
+              An attribute value is one of eight shapes: a boolean, an integer, a
+              double, a string, or an array of one of those. The arrays are separate
+              variants because OpenTelemetry requires a homogeneous array, and because
+              an exporter has to write a single type tag for it.
+            </p>
+            <h3>Status, in one order</h3>
+            <p>
+              The three statuses are ordered <code>Ok</code> above <code>Error</code>
+              above <code>Unset</code>, and a write is judged against that order rather
+              than last-write-wins. <code>Ok</code> is final: once a span is
+              <code>Ok</code>, a later <code>Error</code> does not take it back. Two
+              <code>Error</code>s may replace each other, because the message may
+              improve.
+            </p>
+<pre><code>span.<span class="a">set_status</span>(<span class="a">@trace.Error</span>(<span class="s">"card declined"</span>))
+span.<span class="a">record_exception</span>(
+  message=<span class="s">"card declined"</span>,
+  at=started + 2_000_000L,
+  type_=<span class="s">"PaymentError"</span>,
+)
+span.<span class="a">finish</span>(at=started + 3_000_000L)
+span.<span class="a">finish</span>(at=started + 4_000_000L) <span class="c">// ignored: a span ends once</span></code></pre>
+            <p>
+              <code>record_exception</code> writes an event named
+              <code>exception</code> with the three conventional attributes. A status
+              says how the operation ended; an event says what happened on the way.
+              Neither replaces the other.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>After the end</b>
+            <p>
+              Every mutating call is a no-op once <code>finish</code> has run, and on a
+              span the sampler dropped. That is deliberate: instrumented code contains
+              no branches about sampling.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="sampling" data-ruler-section="Sampling">
+          <div class="doc-mark"><span class="plate-no">04</span></div>
+          <div class="doc-body">
+            <h2>Sampling.</h2>
+            <p>
+              A sampler decides, once, whether a trace is wanted. The decision is made
+              at the root and travels in the header, so every later hop agrees without
+              asking again. That is why the sampler a service wants is almost always
+              <code>parent_based</code>: the hop that started the trace chose for the
+              whole trace.
+            </p>
+<pre><code><span class="k">fn</span> pick() -&gt; <span class="a">@trace.ParentBased</span> {
+  <span class="a">@trace.parent_based</span>(root=<span class="a">@trace.ratio</span>(ratio=0.1))
+}</code></pre>
+            <table class="table">
+              <thead>
+                <tr><th>Sampler</th><th>Keeps</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>always</td><td>Everything.</td></tr>
+                <tr><td>never</td><td>Nothing.</td></tr>
+                <tr><td>ratio(r)</td><td>A deterministic fraction r, chosen from the trace id.</td></tr>
+                <tr><td>parent_based(root)</td><td>Whatever the parent decided; a new trace asks <code>root</code>.</td></tr>
+              </tbody>
+            </table>
+            <p>
+              <code>ratio</code> reads the low 64 bits of the trace id — not a clock,
+              not a counter — so the same trace gets the same answer in every process,
+              and raising the rate keeps every trace the lower rate kept. That property
+              is what makes the number on the home page honest: drag it and watch the
+              strip thin out without any mark coming back.
+            </p>
+            <p>
+              A sampler may also answer <code>RecordOnly</code>: the span is recorded
+              and reaches the sink, but the <code>sampled</code> bit stays clear and its
+              children are dropped. That is how a service keeps counts without keeping
+              traces.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Your own</b>
+            <p>
+              <code>Sampler</code> is a trait with one decision and one name. A rate
+              limit read from configuration, or a list of paths that must never be
+              dropped, is another implementation.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="propagation" data-ruler-section="Propagation">
+          <div class="doc-mark"><span class="plate-no">05</span></div>
+          <div class="doc-body">
+            <h2>Propagation.</h2>
+            <p>
+              A hop reads two headers and writes three. Both operations take the same
+              thing: an array of name and value pairs, which is what an ASGI scope
+              hands over and what an HTTP client's header list already is.
+            </p>
+<pre><code><span class="k">fn</span> forward(
+  inbound_headers : Array[(String, String)],
+  request_headers : Array[(String, String)],
+  tracer : <span class="a">@trace.Tracer</span>,
+  at : Int64,
+) -&gt; Array[(String, String)] <span class="k">raise</span> {
+  <span class="k">let</span> extracted = <span class="a">@propagate.extract</span>(inbound_headers)
+  <span class="k">let</span> span = <span class="k">match</span> extracted.context {
+    <span class="a">Some</span>(parent) =&gt;
+      tracer.<span class="a">start</span>(<span class="s">"GET /orders"</span>, parent=parent, kind=<span class="a">@trace.Server</span>, at~)
+    <span class="a">None</span> =&gt;
+      tracer.<span class="a">start</span>(<span class="s">"GET /orders"</span>, kind=<span class="a">@trace.Server</span>, at~)
+  }
+  <span class="c">// The next request carries this hop's span, and the bag unchanged.</span>
+  <span class="a">@propagate.inject</span>(request_headers, {
+    context: <span class="a">Some</span>(span.<span class="a">context</span>()),
+    baggage: extracted.baggage,
+  })
+}</code></pre>
+            <p class="output-label">One run</p>
+            <pre class="output">traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-16e31247ca00e178-01
+tracestate: vendor=abc</pre>
+            <p>
+              Extraction is forgiving exactly where the specification says to be. Two
+              <code>traceparent</code> headers contradict each other, so the hop starts
+              a new trace rather than picking one. A <code>tracestate</code> that does
+              not parse costs the hop its vendor state and not its trace, because W3C
+              Trace Context §3.3.1 asks for precisely that.
+            </p>
+            <p>
+              An outgoing request gets the headers rewritten rather than appended to,
+              so the context of the sender cannot survive beside the one this hop
+              decided on. <code>traceparent</code> and <code>tracestate</code> are
+              written whenever there is a context; <code>baggage</code> is written only
+              when it is not empty.
+            </p>
+            <p>
+              When you want the refusal instead of the forgiveness, call
+              <code>@propagate.parse</code>, <code>parse_traceparent</code> or
+              <code>parse_tracestate</code>: they raise <code>Refused</code> with the
+              offset, the expected shape and the field that was wrong.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Baggage limits</b>
+            <p>
+              64 members and 8192 octets, the numbers the specification requires a
+              platform to propagate. A header past them is refused, not truncated.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="asgi" data-ruler-section="ASGI">
+          <div class="doc-mark"><span class="plate-no">06</span></div>
+          <div class="doc-body">
+            <h2>The ASGI middleware.</h2>
+            <p>
+              One layer opens a server span per request, stamps it the way the semantic
+              conventions describe, records the response status and writes the context
+              back on the response. It implements the framework's <code>Layer</code>, so
+              it stacks beside the others on equal terms.
+            </p>
+<pre><code><span class="k">fn</span> traced(
+  handler : <span class="a">@spec.AsgiApp</span>,
+  tracer : <span class="a">@trace.Tracer</span>,
+  now : () -&gt; Int64,
+) -&gt; <span class="a">@spec.AsgiApp</span> {
+  <span class="k">let</span> layer = <span class="a">@asgi.Tracing</span>::new(tracer~, now~)
+  <span class="a">@mid.stack</span>([<span class="a">@mid.server_errors</span>, layer], handler)
+}</code></pre>
+            <p class="output-label">One run</p>
+            <pre class="output">response 200
+  traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-960516d9a24e7b34-01
+  baggage: userId=alice</pre>
+            <p>
+              Two arguments are required and both are things this library will not
+              guess: the tracer, and <code>now</code>, a clock. The rest have defaults:
+              the span name is the method and the path, baggage rides along, and no
+              path is ignored.
+            </p>
+<pre><code><span class="k">fn</span> route_of(path : String) -&gt; String {
+  path
+}
+
+<span class="k">fn</span> named(tracer : <span class="a">@trace.Tracer</span>, now : () -&gt; Int64) -&gt; <span class="a">@asgi.Tracing</span> {
+  <span class="a">@asgi.Tracing</span>::new(
+    tracer~,
+    now~,
+    name=(method, path) =&gt; <span class="s">"\{method} \{route_of(path)}"</span>,
+    ignore=[<span class="s">"/healthz"</span>, <span class="s">"/metrics"</span>],
+  )
+}</code></pre>
+            <p>
+              The layer sees a path and not a route, which is why <code>name</code> is a
+              parameter: a trace backend wants <code>GET /orders/{id}</code>, not ten
+              thousand distinct paths. A 5xx marks the span as an error; a 4xx is an
+              answer, not a failure, and leaves the status unset. An application that
+              raises leaves an <code>exception</code> event before the error goes on.
+            </p>
+            <p>
+              A WebSocket or a lifespan scope is passed straight through. A server span
+              for either needs a different set of attributes, and a wrong span is worse
+              than a missing one.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>A broken generator</b>
+            <p>
+              If the id source is broken the request runs untraced rather than failing:
+              a tracing problem should not become an outage.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="replay" data-ruler-section="Replay">
+          <div class="doc-mark"><span class="plate-no">07</span></div>
+          <div class="doc-body">
+            <h2>Replay.</h2>
+            <p>
+              The same three seams make a request reproducible. Hand in a source of ids
+              that counts, a sink that keeps everything, and a clock that is a list of
+              numbers, and a request replays exactly: the same ids, the same timings,
+              the same header out.
+            </p>
+<pre><code><span class="k">fn</span> replay() -&gt; Unit <span class="k">raise</span> {
+  <span class="k">let</span> recorder = <span class="a">@trace.Recorder</span>::new()
+  <span class="k">let</span> tracer = <span class="a">@trace.Tracer</span>::new(
+    rand=width =&gt; Bytes::make(width, b'\x01'),
+    sink=recorder,
+    sampler=<span class="a">@trace.always</span>,
+  )
+  <span class="k">let</span> span = tracer.<span class="a">start</span>(<span class="s">"op"</span>, at=0L)
+  span.<span class="a">finish</span>(at=900_000L)
+
+  <span class="k">let</span> data = recorder.<span class="a">spans</span>()[0]
+  println(<span class="s">"\{data.name}: \{data.duration()} ns, sampled=\{data.sampled()}"</span>)
+}</code></pre>
+            <p class="output-label">One run</p>
+            <pre class="output">op: 900000 ns, sampled=true</pre>
+            <p>
+              <code>Recorder::take</code> empties the recorder and returns what it
+              held, which is what a batch of replays needs when one tracer drives
+              several requests. <code>SpanData::sampled</code> separates the spans kept
+              for counting from the ones a backend should see.
+            </p>
+            <p>
+              The home page is one long replay: its ids and its clock are scripted, so
+              the drawing is the same on every visit. Change the script and the
+              waterfall changes with it.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>A recorded request</b>
+            <p>
+              The <a href="showcase.html">showcase</a> is another: the parser and one
+              hop, called in the browser, with the answers the library gives.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="limits" data-ruler-section="Limits">
+          <div class="doc-mark"><span class="plate-no">08</span></div>
+          <div class="doc-body">
+            <h2>Limits.</h2>
+            <p>
+              Every bound here is one a specification states, or one OpenTelemetry's
+              defaults state. A span that reaches a limit counts what it dropped rather
+              than growing without bound; a header that reaches one is refused rather
+              than truncated.
+            </p>
+            <table class="table">
+              <thead>
+                <tr><th>Thing</th><th>Limit</th><th>On the way past</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>attributes per span</td><td>128</td><td>counted in <code>Dropped</code></td></tr>
+                <tr><td>events per span</td><td>128</td><td>counted in <code>Dropped</code></td></tr>
+                <tr><td>links per span</td><td>128</td><td>counted in <code>Dropped</code></td></tr>
+                <tr><td>attributes per event</td><td>128</td><td>counted in <code>Dropped</code></td></tr>
+                <tr><td>attribute value length</td><td>unlimited by default</td><td><code>Limits::new</code> can cut</td></tr>
+                <tr><td>tracestate members</td><td>32</td><td>header dropped</td></tr>
+                <tr><td>tracestate key, value</td><td>256 characters each</td><td>header dropped</td></tr>
+                <tr><td>baggage members</td><td>64</td><td>header dropped</td></tr>
+                <tr><td>baggage header</td><td>8192 octets</td><td>header dropped</td></tr>
+              </tbody>
+            </table>
+            <p>
+              The per-span limits are fixed when the span starts, which is what keeps
+              instrumentation that loops over user data from taking the process down
+              with it. <code>Limits::new</code> moves them; the defaults are
+              <code>trace_limits</code>.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Counting, not losing</b>
+            <p>
+              <code>SpanData::dropped</code> carries three counts, so a backend can tell
+              "there was nothing else" from "there were three hundred more".
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="absent" data-ruler-section="Not here">
+          <div class="doc-mark"><span class="plate-no">09</span></div>
+          <div class="doc-body">
+            <h2>What is deliberately not here.</h2>
+            <p>
+              moontel is the trace API and the trace SDK. It is not a telemetry
+              pipeline, and the things it leaves out are left out on purpose:
+            </p>
+            <ul>
+              <li>
+                <b>No OTLP exporter.</b> A sink is a trait of one method, and the
+                transport belongs to whoever owns it. Shipping bytes to a collector
+                means writing that method, not configuring this library.
+              </li>
+              <li>
+                <b>No metrics or logs.</b> They are different signals with different
+                data models; folding them into a trace library would make all three
+                worse.
+              </li>
+              <li>
+                <b>No automatic instrumentation.</b> Nothing wraps your HTTP client or
+                your database driver. A span is opened where you open it, with the name
+                you choose.
+              </li>
+              <li>
+                <b>No ambient context.</b> There is no thread-local current span: a
+                context is passed as a value. That is why a span is started with the
+                parent in hand, and why there is nothing to clean up afterwards.
+              </li>
+              <li>
+                <b>No sampling by attribute.</b> A sampler sees the four things known
+                before the span exists. A policy that needs an attribute runs after the
+                fact, on the sink.
+              </li>
+            </ul>
+            <p>
+              These are the edges of the library, not gaps in it. If a service needs
+              one of them, the seam to build it on is <code>Sink</code>, and the code
+              at that seam says why.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Next</b>
+            <p>
+              <a href="api.html">The reference</a> lists every public name.<br />
+              <a href="showcase.html">The showcase</a> takes a header apart.<br />
+              <a href="examples.html">The examples</a> are three programs you can run.
+            </p>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <span>moontel <span data-version>—</span> · Apache-2.0</span>
+        <nav aria-label="Footer">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <a href="https://github.com/moonbitstack/moontel">source</a>
+        <a href="https://mooncakes.io/docs/moonbitstack/moontel">mooncakes</a>
+      </footer>
+    </div>
+
+    <script type="module" src="site.js"></script>
+  </body>
+</html>

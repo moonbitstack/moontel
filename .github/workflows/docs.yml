@@ -39,6 +39,14 @@ jobs:
           mkdir -p docs/engine
           cp _build/js/release/build/examples/browser/browser.js docs/engine/moontel.js
 
+      # The reference is generated from the interfaces and the source comments, so a
+      # drift between the two is a deploy that would publish the wrong signatures.
+      - name: the reference and the version are up to date
+        run: |
+          python3 scripts/gen_api.py
+          python3 scripts/gen_version.py
+          git diff --exit-code docs/api.html docs/version.js
+
       - uses: actions/configure-pages@v6
         with:
           enablement: true

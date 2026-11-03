@@ -8,7 +8,7 @@
 ///
 ///     moon run src/examples/02-asgi
 ///
-/// The application is driven in process, the way a test would drive it; a real
+/// The application is driven in process, the way a caller would drive it; a real
 /// server binds the same `@spec.AsgiApp` to a socket instead.
 #coverage.skip
 async fn main {

@@ -158,6 +158,7 @@ pub fn TraceState::len(self : TraceState) -> Int32 {
 }
 
 ///|
+/// Whether the hop carried no vendor state at all.
 pub fn TraceState::is_empty(self : TraceState) -> Bool {
   self.members.is_empty()
 }
@@ -199,13 +200,13 @@ pub fn TraceState::to_header(self : TraceState) -> String {
 /// wrote, and W3C Trace Context §3.3.1 asks for the header to be dropped instead.
 ///
 /// The one place the reading is wider than §3.3.1's ABNF is the key: the
-/// interoperability suite's checker is followed there, so `foo@` and `foo@@bar` are
+/// W3C Trace Context's reference parser is followed there, so `foo@` and `foo@@bar` are
 /// list-members like any other. `check_key` says why, and says what is still out.
 ///
 /// A key that appears twice is the one thing handled member by member: the first
 /// member with that key wins and the later one is dropped, which is the choice W3C
 /// Trace Context level 2 allows ("pass the duplicate on as-is or drop one of
-/// them") and the one the interoperability suite's reference checker makes.
+/// them") and the one W3C Trace Context's reference parser makes.
 ///
 /// Whitespace before a member and after a value is dropped, as is whitespace
 /// around the commas; whitespace anywhere else is part of a key or a value that
@@ -347,15 +348,15 @@ fn split_member(
 ///|
 /// A tracestate key, over `s[start..<end]`.
 ///
-/// The rule is the one the W3C Trace Context interoperability suite's own checker
+/// The rule is the one W3C Trace Context's own reference parser
 /// applies — `[0-9a-z][_0-9a-z-*/@]{0,255}`, 256 characters at most — and not the
 /// narrower ABNF of §3.3.1, which splits a multi-tenant key into a tenant id of at
 /// most 241 characters and a system id of 1 to 14 around exactly one `@`.
 ///
-/// The suite's reading is deliberately the wider one, and it is wider in three
+/// That reading is deliberately the wider one, and it is wider in three
 /// shapes the ABNF refuses: `foo@` (no system id), `foo@@bar` (two at signs) and a
 /// system id longer than fourteen characters. Following it keeps this library in
-/// step with what the suite tests, which is what the hop upstream and the hop
+/// step with what the reference parser accepts, which is what the hop upstream and the hop
 /// downstream are measured by: a key refused here but accepted there breaks the
 /// vendor state on the way through, and vice versa.
 ///

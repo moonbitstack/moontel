@@ -79,6 +79,7 @@ pub fn Baggage::len(self : Baggage) -> Int32 {
 }
 
 ///|
+/// Whether the bag has no members.
 pub fn Baggage::is_empty(self : Baggage) -> Bool {
   self.members.is_empty()
 }

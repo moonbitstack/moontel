@@ -1,0 +1,1540 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API — moontel</title>
+    <meta
+      name="description"
+      content="The complete public interface of moontel: every type, function, trait, error and derived method in trace, propagate and asgi."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0c0e'/%3E%3Cpath d='M2 8h12' stroke='%237fe7d6' stroke-width='1'/%3E%3Cpath d='M6 8v-3M10 8v3' stroke='%23edeae3' stroke-width='1'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="theme.js"></script>
+    <script src="version.js"></script>
+  </head>
+  <body data-ruler="page">
+    <a class="skip" href="#main">Skip to the text</a>
+
+    <div
+      class="ruler"
+      id="ruler"
+      role="scrollbar"
+      aria-controls="main"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-label="Position in the sheet"
+      tabindex="0"
+    >
+      <div class="ruler-thumb" id="ruler-thumb"></div>
+    </div>
+    <div class="ruler-readout" aria-hidden="true">
+      <span id="readout-plate">01 / 04</span>
+      <b id="readout-time">0%</b>
+    </div>
+
+    <div class="sheet" id="main">
+      <header class="topline">
+        <span class="brand">
+          <a class="wordmark" href="./">moontel</a>
+          <span class="marginalia wide-only">Reference · every public name</span>
+          <span class="marginalia narrow-only">Reference</span>
+        </span>
+        <nav class="nav" aria-label="Sections">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html" aria-current="page">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <span class="toplinks">
+          <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
+          <button class="theme" id="theme" type="button" aria-label="Switch plate">paper</button>
+        </span>
+      </header>
+
+      <main>
+        <section class="page-head api-head">
+          <span class="marginalia page-kicker">Reference</span>
+          <h1 class="page-title">Every public <em>name</em>.</h1>
+          <p class="page-lede">
+            Generated from the interfaces MoonBit prints for this module, so nothing
+            public is missing and no signature was typed twice. The prose is the
+            documentation comment beside the code.
+          </p>
+          <dl class="page-facts">
+            <div><dt>Packages</dt><dd>three, and a facade</dd></div>
+            <div><dt>Entries</dt><dd><b id="api-count">—</b> entries</dd></div>
+            <div><dt>Source</dt><dd>pkg.generated.mbti</dd></div>
+          </dl>
+        </section>
+
+        <div class="api-layout">
+          <aside class="api-contents">
+            <div class="api-filter-wrap">
+              <label for="api-filter">Filter names</label>
+              <input
+                id="api-filter"
+                type="search"
+                placeholder="span, ratio, inject…"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <span class="api-count"><b id="api-count-shown">—</b> shown</span>
+            </div>
+            <nav class="api-toc" aria-label="Packages">
+              <a href="#trace">trace <span data-count-for="trace">—</span></a>
+              <a href="#propagate">propagate <span data-count-for="propagate">—</span></a>
+              <a href="#asgi">asgi <span data-count-for="asgi">—</span></a>
+              <a href="#facade">moontel <span>facade</span></a>
+            </nav>
+            <p class="api-hint">
+              Press <kbd>/</kbd> to filter, <kbd>Esc</kbd> to clear. A dotted anchor in
+              the address bar opens one entry directly. Signatures are printed as
+              <code>moon info</code> writes them: <code>x~</code> has a default,
+              <code>x?</code> may be absent.
+            </p>
+          </aside>
+
+          <div class="api-packages">
+            <section class="api-package" id="trace" data-ruler-section="trace">
+              <header class="api-package-head">
+                <span class="plate-no">01</span>
+                <h2>trace</h2>
+                <code>moonbitstack/moontel/trace</code>
+                <p>
+                  The span model, the tracer that mints spans, the four samplers, and
+                  the two traits a caller implements: <code>Sink</code> for where spans
+                  go and <code>Sampler</code> for what is kept. Nothing here reads a
+                  clock, opens a socket or looks at a header.
+                </p>
+              </header>
+              <div class="api-entries" data-package="trace">
+                <!-- BEGIN trace -->
+<!-- Generated by scripts/gen_api.py from pkg.generated.mbti and the documentation comments; do not edit by hand. -->
+<div class="api-group">
+  <h3 class="api-group-title">Values</h3>
+<article class="api-entry" id="trace-always" data-name="always">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">always</code><code class="api-sig">: Always</code></span>
+  </div>
+  <div class="api-doc"><p>Samples everything, whatever the parent said. The starting point for a service whose traffic is small enough to keep whole.</p></div>
+</article>
+<article class="api-entry" id="trace-discard" data-name="discard">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">discard</code><code class="api-sig">: Discard</code></span>
+  </div>
+  <div class="api-doc"><p>Throws spans away. The default for a tracer whose owner has not decided where they go yet, and the sink a replay uses when it only cares that nothing crashes.</p></div>
+</article>
+<article class="api-entry" id="trace-dropped_nothing" data-name="dropped_nothing">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">dropped_nothing</code><code class="api-sig">: Dropped</code></span>
+  </div>
+  <div class="api-doc"><p>Nothing dropped, the value a span starts with.</p></div>
+</article>
+<article class="api-entry" id="trace-empty_trace_state" data-name="empty_trace_state">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">empty_trace_state</code><code class="api-sig">: TraceState</code></span>
+  </div>
+  <div class="api-doc"><p>No vendor state: what a new trace starts with, and what a hop that carries nothing forward hands on.</p></div>
+</article>
+<article class="api-entry" id="trace-never" data-name="never">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">never</code><code class="api-sig">: Never</code></span>
+  </div>
+  <div class="api-doc"><p>Samples nothing. Useful behind <a href="#trace-parent_based"><code>parent_based</code></a>, where it is the answer for a parent that was not sampled.</p></div>
+</article>
+<article class="api-entry" id="trace-parent_based" data-name="parent_based">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">parent_based</code><code class="api-sig">(root~ : &amp;Sampler) -&gt; ParentBased</code></span>
+  </div>
+  <div class="api-doc"><p>Parent-based sampling over <code>root</code>, which decides for the first span of a trace.</p></div>
+</article>
+<article class="api-entry" id="trace-random_flag" data-name="random_flag">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">random_flag</code><code class="api-sig">: Byte</code></span>
+  </div>
+  <div class="api-doc"><p>The <code>random</code> bit W3C Trace Context level 2 uses to say a trace id was drawn at random. Carried through a hop unchanged; this library does not read it.</p></div>
+</article>
+<article class="api-entry" id="trace-ratio" data-name="ratio">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ratio</code><code class="api-sig">(ratio~ : Double) -&gt; Ratio</code></span>
+  </div>
+  <div class="api-doc"><p>A ratio sampler. A <code>ratio</code> outside 0 to 1 is clamped, so configuration read from a file cannot produce a sampler that samples more than everything or less than nothing.</p></div>
+</article>
+<article class="api-entry" id="trace-sampled_flag" data-name="sampled_flag">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">sampled_flag</code><code class="api-sig">: Byte</code></span>
+  </div>
+  <div class="api-doc"><p>The <code>sampled</code> bit of <code>traceparent</code>'s flags field (W3C Trace Context §3.2.2.5).</p></div>
+</article>
+<article class="api-entry" id="trace-trace_limits" data-name="trace_limits">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">trace_limits</code><code class="api-sig">: Limits</code></span>
+  </div>
+  <div class="api-doc"><p>The OpenTelemetry defaults, from the trace SDK specification's span limits table.</p></div>
+</article>
+<article class="api-entry" id="trace-tracestate_limit" data-name="tracestate_limit">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">tracestate_limit</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The list-members W3C Trace Context allows in one <code>tracestate</code> (§3.3.1).</p></div>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Errors</h3>
+<article class="api-entry api-type" id="trace-Refused" data-name="Refused">
+  <div class="api-line">
+    <span class="api-kind">error</span>
+    <span class="api-call"><code class="api-name">Refused</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>Why a header, an id or a span id source was refused.</p>
+<p>One error type for the whole module: a caller parsing an inbound <code>traceparent</code> and a caller handing the tracer a broken source of randomness both have one thing to catch.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Field(at~ : Int32, want~ : String)</code>
+      <p>A field that is not what the grammar asks for, at this offset in the input.</p>
+    </div>
+    <div class="api-variant">
+      <code>NotHex(at~ : Int32)</code>
+      <p>A character that has to be a lowercase hexadecimal digit and is not, at
+this offset. Uppercase is refused here because W3C Trace Context writes the
+fields in lowercase, and a parser that accepted both would let two spellings
+of one trace id into the same backend.</p>
+    </div>
+    <div class="api-variant">
+      <code>Zero(at~ : Int32)</code>
+      <p>An id that is all zero octets, which W3C Trace Context declares invalid.</p>
+    </div>
+    <div class="api-variant">
+      <code>TooMany(limit~ : Int32, got~ : Int32)</code>
+      <p>More list-members than the limit allows.</p>
+    </div>
+    <div class="api-variant">
+      <code>TooLong(limit~ : Int32, got~ : Int32)</code>
+      <p>A header longer than the limit, in octets.</p>
+    </div>
+    <div class="api-variant">
+      <code>Ids(want~ : Int32, got~ : Int32)</code>
+      <p>A source of randomness that did not hand back the number of octets asked
+for: <code>rand(16)</code> owes sixteen, and anything else is a broken generator rather
+than an id this library can guess at.</p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="trace-Always" data-name="Always">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Always</code></span>
+    <span class="api-meta">Sampler</span>
+  </div>
+  <div class="api-doc"><p>Samples everything, whatever the parent said. The starting point for a service whose traffic is small enough to keep whole.</p></div>
+  <p class="api-derived">Also on the type: <code>description</code> · <code>should_sample</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Decision" data-name="Decision">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">Decision</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>The three answers a sampler can give.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Drop</code>
+      <p>Not recorded at all: the tracer hands back a span that forgets everything,
+so instrumented code needs no branch of its own.</p>
+    </div>
+    <div class="api-variant">
+      <code>RecordOnly</code>
+      <p>Recorded but not sent on: the span keeps its attributes and reaches the
+sink, and the <code>sampled</code> bit stays clear so its children are dropped too.</p>
+    </div>
+    <div class="api-variant">
+      <code>RecordAndSample</code>
+      <p>Recorded and sent on.</p>
+    </div>
+  </div>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Decision-recording" data-name="Decision::recording">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Decision::recording</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the span reaches the sink with data in it.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Decision-sampled" data-name="Decision::sampled">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Decision::sampled</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the <code>sampled</code> bit is set and the trace continues.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Discard" data-name="Discard">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Discard</code></span>
+    <span class="api-meta">Sink</span>
+  </div>
+  <div class="api-doc"><p>Throws spans away. The default for a tracer whose owner has not decided where they go yet, and the sink a replay uses when it only cares that nothing crashes.</p></div>
+  <p class="api-derived">Also on the type: <code>accept</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Dropped" data-name="Dropped">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Dropped</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>How much a span gave up at its limits. OpenTelemetry asks for the counts rather than for the dropped values, so a reader can tell "this span had no attributes" from "this span had three hundred and we kept 128".</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>attributes</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>events</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>links</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Event" data-name="Event">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Event</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>Something that happened during a span: a name, when it happened, and what it carried. Events keep the order they were added in, which for timestamps handed in by the caller is not necessarily the order of those timestamps.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>name</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>at</dt>
+      <dd>Int64</dd>
+    </div>
+    <div>
+      <dt>attributes</dt>
+      <dd>Array[(String, Value)]</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Limits" data-name="Limits">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Limits</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>How much one span collects.</p>
+<p>The defaults are OpenTelemetry's: 128 attributes, 128 events, 128 links, 128 attributes on an event, and no limit on the length of a value. They exist to keep instrumentation that loops over user data from taking the process down with it, so the counts are per span and fixed when the span starts.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>attributes</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>events</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>links</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>attributes_per_event</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
+      <dt>attribute_value_length</dt>
+      <dd>Int32?</dd>
+      <dd class="api-field-doc"><p><code>None</code> keeps values of any length. A number cuts every string attribute to that many characters, counting each as one.</p></dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Limits-new" data-name="Limits::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Limits::new</code><code class="api-sig">(attributes? : Int32, events? : Int32, links? : Int32, attributes_per_event? : Int32, attribute_value_length? : Int32?) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>The same defaults, with any of them changed.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Link" data-name="Link">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Link</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>A causal relationship to another span that is not this one's parent — a batch item, a message consumed later, a fan-in. The linked context travels with the link so a reader can join the two traces.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>context</dt>
+      <dd>TraceContext</dd>
+    </div>
+    <div>
+      <dt>attributes</dt>
+      <dd>Array[(String, Value)]</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Never" data-name="Never">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Never</code></span>
+    <span class="api-meta">Sampler</span>
+  </div>
+  <div class="api-doc"><p>Samples nothing. Useful behind <a href="#trace-parent_based"><code>parent_based</code></a>, where it is the answer for a parent that was not sampled.</p></div>
+  <p class="api-derived">Also on the type: <code>description</code> · <code>should_sample</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-ParentBased" data-name="ParentBased">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ParentBased</code></span>
+    <span class="api-meta">Sampler</span>
+  </div>
+  <div class="api-doc"><p>Follows the parent's decision and asks <code>root</code> only when there is no parent.</p>
+<p>This is the sampler to give a service, because it is what keeps a distributed trace whole: the hop that made the decision decided for the whole trace, and every later hop obeys it instead of rolling its own dice.</p>
+<p>A <a href="#trace-TraceContext"><code>TraceContext</code></a> does not say whether it arrived over the wire or was made in this process, so the specification's separate answers for a remote and a local parent collapse into one; with the default delegates — sample when the parent was sampled, drop when it was not — the two tables are the same table.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>root</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>description</code> · <code>should_sample</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Ratio" data-name="Ratio">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Ratio</code></span>
+    <span class="api-meta">Debug · Sampler</span>
+  </div>
+  <div class="api-doc"><p>Samples a fixed fraction of traces, decided by the trace id rather than by a coin: the same id gets the same answer on every hop, in every process, and from every service, so a trace that one service keeps is not dropped by the next.</p>
+<p>The fraction is read off the low 64 bits of the trace id, which the specification asks for so that two rates nest: raising the rate keeps every trace the lower rate kept.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>ratio</dt>
+      <dd>Double</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>description</code> · <code>should_sample</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Recorder" data-name="Recorder">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Recorder</code></span>
+    <span class="api-meta">Sink</span>
+  </div>
+  <div class="api-doc"><p>Keeps spans in memory, in the order they finished.</p>
+<p>Meant for replays, examples and the debugging of a single request; a service wants a sink that ships spans off the process, because this one grows without bound.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>spans</dt>
+      <dd>@ref.Ref[Array[SpanData]]</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Recorder-len" data-name="Recorder::len">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Recorder::len</code><code class="api-sig">(Self) -&gt; Int32</code></span>
+  </div>
+  <div class="api-doc"><p>How many spans are kept.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Recorder-new" data-name="Recorder::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Recorder::new</code><code class="api-sig">() -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>An empty recorder.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Recorder-spans" data-name="Recorder::spans">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Recorder::spans</code><code class="api-sig">(Self) -&gt; Array[SpanData]</code></span>
+  </div>
+  <div class="api-doc"><p>The spans kept so far, oldest first.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Recorder-take" data-name="Recorder::take">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Recorder::take</code><code class="api-sig">(Self) -&gt; Array[SpanData]</code></span>
+  </div>
+  <div class="api-doc"><p>The spans kept so far, and an empty recorder afterwards. Use this when a replay drives several requests through one tracer and reads one request's spans at a time.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>accept</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-SampleRequest" data-name="SampleRequest">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">SampleRequest</code></span>
+  </div>
+  <div class="api-doc"><p>What a sampler is told about the span it is deciding on.</p>
+<p>The four things a sampler may look at are all known before the span exists: the parent, the trace id the span will carry, its name and its kind. Later changes — a better name, an attribute discovered mid-request — cannot move the decision, which is why the decision is made here and not on the finished span.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>parent</dt>
+      <dd>TraceContext?</dd>
+    </div>
+    <div>
+      <dt>trace_id</dt>
+      <dd>Bytes</dd>
+    </div>
+    <div>
+      <dt>name</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>kind</dt>
+      <dd>SpanKind</dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="trace-Span" data-name="Span">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Span</code></span>
+  </div>
+  <div class="api-doc"><p>The span a caller holds: an identity fixed at creation, and fields that fill in until it is finished.</p>
+<p>Everything that changes after creation sits behind a <code>Ref</code>, so one span may be filled in from the task that opened it and read from another. A non-recording span — one the sampler dropped — accepts the same calls and forgets them, which is what lets instrumented code stay the same whatever the sampler decided.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>context</dt>
+      <dd>TraceContext</dd>
+    </div>
+    <div>
+      <dt>parent</dt>
+      <dd>Bytes?</dd>
+    </div>
+    <div>
+      <dt>kind</dt>
+      <dd>SpanKind</dd>
+    </div>
+    <div>
+      <dt>start</dt>
+      <dd>Int64</dd>
+    </div>
+    <div>
+      <dt>recording</dt>
+      <dd>Bool</dd>
+    </div>
+    <div>
+      <dt>sink</dt>
+      <dd>&amp;Sink</dd>
+    </div>
+    <div>
+      <dt>limits</dt>
+      <dd>Limits</dd>
+    </div>
+    <div>
+      <dt>span_name</dt>
+      <dd>@ref.Ref[String]</dd>
+    </div>
+    <div>
+      <dt>attribute_list</dt>
+      <dd>@ref.Ref[Array[(String, Value)]]</dd>
+    </div>
+    <div>
+      <dt>event_list</dt>
+      <dd>@ref.Ref[Array[Event]]</dd>
+    </div>
+    <div>
+      <dt>link_list</dt>
+      <dd>@ref.Ref[Array[Link]]</dd>
+    </div>
+    <div>
+      <dt>span_status</dt>
+      <dd>@ref.Ref[Status]</dd>
+    </div>
+    <div>
+      <dt>end_time</dt>
+      <dd>@ref.Ref[Int64?]</dd>
+    </div>
+    <div>
+      <dt>dropped</dt>
+      <dd>@ref.Ref[Dropped]</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Span-add_event" data-name="Span::add_event">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::add_event</code><code class="api-sig">(Self, String, attributes? : Array[(String, Value)], at~ : Int64) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Add an event. <code>at</code> is the moment the caller says it happened, so a span recorded after the fact keeps its real timeline.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-add_link" data-name="Span::add_link">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::add_link</code><code class="api-sig">(Self, Link) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Add a link to another span after creation, past the link limit being counted rather than applied.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-attributes" data-name="Span::attributes">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::attributes</code><code class="api-sig">(Self) -&gt; Array[(String, Value)]</code></span>
+  </div>
+  <div class="api-doc"><p>A copy of the attributes set so far, in the order their keys first appeared.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-context" data-name="Span::context">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::context</code><code class="api-sig">(Self) -&gt; TraceContext</code></span>
+  </div>
+  <div class="api-doc"><p>The identity of the span. It does not change for the span's whole life and stays usable after it ends, because a later span may still name this one as its parent.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-events" data-name="Span::events">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::events</code><code class="api-sig">(Self) -&gt; Array[Event]</code></span>
+  </div>
+  <div class="api-doc"><p>A copy of the events added so far, in the order they were added.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-finish" data-name="Span::finish">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::finish</code><code class="api-sig">(Self, at~ : Int64) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Finish the span at <code>at</code>, handing it to the sink once.</p>
+<p>Finishing twice does nothing the second time, and finishing a span the sampler dropped hands nothing over. Child spans are untouched: they may still be running, and they keep naming this one as their parent.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-is_ended" data-name="Span::is_ended">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::is_ended</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the span has been finished. A finished span takes no more writes and is not handed to the sink a second time.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-is_recording" data-name="Span::is_recording">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::is_recording</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the span is collecting anything: false after it ends, and false for a span the sampler dropped. Instrumented code can use it to skip building expensive attributes.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-links" data-name="Span::links">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::links</code><code class="api-sig">(Self) -&gt; Array[Link]</code></span>
+  </div>
+  <div class="api-doc"><p>A copy of the links added so far.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-name" data-name="Span::name">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::name</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The name the span carries now, which <code>set_name</code> may have changed since it started.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-record_exception" data-name="Span::record_exception">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::record_exception</code><code class="api-sig">(Self, message~ : String, at~ : Int64, type_? : String, stacktrace? : String, attributes? : Array[(String, Value)]) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Record an error the way OpenTelemetry's exception conventions ask: an event named <code>exception</code> carrying <code>exception.type</code>, <code>exception.message</code> and <code>exception.stacktrace</code>, with any <code>attributes</code> of the caller's own taking precedence over those three.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-set_attribute" data-name="Span::set_attribute">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::set_attribute</code><code class="api-sig">(Self, String, Value) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Set one attribute. A key already present is overwritten in place, so the attribute list keeps the order in which keys first appeared rather than the order of their last write.</p>
+<p>Past the attribute limit the write is dropped and counted rather than applied: a span with a runaway loop of attributes must not take the process down with it.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-set_attributes" data-name="Span::set_attributes">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::set_attributes</code><code class="api-sig">(Self, Array[(String, Value)]) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Set several attributes at once, each following the same rule as <code>set_attribute</code>.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-set_name" data-name="Span::set_name">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::set_name</code><code class="api-sig">(Self, String) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Rename the span. The sampler has already decided, so a better name found during the request cannot change that decision — it changes what the backend draws.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-set_status" data-name="Span::set_status">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::set_status</code><code class="api-sig">(Self, Status) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Set the status, judged against the order <code>Ok</code> above <code>Error</code> above <code>Unset</code>: <code>Unset</code> changes nothing, <code>Ok</code> is final, and a later <code>Error</code> replaces an earlier one so the message can improve.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Span-status" data-name="Span::status">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Span::status</code><code class="api-sig">(Self) -&gt; Status</code></span>
+  </div>
+  <div class="api-doc"><p>The status as it stands: <code>Unset</code> until a caller sets one.</p></div>
+</article>
+  </div>
+</article>
+<article class="api-entry api-type" id="trace-SpanData" data-name="SpanData">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">SpanData</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>A finished span, as a <a href="#trace-Sink"><code>Sink</code></a> receives it.</p>
+<p>It is a value, not a handle: everything in it is settled, and a sink may keep it, queue it or throw it away. Nothing here is normalised — a span may begin and end at the same nanosecond, and an event may carry a time outside the span.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>context</dt>
+      <dd>TraceContext</dd>
+    </div>
+    <div>
+      <dt>parent</dt>
+      <dd>Bytes?</dd>
+      <dd class="api-field-doc"><p>The parent's span id, or <code>None</code> for the first span of a trace. The parent's own context is deliberately not carried: a child needs the id to say where it hangs, and nothing else about the parent.</p></dd>
+    </div>
+    <div>
+      <dt>name</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>kind</dt>
+      <dd>SpanKind</dd>
+    </div>
+    <div>
+      <dt>start</dt>
+      <dd>Int64</dd>
+    </div>
+    <div>
+      <dt>end</dt>
+      <dd>Int64</dd>
+    </div>
+    <div>
+      <dt>attributes</dt>
+      <dd>Array[(String, Value)]</dd>
+    </div>
+    <div>
+      <dt>events</dt>
+      <dd>Array[Event]</dd>
+    </div>
+    <div>
+      <dt>links</dt>
+      <dd>Array[Link]</dd>
+    </div>
+    <div>
+      <dt>status</dt>
+      <dd>Status</dd>
+    </div>
+    <div>
+      <dt>dropped</dt>
+      <dd>Dropped</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-SpanData-duration" data-name="SpanData::duration">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">SpanData::duration</code><code class="api-sig">(Self) -&gt; Int64</code></span>
+  </div>
+  <div class="api-doc"><p>How long the span lasted, in nanoseconds. Negative only if the caller handed in an end before the start, which is left as it came.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-SpanData-sampled" data-name="SpanData::sampled">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">SpanData::sampled</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether this span carries the <code>sampled</code> bit, which is the one thing a sink needs in order to choose between exporting and merely counting.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-SpanKind" data-name="SpanKind">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">SpanKind</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>What a span is about, from the point of view of the process that made it. The kind is part of the sampling input and of what a backend draws, so it is settled when the span starts.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Internal</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Server</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Client</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Producer</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Consumer</code>
+      <p></p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Status" data-name="Status">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">Status</code></span>
+    <span class="api-meta">Eq · Debug · Show</span>
+  </div>
+  <div class="api-doc"><p>How the operation ended, as the caller judges it.</p>
+<p>The three values form a total order, <code>Ok</code> above <code>Error</code> above <code>Unset</code>, and a status is judged against that order rather than by "last write wins": <code>Ok</code> is final, <code>Error</code> may replace another <code>Error</code> because the message may improve, and <code>Unset</code> is what a span already has.</p>
+<p><code>Unset</code> means "the caller has no opinion", which is not a failure: an instrumentation library leaves it alone unless the semantic conventions say otherwise.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Unset</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Ok</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Error(String)</code>
+      <p></p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>output</code> · <code>to_repr</code> · <code>to_string</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-TraceContext" data-name="TraceContext">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">TraceContext</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>The identity of a span: the trace it belongs to, its own id, the flags travelling with it, and the vendor state riding along.</p>
+<p>Ids are octets, not text: sixteen for the trace and eight for the span, as W3C Trace Context lays them out. Hexadecimal is a spelling used at the wire and in logs, and it is produced there rather than stored here.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>trace_id</dt>
+      <dd>Bytes</dd>
+    </div>
+    <div>
+      <dt>span_id</dt>
+      <dd>Bytes</dd>
+    </div>
+    <div>
+      <dt>flags</dt>
+      <dd>Byte</dd>
+    </div>
+    <div>
+      <dt>state</dt>
+      <dd>TraceState</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-TraceContext-is_valid" data-name="TraceContext::is_valid">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceContext::is_valid</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the trace id is sixteen octets and the span id eight, neither all zero. A context that fails this is not a trace to join.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceContext-new" data-name="TraceContext::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceContext::new</code><code class="api-sig">(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>Build a context from ids the caller already has. Nothing is validated: this is the shape a tracer mints and a sink reads, and a caller holding a <a href="#trace-Span"><code>Span</code></a> already has a valid one. A context read off the wire comes from <a href="#propagate-parse"><code>parse</code></a> instead, which does validate.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceContext-sampled" data-name="TraceContext::sampled">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceContext::sampled</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the <code>sampled</code> bit is set: the flag that says this span, and the children that carry it, are wanted by whoever reads the traces.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceContext-to_traceparent" data-name="TraceContext::to_traceparent">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceContext::to_traceparent</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The <code>traceparent</code> header value for this context: version <code>00</code>, the trace id, the span id, and the flags, in lowercase hexadecimal.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceContext-with_sampled" data-name="TraceContext::with_sampled">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceContext::with_sampled</code><code class="api-sig">(Self, sampled~ : Bool) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>The same context with the <code>sampled</code> bit set or cleared, which is what a sampler's decision turns into. Every other flag travels as it came: a version of the header this library has not met may have put meaning in them.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-TraceState" data-name="TraceState">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">TraceState</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>Vendor state travelling with the trace, as an ordered list of at most 32 list-members (W3C Trace Context §3.3.1).</p>
+<p>It is a list, not a map: the order is what a hop writes back, the first member belongs to the closest hop, and two members may not share a key. The update operations return a new state rather than editing this one, so that a caller holding the state that arrived cannot change what it arrived as.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>members</dt>
+      <dd>Array[(String, String)]</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-TraceState-delete" data-name="TraceState::delete">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::delete</code><code class="api-sig">(Self, String) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>The same state without the member <code>key</code> names, and unchanged when there is none.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-get" data-name="TraceState::get">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::get</code><code class="api-sig">(Self, String) -&gt; String?</code></span>
+  </div>
+  <div class="api-doc"><p>The value <code>key</code> is bound to, or <code>None</code> when the state has no such member.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-insert" data-name="TraceState::insert">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::insert</code><code class="api-sig">(Self, key~ : String, value~ : String) -&gt; Self raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>The same state with <code>key</code> set to <code>value</code> as the member closest to this hop (W3C Trace Context §3.3.1): an existing member with that key is replaced rather than moved, and a list already at 32 members drops its rightmost.</p>
+<p>Building a header to send means adding your own entry to what came in, which is the one mutation a hop is allowed to make.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-is_empty" data-name="TraceState::is_empty">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::is_empty</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the hop carried no vendor state at all.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-len" data-name="TraceState::len">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::len</code><code class="api-sig">(Self) -&gt; Int32</code></span>
+  </div>
+  <div class="api-doc"><p>How many list-members the state carries.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-parse" data-name="TraceState::parse">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::parse</code><code class="api-sig">(StringView) -&gt; Self raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>Parse a <code>tracestate</code> header value.</p>
+<p>Strict on purpose: a list-member that does not match the grammar or a list longer than 32 members refuses the whole header. A hop that kept the parseable half of a broken <code>tracestate</code> would hand the next hop something the sender never wrote, and W3C Trace Context §3.3.1 asks for the header to be dropped instead.</p>
+<p>The one place the reading is wider than §3.3.1's ABNF is the key: the W3C Trace Context's reference parser is followed there, so <code>foo@</code> and <code>foo@@bar</code> are list-members like any other. <code>check_key</code> says why, and says what is still out.</p>
+<p>A key that appears twice is the one thing handled member by member: the first member with that key wins and the later one is dropped, which is the choice W3C Trace Context level 2 allows ("pass the duplicate on as-is or drop one of them") and the one W3C Trace Context's reference parser makes.</p>
+<p>Whitespace before a member and after a value is dropped, as is whitespace around the commas; whitespace anywhere else is part of a key or a value that the grammar does not allow.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-TraceState-to_header" data-name="TraceState::to_header">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">TraceState::to_header</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The header value: members in order, <code>key=value</code>, comma-separated, with no whitespace (W3C Trace Context §3.3.1.2). Empty when there is no state, which on the wire is the same as no header being sent.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="trace-Tracer" data-name="Tracer">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Tracer</code></span>
+  </div>
+  <div class="api-doc"><p>Makes spans, and the one place ids and the sampling decision are settled.</p>
+<p>A tracer holds three things it cannot invent for itself: where randomness comes from, where finished spans go, and who decides whether a trace is wanted. The clock is the fourth, and it does not even reach the tracer — every call that needs a time is handed one.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>rand</dt>
+      <dd>(Int32) -&gt; Bytes</dd>
+    </div>
+    <div>
+      <dt>sink</dt>
+      <dd>&amp;Sink</dd>
+    </div>
+    <div>
+      <dt>sampler</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+    <div>
+      <dt>limits</dt>
+      <dd>Limits</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Tracer-new" data-name="Tracer::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Tracer::new</code><code class="api-sig">(rand~ : (Int32) -&gt; Bytes, sink~ : &amp;Sink, sampler~ : &amp;Sampler, limits? : Limits) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>A tracer drawing ids from <code>rand</code>, handing finished spans to <code>sink</code>, and asking <code>sampler</code> about every span it starts.</p>
+<p><code>rand(n)</code> must return exactly <code>n</code> octets and must not return all zeros: eight octets of zeros is not a valid span id, and a generator that produces one is broken rather than unlucky. A call that breaks either rule makes <code>start</code> refuse; see <code>Refused::Ids</code> and <code>Refused::Zero</code>.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Tracer-start" data-name="Tracer::start">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Tracer::start</code><code class="api-sig">(Self, String, parent? : TraceContext, kind? : SpanKind, at~ : Int64, attributes? : Array[(String, Value)], links? : Array[Link]) -&gt; Span raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>Start a span.</p>
+<p>With a <code>parent</code> whose context is valid, the new span joins that trace: it takes the parent's trace id and trace state, and <a href="#trace-parent_based"><code>parent_based</code></a> sampling follows the parent's decision. Without one it starts a trace of its own, with a fresh trace id and no vendor state.</p>
+<p><code>at</code> is the start of the operation in nanoseconds. <code>attributes</code> and <code>links</code> are set before the span is handed back; a sampler sees them, which is why they are parameters here rather than calls on the span afterwards.</p></div>
+</article>
+  </div>
+</article>
+<article class="api-entry api-type" id="trace-Value" data-name="Value">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">Value</code></span>
+    <span class="api-meta">Eq · Debug · Show</span>
+  </div>
+  <div class="api-doc"><p>One attribute value.</p>
+<p>The arrays are separate variants rather than one array of <code>Value</code> because OpenTelemetry requires an array attribute to be homogeneous, and because that is what an exporter has to write: a mixed array has no single type tag.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Bool(Bool)</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Int(Int64)</code>
+      <p>A signed 64-bit integer. Nanosecond timestamps and byte counts both fit; a
+<code>Double</code> would lose the low digits of a nanosecond clock.</p>
+    </div>
+    <div class="api-variant">
+      <code>Double(Double)</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Str(String)</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Bools(Array[Bool])</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Ints(Array[Int64])</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Doubles(Array[Double])</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>Strs(Array[String])</code>
+      <p></p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>output</code> · <code>to_repr</code> · <code>to_string</code> — derived, or required by an implementation above.</p>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Traits</h3>
+<article class="api-entry api-type" id="trace-Sampler" data-name="Sampler">
+  <div class="api-line">
+    <span class="api-kind">trait</span>
+    <span class="api-call"><code class="api-name">Sampler</code></span>
+  </div>
+  <div class="api-doc"><p>Whether a span is wanted, and how much of it.</p>
+<p>A caller can plug in its own: the four here are the ones the specification names, and anything with a decision — a rate limit read from configuration, a list of paths that must never be dropped — is another implementation of this.</p></div>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Sampler-should_sample" data-name="Sampler::should_sample">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Sampler::should_sample</code><code class="api-sig">(Self, SampleRequest) -&gt; Decision</code></span>
+  </div>
+  <div class="api-doc"><p>Decide whether the span is wanted, and how much of it to record.</p></div>
+</article>
+<article class="api-entry api-method" id="trace-Sampler-description" data-name="Sampler::description">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Sampler::description</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>A short name for logs and debug pages, e.g. <code>TraceIdRatioBased{0.25}</code>.</p></div>
+</article>
+  </div>
+</article>
+<article class="api-entry api-type" id="trace-Sink" data-name="Sink">
+  <div class="api-line">
+    <span class="api-kind">trait</span>
+    <span class="api-call"><code class="api-name">Sink</code></span>
+  </div>
+  <div class="api-doc"><p>Where finished spans go.</p>
+<p>This is the one seam this library leaves open: exporting to OTLP, to a file, to a ring buffer that a background task drains, or to nothing at all is the caller's business, and the shapes that do it belong to whoever owns the transport. A sink is called on the task that finished the span, so an implementation that writes to a socket should hand the span to a queue rather than block the request.</p>
+<p>A sink receives every recorded span, including the ones the sampler dropped from the trace: <a href="#trace-SpanData-sampled"><code>SpanData::sampled</code></a> is the bit that separates "keep for counting" from "send to the backend".</p></div>
+  <div class="api-methods">
+<article class="api-entry api-method" id="trace-Sink-accept" data-name="Sink::accept">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Sink::accept</code><code class="api-sig">(Self, SpanData) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Take one finished span. Called on the task that finished it, so an implementation that writes to a socket should queue rather than block.</p></div>
+</article>
+  </div>
+</article>
+</div>
+<!-- END trace -->
+              </div>
+            </section>
+
+            <section class="api-package" id="propagate" data-ruler-section="propagate">
+              <header class="api-package-head">
+                <span class="plate-no">02</span>
+                <h2>propagate</h2>
+                <code>moonbitstack/moontel/propagate</code>
+                <p>
+                  W3C Trace Context and W3C Baggage at the header level: what the values
+                  look like on the wire, how to read them off a request, and how to put
+                  them back on the next one. The two calls a service uses are
+                  <code>extract</code> and <code>inject</code>.
+                </p>
+              </header>
+              <div class="api-entries" data-package="propagate">
+                <!-- BEGIN propagate -->
+<!-- Generated by scripts/gen_api.py from pkg.generated.mbti and the documentation comments; do not edit by hand. -->
+<div class="api-group">
+  <h3 class="api-group-title">Values</h3>
+<article class="api-entry" id="propagate-baggage_byte_limit" data-name="baggage_byte_limit">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">baggage_byte_limit</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The size W3C Baggage §3.2.1.3 requires a platform to propagate: 8192 octets of combined header.</p></div>
+</article>
+<article class="api-entry" id="propagate-baggage_header" data-name="baggage_header">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">baggage_header</code><code class="api-sig">: String</code></span>
+  </div>
+  <div class="api-doc"><p>The header <code>baggage</code> travels in (W3C Baggage §3.2.1).</p></div>
+</article>
+<article class="api-entry" id="propagate-baggage_member_limit" data-name="baggage_member_limit">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">baggage_member_limit</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The list-members W3C Baggage §3.2.1.3 requires a platform to propagate: a header of 64 members or fewer must survive the hop whole.</p></div>
+</article>
+<article class="api-entry" id="propagate-empty_baggage" data-name="empty_baggage">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">empty_baggage</code><code class="api-sig">: Baggage</code></span>
+  </div>
+  <div class="api-doc"><p>Nothing carried, which a request with no <code>baggage</code> header arrives with.</p></div>
+</article>
+<article class="api-entry" id="propagate-extract" data-name="extract">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">extract</code><code class="api-sig">(Array[(String, String)]) -&gt; Extracted</code></span>
+  </div>
+  <div class="api-doc"><p>Read the propagation headers out of <code>headers</code>, which is the shape both an ASGI scope and an outgoing request carry.</p>
+<p>Header names are matched without regard to case; a value is taken as it is, with the whitespace around it dropped.</p>
+<p>Two <code>traceparent</code> headers refuse each other: the specification says a request with more than one is invalid, and picking one of the two would be guessing which proxy wrote the one that matters. Several <code>tracestate</code> or <code>baggage</code> headers are combined in order, as RFC 7230 allows a field to be split across lines.</p>
+<p>A header that does not parse leaves that field empty and the rest intact: a mangled <code>tracestate</code> must not cost a hop the trace, and a mangled <code>baggage</code> must not cost it the trace either.</p></div>
+</article>
+<article class="api-entry" id="propagate-inject" data-name="inject">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">inject</code><code class="api-sig">(Array[(String, String)], Extracted) -&gt; Array[(String, String)]</code></span>
+  </div>
+  <div class="api-doc"><p>Put <code>extracted</code> back into <code>headers</code>: the propagation headers already there are removed and rewritten from the context and the bag, and everything else is left exactly as it was.</p>
+<p>Rewriting rather than appending is what makes this safe to call on a request that already carried a context — the one from the sender must not survive next to the one this hop decided on.</p></div>
+</article>
+<article class="api-entry" id="propagate-parse" data-name="parse">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">parse</code><code class="api-sig">(StringView, tracestate? : StringView) -&gt; @trace.TraceContext raise @trace.Refused</code></span>
+  </div>
+  <div class="api-doc"><p>A parsed <code>traceparent</code>, plus the vendor state that came with it.</p>
+<p><code>version</code> is kept even though nothing here acts on it: a caller debugging a failed handshake wants to know which version of the header the other side spoke, and a version above zero may one day carry fields this library does not read.</p>
+<p>The ids are validated on the way in — sixteen and eight octets, neither all zero — because a context that fails that is not a trace to join, and passing it on would make a broken hop look like a working one.</p></div>
+</article>
+<article class="api-entry" id="propagate-parse_traceparent" data-name="parse_traceparent">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">parse_traceparent</code><code class="api-sig">(StringView) -&gt; @trace.TraceContext raise @trace.Refused</code></span>
+  </div>
+  <div class="api-doc"><p>Parse a <code>traceparent</code> header value, without any vendor state.</p>
+<p>The grammar is W3C Trace Context §3.2:</p>
+<p>``<code>text version(2)-trace-id(32)-parent-id(16)-trace-flags(2) </code>``</p>
+<p>A version this library does not know may append fields, but only after a <code>-</code>: <code>00</code> headers end at 55 characters, and <code>00-…-01.whatever</code> is refused rather than read as a version-0 header with a suffix. Version <code>ff</code> is refused by the specification, as is an all-zero id.</p>
+<p>Whitespace around the value is dropped. HTTP allows OWS around a field value, and W3C Trace Context's examples send it; whitespace anywhere inside is refused as the illegal character it is.</p></div>
+</article>
+<article class="api-entry" id="propagate-parse_tracestate" data-name="parse_tracestate">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">parse_tracestate</code><code class="api-sig">(StringView) -&gt; @trace.TraceState raise @trace.Refused</code></span>
+  </div>
+  <div class="api-doc"><p>Parse a <code>tracestate</code> header value. The grammar lives with the type that holds the state; this is the name a caller reaching for the header uses.</p></div>
+</article>
+<article class="api-entry" id="propagate-traceparent_header" data-name="traceparent_header">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">traceparent_header</code><code class="api-sig">: String</code></span>
+  </div>
+  <div class="api-doc"><p>The header <code>traceparent</code> travels in (W3C Trace Context §3.2.1). Lowercase on the wire; lookups here compare without regard to case.</p></div>
+</article>
+<article class="api-entry" id="propagate-tracestate_header" data-name="tracestate_header">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">tracestate_header</code><code class="api-sig">: String</code></span>
+  </div>
+  <div class="api-doc"><p>The header <code>tracestate</code> travels in (W3C Trace Context §3.3.1).</p></div>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="propagate-Baggage" data-name="Baggage">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Baggage</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>Keys and values carried alongside a trace, ordered, with duplicates allowed.</p>
+<p>Order is part of the data: W3C Baggage asks a hop to preserve the order of duplicate entries when it mutates the list, so this is an array rather than a map. <code>get</code> answers with the first member carrying a key, which is the one a reader asking "what did the caller say" wants.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>members</dt>
+      <dd>Array[Member]</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="propagate-Baggage-add" data-name="Baggage::add">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::add</code><code class="api-sig">(Self, Member) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>The same bag with <code>member</code> added at the end, past the member limit keeping the bag as it was rather than growing an unusable header.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-get" data-name="Baggage::get">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::get</code><code class="api-sig">(Self, String) -&gt; String?</code></span>
+  </div>
+  <div class="api-doc"><p>The value of the first member keyed <code>key</code>, or <code>None</code>.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-is_empty" data-name="Baggage::is_empty">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::is_empty</code><code class="api-sig">(Self) -&gt; Bool</code></span>
+  </div>
+  <div class="api-doc"><p>Whether the bag has no members.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-len" data-name="Baggage::len">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::len</code><code class="api-sig">(Self) -&gt; Int32</code></span>
+  </div>
+  <div class="api-doc"><p>How many members the bag carries.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-new" data-name="Baggage::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::new</code><code class="api-sig">(members? : Array[Member]) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>A bag carrying <code>members</code>, in the order given.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-parse" data-name="Baggage::parse">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::parse</code><code class="api-sig">(StringView) -&gt; Self raise @trace.Refused</code></span>
+  </div>
+  <div class="api-doc"><p>Parse a <code>baggage</code> header value (W3C Baggage §3.2).</p>
+<p>Whitespace around a member, around an <code>=</code>, and around the commas is dropped; a member that does not match the grammar refuses the whole header, because a half-read bag is a bag the next hop would rewrite. Values are percent-decoded and sequences that are not UTF-8 become <code>U+FFFD</code>, as §3.2.2.2 asks.</p>
+<p>The limits are the ones a platform must propagate — 64 members and 8192 octets — checked against the value as it arrived, and enforced by refusing rather than truncating: a caller that receives a bag too big to be legal has received something a middlebox either wrote or mangled, and guessing which members it meant is not this library's business.</p></div>
+</article>
+<article class="api-entry api-method" id="propagate-Baggage-to_header" data-name="Baggage::to_header">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Baggage::to_header</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The header value: members in order, <code>key=value</code> with properties after <code>;</code>, and every character outside the <code>baggage-octet</code> set percent-encoded in uppercase hexadecimal (W3C Baggage §3.2.2.2). Empty when the bag is empty, which on the wire is the same as sending no header. <code>encode_value</code> says why a space is <code>%20</code> rather than the <code>+</code> form encoding would use.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="propagate-Extracted" data-name="Extracted">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Extracted</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>What a hop takes out of a set of request headers: the trace it joins, if the request carried one, and the baggage that came with it.</p>
+<p>One value rather than two calls, because a hop that reads one and forgets the other is a bug this shape makes hard to write: <a href="#propagate-inject"><code>inject</code></a> puts back exactly what <a href="#propagate-extract"><code>extract</code></a> found, changed only where the caller changed it.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>context</dt>
+      <dd>@trace.TraceContext?</dd>
+      <dd class="api-field-doc"><p>The parent context, or <code>None</code> when the request carried no context or carried one this library refused. A refused context is not an error here: W3C Trace Context says a hop starts a new trace rather than failing the request.</p></dd>
+    </div>
+    <div>
+      <dt>baggage</dt>
+      <dd>Baggage</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="propagate-Member" data-name="Member">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Member</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>One baggage entry: a key, a value, and any properties attached to it.</p>
+<p>The value is stored decoded, as text. The wire form is percent-encoded ASCII, and decoding is where a hop stops caring how the value was spelled.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>key</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>value</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>properties</dt>
+      <dd>Array[Property]</dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="propagate-Property" data-name="Property">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Property</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>One metadata entry on a baggage member: <code>key</code> or <code>key=value</code>, after the <code>;</code> of a list-member (W3C Baggage §3.2.2.3). The specification gives properties no meaning of their own; they are carried so a hop that does not understand one can pass it on unchanged.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>key</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>value</dt>
+      <dd>String?</dd>
+      <dd class="api-field-doc"><p><code>None</code> for a property written as a bare key.</p></dd>
+    </div>
+  </dl>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+</div>
+<!-- END propagate -->
+              </div>
+            </section>
+
+            <section class="api-package" id="asgi" data-ruler-section="asgi">
+              <header class="api-package-head">
+                <span class="plate-no">03</span>
+                <h2>asgi</h2>
+                <code>moonbitstack/moontel/asgi</code>
+                <p>
+                  One middleware: a server span per HTTP request, joined to the trace
+                  the request arrived with, and the context written back on the
+                  response. It implements the framework's <code>Layer</code>, so it
+                  stacks with the rest.
+                </p>
+              </header>
+              <div class="api-entries" data-package="asgi">
+                <!-- BEGIN asgi -->
+<!-- Generated by scripts/gen_api.py from pkg.generated.mbti and the documentation comments; do not edit by hand. -->
+<div class="api-group">
+  <h3 class="api-group-title">Values</h3>
+<article class="api-entry" id="asgi-method_and_path" data-name="method_and_path">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">method_and_path</code><code class="api-sig">(String, String) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The default span name: the method and the path, e.g. <code>GET /orders/42</code>.</p></div>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="asgi-Tracing" data-name="Tracing">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Tracing</code></span>
+    <span class="api-meta">@mid.Layer</span>
+  </div>
+  <div class="api-doc"><p>One server span per HTTP request, joined to the trace the request arrived with.</p>
+<p>The layer does three things and no more: it reads <code>traceparent</code> and <code>baggage</code> off the request, it opens a span of kind <code>Server</code> as a child of what it read, and it writes the resulting context back on the response. A request that carried no context starts a trace; one that carried a broken context also starts a trace, because refusing the request over a header would be worse than a missing link in the trace.</p>
+<p>The span reaches the sink when the application returns, with the response status on it. A request the application fails is recorded as an exception event before the error is passed on to the server, which is what an ASGI server keeps.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>tracer</dt>
+      <dd>@trace.Tracer</dd>
+    </div>
+    <div>
+      <dt>now</dt>
+      <dd>() -&gt; Int64</dd>
+      <dd class="api-field-doc"><p>The clock. This library never reads one itself, so a replay can drive a request through a timeline it chose and a service can hand in whichever clock it already trusts. Nanoseconds since any fixed origin.</p></dd>
+    </div>
+    <div>
+      <dt>name</dt>
+      <dd>(String, String) -&gt; String</dd>
+      <dd class="api-field-doc"><p>How a request is named. The default is the method and the path, which is what the middleware can see; a site that knows its routes should pass the route template instead, so that <code>/orders/42</code> and <code>/orders/43</code> are one span name rather than a thousand.</p></dd>
+    </div>
+    <div>
+      <dt>baggage</dt>
+      <dd>Bool</dd>
+      <dd class="api-field-doc"><p>Whether <code>baggage</code> rides along to the response. On by default: a hop that quietly drops what the caller attached is worse than one that never had it.</p></dd>
+    </div>
+    <div>
+      <dt>ignore</dt>
+      <dd>Array[String]</dd>
+      <dd class="api-field-doc"><p>Paths to leave untraced. A health check every second is noise a backend pays for and nobody reads.</p></dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="asgi-Tracing-new" data-name="Tracing::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Tracing::new</code><code class="api-sig">(tracer~ : @trace.Tracer, now~ : () -&gt; Int64, name? : (String, String) -&gt; String, baggage? : Bool, ignore? : Array[String]) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>A tracing layer over <code>tracer</code>.</p></div>
+</article>
+<article class="api-entry api-method" id="asgi-Tracing-wrap" data-name="Tracing::wrap">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Tracing::wrap</code><code class="api-sig">(Self, async (@spec.Scope, async () -&gt; @spec.Event, async (@spec.Event) -&gt; Unit) -&gt; Unit) -&gt; async (@spec.Scope, async () -&gt; @spec.Event, async (@spec.Event) -&gt; Unit) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Wraps an application in a server span per request. <code>wrap</code> is the <code>Layer</code> method, so the middleware can sit in a stack beside the framework's own layers as well as around a single application.</p></div>
+</article>
+  </div>
+</article>
+</div>
+<!-- END asgi -->
+              </div>
+            </section>
+
+            <section class="api-package" id="facade" data-ruler-section="the facade">
+              <header class="api-package-head">
+                <span class="plate-no">04</span>
+                <h2>moontel</h2>
+                <code>moonbitstack/moontel</code>
+                <p>
+                  One import for a program that wants all three packages. A type is
+                  re-exported, not copied, so it is the same type the package defines;
+                  a constructor is still reached through the package that owns it.
+                </p>
+              </header>
+              <div class="api-entries">
+                <div class="api-entry">
+                  <div class="api-line">
+                    <span class="api-kind">facade</span>
+                    <code class="api-name">pub using @trace</code>
+                    <span class="api-meta">every public name</span>
+                  </div>
+                  <div class="api-doc">
+                    <p>
+                      <code>Tracer</code>, <code>Span</code>, <code>TraceContext</code>,
+                      <code>Value</code>, <code>Limits</code>, the four samplers,
+                      <code>Recorder</code> and <code>Discard</code>, and the traits
+                      <code>Sink</code> and <code>Sampler</code>.
+                    </p>
+                  </div>
+                </div>
+                <div class="api-entry">
+                  <div class="api-line">
+                    <span class="api-kind">facade</span>
+                    <code class="api-name">pub using @propagate</code>
+                    <span class="api-meta">every public name</span>
+                  </div>
+                  <div class="api-doc">
+                    <p>
+                      <code>extract</code>, <code>inject</code>, <code>parse</code>,
+                      <code>parse_traceparent</code>, <code>parse_tracestate</code>,
+                      <code>Baggage</code>, <code>Extracted</code>, <code>Member</code>,
+                      <code>Property</code>, and the three header names.
+                    </p>
+                  </div>
+                </div>
+                <div class="api-entry">
+                  <div class="api-line">
+                    <span class="api-kind">facade</span>
+                    <code class="api-name">pub using @asgi</code>
+                    <span class="api-meta">every public name</span>
+                  </div>
+                  <div class="api-doc">
+                    <p><code>Tracing</code>, and <code>method_and_path</code>.</p>
+                  </div>
+                </div>
+                <div class="api-entry">
+                  <div class="api-line">
+                    <span class="api-kind">note</span>
+                    <code class="api-name">constructors</code>
+                  </div>
+                  <div class="api-doc">
+                    <p>
+                      A re-exported enum or struct arrives without its constructors:
+                      that is the language's rule, not a decision here. To build an
+                      attribute value, import <code>trace</code> and write
+                      <code>@trace.Str("…")</code>; the facade alone cannot spell it.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <p class="api-empty" id="api-empty" hidden>
+              Nothing matches that. <a href="api.html">Clear the filter</a>.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <footer class="foot">
+        <span>moontel <span data-version>—</span> · Apache-2.0</span>
+        <nav aria-label="Footer">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <a href="https://github.com/moonbitstack/moontel">source</a>
+        <a href="https://mooncakes.io/docs/moonbitstack/moontel">mooncakes</a>
+      </footer>
+    </div>
+
+    <script type="module" src="site.js"></script>
+  </body>
+</html>

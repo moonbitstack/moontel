@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Examples — moontel</title>
+    <meta
+      name="description"
+      content="Three complete moontel programs: a first trace, one hop of propagation, and a traced ASGI application, with the output each one prints."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0c0e'/%3E%3Cpath d='M2 8h12' stroke='%237fe7d6' stroke-width='1'/%3E%3Cpath d='M6 8v-3M10 8v3' stroke='%23edeae3' stroke-width='1'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="theme.js"></script>
+    <script src="version.js"></script>
+  </head>
+  <body data-ruler="page">
+    <a class="skip" href="#main">Skip to the text</a>
+
+    <div
+      class="ruler"
+      id="ruler"
+      role="scrollbar"
+      aria-controls="main"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      aria-label="Position in the sheet"
+      tabindex="0"
+    >
+      <div class="ruler-thumb" id="ruler-thumb"></div>
+    </div>
+    <div class="ruler-readout" aria-hidden="true">
+      <span id="readout-plate">01 / 03</span>
+      <b id="readout-time">0%</b>
+    </div>
+
+    <div class="sheet" id="main">
+      <header class="topline">
+        <span class="brand">
+          <a class="wordmark" href="./">moontel</a>
+          <span class="marginalia wide-only">Examples · three programs, three outputs</span>
+          <span class="marginalia narrow-only">Examples</span>
+        </span>
+        <nav class="nav" aria-label="Sections">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html" aria-current="page">Examples</a>
+        </nav>
+        <span class="toplinks">
+          <a class="toplink" href="https://github.com/moonbitstack/moontel">GitHub</a>
+          <button class="theme" id="theme" type="button" aria-label="Switch plate">paper</button>
+        </span>
+      </header>
+
+      <main>
+        <section class="page-head">
+          <span class="marginalia page-kicker">Examples</span>
+          <h1 class="page-title">Three programs,<br /><em>and what they print.</em></h1>
+          <p class="page-lede">
+            No excerpts and no pseudo-code: each listing below is the whole file
+            under <code>src/examples</code>, and each output is what that file
+            printed when it ran.
+          </p>
+          <dl class="page-facts">
+            <div><dt>00</dt><dd>a trace, in memory</dd></div>
+            <div><dt>01</dt><dd>one hop of propagation</dd></div>
+            <div><dt>02</dt><dd>a traced ASGI request</dd></div>
+          </dl>
+        </section>
+
+        <section class="example" id="hello" data-ruler-section="00 · hello">
+          <header class="example-head">
+            <span class="plate-no">00</span>
+            <h2>hello</h2>
+            <span class="path">src/examples/00-hello/main.mbt</span>
+            <span class="run">moon run src/examples/00-hello</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// A tracer, a root span, a child span, some attributes and an event, and the two
+/// spans as a sink receives them.
+///
+///     moon run src/examples/00-hello
+#coverage.skip
+fn main {
+  let recorder = @trace.Recorder::new()
+  let tracer = @trace.Tracer::new(
+    rand=random_bytes,
+    sink=recorder,
+    sampler=@trace.parent_based(root=@trace.always),
+  )
+  // Times are handed in: this library never reads a clock, so a batch job
+  // replaying yesterday&#x27;s events and a server under load use the same code.
+  let started = 1_700_000_000_000_000_000L
+  let root = tracer.start(&quot;GET /orders/{id}&quot;, kind=@trace.Server, at=started, attributes=[
+    (&quot;http.request.method&quot;, @trace.Str(&quot;GET&quot;)),
+  ]) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+  let child = tracer.start(
+    &quot;SELECT orders&quot;,
+    parent=root.context(),
+    kind=@trace.Client,
+    at=started + 1_000_000L,
+  ) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+  child.set_attribute(&quot;db.rows&quot;, @trace.Int(3L))
+  child.set_status(@trace.Ok)
+  child.finish(at=started + 2_000_000L)
+
+  root.add_event(&quot;cache.miss&quot;, at=started + 3_000_000L)
+  root.set_attribute(&quot;http.response.status_code&quot;, @trace.Int(200L))
+  root.finish(at=started + 4_000_000L)
+
+  for span in recorder.spans() {
+    println(
+      &quot;\{span.name}  \{span.context.to_traceparent()}  \{span.duration()} ns&quot;,
+    )
+    for pair in span.attributes {
+      println(&quot;  \{pair.0} = \{pair.1}&quot;)
+    }
+    for event in span.events {
+      println(&quot;  event \{event.name} at \{event.at}&quot;)
+    }
+  }
+}
+
+///|
+/// Eight or sixteen octets from the platform&#x27;s entropy source. A caller this close
+/// to the edge is the one that knows what to do when there is none; here that is to
+/// stop rather than to trace with predictable ids.
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonrand.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}</code></pre></div>
+            <div class="example-side">
+              <h3>What it prints</h3>
+              <pre class="output">SELECT orders  00-be3c4e65302ba7c1387a58b5144df67d-059be837e83c67a2-01  1000000 ns
+  db.rows = 3
+GET /orders/{id}  00-be3c4e65302ba7c1387a58b5144df67d-cd73d0d2d74ffe97-01  4000000 ns
+  http.request.method = "GET"
+  http.response.status_code = 200
+  event cache.miss at 1700000000003000000</pre>
+              <p>
+                Two spans, child first because a sink sees them in the order they
+                finished. The trace id is shared; each span has its own. The ids
+                differ on every run, because the example draws them from the
+                platform's entropy source rather than a script.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="example" id="propagate" data-ruler-section="01 · propagate">
+          <header class="example-head">
+            <span class="plate-no">01</span>
+            <h2>propagate</h2>
+            <span class="path">src/examples/01-propagate/main.mbt</span>
+            <span class="run">moon run src/examples/01-propagate</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// The two headers a hop reads and the three it writes, over the same carrier: an
+/// array of name and value pairs, which is what an ASGI scope and an HTTP client&#x27;s
+/// header list both are.
+///
+///     moon run src/examples/01-propagate
+#coverage.skip
+fn main {
+  let inbound = [
+    (&quot;traceparent&quot;, &quot;00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01&quot;),
+    (&quot;tracestate&quot;, &quot;vendor=abc&quot;),
+    (&quot;baggage&quot;, &quot;userId=alice,note=caf%C3%A9&quot;),
+    (&quot;accept&quot;, &quot;application/json&quot;),
+  ]
+  println(&quot;inbound&quot;)
+  for header in inbound {
+    println(&quot;  \{header.0}: \{header.1}&quot;)
+  }
+
+  // What the hop understood: the trace to join, and the bag that came with it.
+  let extracted = @propagate.extract(inbound)
+  println(&quot;&quot;)
+  println(
+    match extracted.context {
+      Some(context) =&gt; &quot;joined trace \{context.to_traceparent()}&quot;
+      None =&gt; &quot;no usable context, this hop starts a trace&quot;
+    },
+  )
+  println(&quot;baggage: \{extracted.baggage.to_header()}&quot;)
+
+  // A span of this hop&#x27;s own, under whatever context arrived.
+  let tracer = @trace.Tracer::new(
+    rand=random_bytes,
+    sink=@trace.Recorder::new(),
+    sampler=@trace.parent_based(root=@trace.always),
+  )
+  let span = match extracted.context {
+    Some(parent) =&gt;
+      tracer.start(&quot;publish&quot;, parent~, kind=@trace.Client, at=1L) catch {
+        _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+      }
+    None =&gt;
+      tracer.start(&quot;publish&quot;, kind=@trace.Client, at=1L) catch {
+        _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+      }
+  }
+  span.finish(at=2L)
+
+  // The next request carries this hop&#x27;s span as its parent, and the bag unchanged.
+  let outgoing = @propagate.inject(inbound, {
+    context: Some(span.context()),
+    baggage: extracted.baggage,
+  })
+  println(&quot;&quot;)
+  println(&quot;outgoing&quot;)
+  for header in outgoing {
+    println(&quot;  \{header.0}: \{header.1}&quot;)
+  }
+}
+
+///|
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonrand.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}</code></pre></div>
+            <div class="example-side">
+              <h3>What it prints</h3>
+              <pre class="output">inbound
+  traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+  tracestate: vendor=abc
+  baggage: userId=alice,note=caf%C3%A9
+  accept: application/json
+
+joined trace 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+baggage: userId=alice,note=caf%C3%A9
+
+outgoing
+  accept: application/json
+  traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-16e31247ca00e178-01
+  tracestate: vendor=abc
+  baggage: userId=alice,note=caf%C3%A9</pre>
+              <p>
+                The trace id survives the hop and the span id does not: that is the
+                whole of propagation. Note the bag is percent-encoded on the wire and
+                decoded in memory, and that <code>accept</code> is carried through
+                untouched because it is not a header this library owns.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="example" id="asgi" data-ruler-section="02 · asgi">
+          <header class="example-head">
+            <span class="plate-no">02</span>
+            <h2>asgi</h2>
+            <span class="path">src/examples/02-asgi/main.mbt</span>
+            <span class="run">moon run src/examples/02-asgi</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// A request through a traced application: the middleware reads the context the
+/// request arrived with, opens a server span, and puts the context back on the
+/// response.
+///
+///     moon run src/examples/02-asgi
+///
+/// The application is driven in process, the way a caller would drive it; a real
+/// server binds the same `@spec.AsgiApp` to a socket instead.
+#coverage.skip
+async fn main {
+  @async.pause()
+  let recorder = @trace.Recorder::new()
+  let tracer = @trace.Tracer::new(
+    rand=random_bytes,
+    sink=recorder,
+    sampler=@trace.parent_based(root=@trace.always),
+  )
+  let layer = @asgi.Tracing::new(tracer~, now=clock())
+  let app : @spec.AsgiApp = async fn(_, receive, send) {
+    ignore(receive())
+    send(
+      @spec.HttpResponseStart(
+        status=200,
+        headers=[(&quot;content-type&quot;, &quot;application/json&quot;)],
+        trailers=false,
+      ),
+    )
+    send(@spec.HttpResponseBody(body=b&quot;{\&quot;ok\&quot;:true}&quot;, more_body=false))
+  }
+  let traced = layer.wrap(app)
+
+  let scope = @spec.Http(
+    @spec.HttpScope::new(
+      http_method=&quot;POST&quot;,
+      path=&quot;/orders&quot;,
+      headers=[
+        (
+          &quot;traceparent&quot;, &quot;00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01&quot;,
+        ),
+        (&quot;baggage&quot;, &quot;userId=alice&quot;),
+      ],
+      server=(&quot;shop.example.com&quot;, Some(8443)),
+    ),
+  )
+
+  // A minimal server: one request in, whatever the application sends out.
+  let handled = Ref(false)
+  let receive : @spec.Receive = async fn() {
+    @async.pause()
+    if handled.val {
+      @spec.HttpDisconnect
+    } else {
+      handled.val = true
+      @spec.HttpRequest(body=b&quot;&quot;, more_body=false)
+    }
+  }
+  let send : @spec.Send = async fn(event) {
+    @async.pause()
+    match event {
+      @spec.HttpResponseStart(status~, headers~, ..) =&gt; {
+        println(&quot;response \{status}&quot;)
+        for header in headers {
+          println(&quot;  \{header.0}: \{header.1}&quot;)
+        }
+      }
+      @spec.HttpResponseBody(body~, ..) =&gt;
+        println(&quot;body \{body.length()} octets&quot;)
+      _ =&gt; ()
+    }
+  }
+  traced(scope, receive, send)
+
+  println(&quot;&quot;)
+  for span in recorder.spans() {
+    println(&quot;\{span.name}  \{span.duration()} ns  \{span.status}&quot;)
+    for pair in span.attributes {
+      println(&quot;  \{pair.0} = \{pair.1}&quot;)
+    }
+  }
+}
+
+///|
+/// A clock that moves ten milliseconds per reading. A real service hands in its own
+/// clock here; this one keeps the example&#x27;s output the same on every run.
+fn clock() -&gt; () -&gt; Int64 {
+  let now = Ref(1_700_000_000_000_000_000L)
+  () =&gt; {
+    now.val = now.val + 10_000_000L
+    now.val
+  }
+}
+
+///|
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonrand.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}</code></pre></div>
+            <div class="example-side">
+              <h3>What it prints</h3>
+              <pre class="output">response 200
+  content-type: application/json
+  traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-960516d9a24e7b34-01
+  baggage: userId=alice
+body 11 octets
+
+POST /orders  10000000 ns  Unset
+  http.request.method = "POST"
+  url.path = "/orders"
+  url.scheme = "http"
+  network.protocol.version = "1.1"
+  server.address = "shop.example.com"
+  server.port = 8443
+  http.response.status_code = 200</pre>
+              <p>
+                The middleware read the context the request arrived with, opened a
+                server span under it, and put the context back on the response. The
+                clock is a script that advances ten milliseconds per reading, which
+                is why the duration is a round number.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="doc-section" id="run" data-ruler-section="Run them">
+          <div class="doc-mark"><span class="plate-no">03</span></div>
+          <div class="doc-body">
+            <h2>Run them yourself.</h2>
+            <p>
+              The three programs are packages in this repository, so a checkout can
+              run them without installing anything else:
+            </p>
+<pre><code><span class="a">moon</span> run src/examples/00-hello --target native
+<span class="a">moon</span> run src/examples/01-propagate --target native
+<span class="a">moon</span> run src/examples/02-asgi --target native</code></pre>
+            <p>
+              <code>00-hello</code> and <code>01-propagate</code> build on every
+              target. <code>02-asgi</code> awaits what the application sends, and the
+              async runtime has no wasm-gc build, so that target builds a second file
+              that says so rather than a program that only looks like the example.
+            </p>
+            <p>
+              The home page runs a fourth program: it compiles this library to
+              JavaScript and draws what came out. That one is not meant to be run by
+              hand: the page loads it as a module and draws its output.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>The page is one too</b>
+            <p>
+              The home page runs a fourth program: this library compiled to
+              JavaScript, drawing the trace it just made.
+            </p>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <span>moontel <span data-version>—</span> · Apache-2.0</span>
+        <nav aria-label="Footer">
+          <a href="./">Home</a>
+          <a href="guide.html">Guide</a>
+          <a href="api.html">API</a>
+          <a href="showcase.html">Showcase</a>
+          <a href="examples.html">Examples</a>
+        </nav>
+        <a href="https://github.com/moonbitstack/moontel">source</a>
+        <a href="https://mooncakes.io/docs/moonbitstack/moontel">mooncakes</a>
+      </footer>
+    </div>
+
+    <script type="module" src="site.js"></script>
+  </body>
+</html>
