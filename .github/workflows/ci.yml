@@ -54,6 +54,14 @@ jobs:
             fi
           done
 
+      # The replay of the recorded reference run is generated from it, so the two
+      # cannot drift: a change to the record without regenerating fails here.
+      - name: the replay of the recorded reference run is up to date
+        if: runner.os == 'Linux'
+        run: |
+          python3 scripts/gen_trace_crosscheck.py
+          git diff --exit-code src/crosscheck_expected_wbtest.mbt
+
       - name: lint (fmt is clean)
         run: |
           moon fmt && git diff --exit-code
