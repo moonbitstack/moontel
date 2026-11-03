@@ -1,0 +1,12 @@
+// The whole surface in one run, from a tracer to the spans it hands a sink:
+// `moon run src/examples/00-hello`.
+pkgtype(kind: "executable")
+
+// The subpackages by name: an enum constructor is reached through the package that
+// defines it, so a program that builds attribute values imports `trace` rather
+// than the facade over it.
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moonrand",
+  "moonbitstack/moonrand/system",
+}

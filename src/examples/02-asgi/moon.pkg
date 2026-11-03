@@ -1,0 +1,28 @@
+// A traced ASGI application driven in process: the middleware, an application under
+// it, and the span and headers that come out. `moon run src/examples/02-asgi`.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/asgi",
+  "moonbitstack/moonasgi/spec",
+  "moonbitlang/async",
+  "moonbitstack/moonrand",
+  "moonbitstack/moonrand/system",
+}
+
+// Driving an application means awaiting what it sends, and the async runtime this
+// module uses has no wasm-gc build. The example says so on that target rather than
+// failing to compile.
+
+options(
+  targets: {
+    "main.mbt": [ "native", "wasm", "js" ],
+    "elsewhere.mbt": [ "wasm-gc" ],
+  },
+)
+
+// The imports above are used by `main.mbt`, which wasm-gc does not build, so that
+// target would report every one of them as unused.
+
+warnings = "-29"

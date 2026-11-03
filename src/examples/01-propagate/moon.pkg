@@ -1,0 +1,10 @@
+// A hop in a distributed trace: read the context off a request, open a span under
+// it, and write the context onto the next request. `moon run src/examples/01-propagate`.
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/propagate",
+  "moonbitstack/moonrand",
+  "moonbitstack/moonrand/system",
+}
