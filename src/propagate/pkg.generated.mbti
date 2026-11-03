@@ -1,0 +1,76 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/propagate"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub let baggage_byte_limit : Int32
+
+pub let baggage_header : String
+
+pub let baggage_member_limit : Int32
+
+pub let empty_baggage : Baggage
+
+pub fn extract(Array[(String, String)]) -> Extracted
+
+pub fn inject(Array[(String, String)], Extracted) -> Array[(String, String)]
+
+pub fn parse(StringView, tracestate? : StringView) -> @trace.TraceContext raise @trace.Refused
+
+pub fn parse_traceparent(StringView) -> @trace.TraceContext raise @trace.Refused
+
+pub fn parse_tracestate(StringView) -> @trace.TraceState raise @trace.Refused
+
+pub let traceparent_header : String
+
+pub let tracestate_header : String
+
+// Errors
+
+// Types and methods
+pub(all) struct Baggage {
+  members : Array[Member]
+} derive(Eq, @debug.Debug)
+pub fn Baggage::add(Self, Member) -> Self
+pub fn Baggage::equal(Self, Self) -> Bool
+pub fn Baggage::get(Self, String) -> String?
+pub fn Baggage::is_empty(Self) -> Bool
+pub fn Baggage::len(Self) -> Int32
+pub fn Baggage::new(members? : Array[Member]) -> Self
+pub fn Baggage::not_equal(Self, Self) -> Bool
+pub fn Baggage::parse(StringView) -> Self raise @trace.Refused
+pub fn Baggage::to_header(Self) -> String
+pub fn Baggage::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Extracted {
+  context : @trace.TraceContext?
+  baggage : Baggage
+} derive(Eq, @debug.Debug)
+pub fn Extracted::equal(Self, Self) -> Bool
+pub fn Extracted::not_equal(Self, Self) -> Bool
+pub fn Extracted::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Member {
+  key : String
+  value : String
+  properties : Array[Property]
+} derive(Eq, @debug.Debug)
+pub fn Member::equal(Self, Self) -> Bool
+pub fn Member::not_equal(Self, Self) -> Bool
+pub fn Member::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Property {
+  key : String
+  value : String?
+} derive(Eq, @debug.Debug)
+pub fn Property::equal(Self, Self) -> Bool
+pub fn Property::not_equal(Self, Self) -> Bool
+pub fn Property::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
