@@ -1,0 +1,243 @@
+{
+  "spans": [
+    {
+      "name": "validate",
+      "kind": "Internal",
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "span_id": "00f067aa0ba902b8",
+      "parent_span_id": "00f067aa0ba902b7",
+      "start": "1700000000200000000",
+      "end": "1700000000300000000",
+      "attributes": [
+        [
+          "valid",
+          {
+            "type": "bool",
+            "value": true
+          }
+        ]
+      ],
+      "events": [],
+      "status": {
+        "code": "Ok",
+        "description": ""
+      }
+    },
+    {
+      "name": "checkout",
+      "kind": "Server",
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "span_id": "00f067aa0ba902b7",
+      "parent_span_id": null,
+      "start": "1700000000000000000",
+      "end": "1700000000900000000",
+      "attributes": [
+        [
+          "order.id",
+          {
+            "type": "string",
+            "value": "A-1024"
+          }
+        ],
+        [
+          "order.total",
+          {
+            "type": "double",
+            "value": 42.5
+          }
+        ],
+        [
+          "order.items",
+          {
+            "type": "int",
+            "value": "3"
+          }
+        ],
+        [
+          "order.paid",
+          {
+            "type": "bool",
+            "value": true
+          }
+        ],
+        [
+          "order.tags",
+          {
+            "type": "strings",
+            "value": [
+              "new",
+              "gift"
+            ]
+          }
+        ],
+        [
+          "http.response.status_code",
+          {
+            "type": "int",
+            "value": "200"
+          }
+        ]
+      ],
+      "events": [
+        {
+          "name": "cache.miss",
+          "at": "1700000000100000000",
+          "attributes": [
+            [
+              "key",
+              {
+                "type": "string",
+                "value": "cart:A-1024"
+              }
+            ]
+          ]
+        }
+      ],
+      "status": {
+        "code": "Error",
+        "description": "card declined"
+      }
+    }
+  ],
+  "headers": {
+    "baggage": "userId=alice,serverNode=DF28,note=caf%C3%A9",
+    "traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+  },
+  "ratio": [
+    {
+      "trace_id": "00000000000000000000000000000001",
+      "ratio": 0.25,
+      "sampled": true
+    },
+    {
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "1234567890abcdef1234567890abcdef",
+      "ratio": 0.25,
+      "sampled": true
+    },
+    {
+      "trace_id": "fedcba0987654321fedcba0987654321",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef0000000000000000",
+      "ratio": 0.25,
+      "sampled": true
+    },
+    {
+      "trace_id": "0123456789abcdef7fffffffffffffff",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdefffffffffffffffff",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef8000000000000000",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "00ffffffffffffffffff000000000000",
+      "ratio": 0.25,
+      "sampled": false
+    },
+    {
+      "trace_id": "00000000000000000000000000000001",
+      "ratio": 0.5,
+      "sampled": true
+    },
+    {
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "ratio": 0.5,
+      "sampled": false
+    },
+    {
+      "trace_id": "1234567890abcdef1234567890abcdef",
+      "ratio": 0.5,
+      "sampled": true
+    },
+    {
+      "trace_id": "fedcba0987654321fedcba0987654321",
+      "ratio": 0.5,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef0000000000000000",
+      "ratio": 0.5,
+      "sampled": true
+    },
+    {
+      "trace_id": "0123456789abcdef7fffffffffffffff",
+      "ratio": 0.5,
+      "sampled": true
+    },
+    {
+      "trace_id": "0123456789abcdefffffffffffffffff",
+      "ratio": 0.5,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef8000000000000000",
+      "ratio": 0.5,
+      "sampled": false
+    },
+    {
+      "trace_id": "00ffffffffffffffffff000000000000",
+      "ratio": 0.5,
+      "sampled": false
+    },
+    {
+      "trace_id": "00000000000000000000000000000001",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "1234567890abcdef1234567890abcdef",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "fedcba0987654321fedcba0987654321",
+      "ratio": 0.75,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef0000000000000000",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "0123456789abcdef7fffffffffffffff",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "0123456789abcdefffffffffffffffff",
+      "ratio": 0.75,
+      "sampled": false
+    },
+    {
+      "trace_id": "0123456789abcdef8000000000000000",
+      "ratio": 0.75,
+      "sampled": true
+    },
+    {
+      "trace_id": "00ffffffffffffffffff000000000000",
+      "ratio": 0.75,
+      "sampled": false
+    }
+  ]
+}
