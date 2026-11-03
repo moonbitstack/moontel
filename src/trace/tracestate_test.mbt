@@ -70,18 +70,19 @@ test "keys follow the grammar, values follow theirs" {
 }
 
 ///|
-test "a multi-tenant key is a tenant id and a system id around one at sign" {
-  // W3C Trace Context §3.3.1: tenant-id is 1-241 characters, system-id 1-14.
-  assert_true(accepts_tracestate("t@v=1"))
-  assert_true(accepts_tracestate("\{"t".repeat(241)}@\{"v".repeat(14)}=1"))
-  assert_false(accepts_tracestate("\{"t".repeat(242)}@v=1"))
-  assert_false(accepts_tracestate("t@\{"v".repeat(15)}=1"))
-  // Both halves have to be there. The interoperability suite's own checker allows
-  // these three; the grammar does not, so they are refused here and the suite cases
-  // that use them are recorded as a known divergence in `w3c_test.mbt`.
-  assert_false(accepts_tracestate("foo@=1"))
+test "a key follows the interoperability suite's reading, at signs included" {
+  // `[0-9a-z][_0-9a-z-*/@]{0,255}`: the suite's own checker, which is wider than
+  // W3C Trace Context §3.3.1's ABNF. The wider reading is deliberate — see the
+  // note on `check_key` — and it is wider in exactly these three shapes.
+  assert_true(accepts_tracestate("tenant@system=1"))
+  assert_true(accepts_tracestate("1tenant@system=1"))
+  assert_true(accepts_tracestate("foo@=1"))
+  assert_true(accepts_tracestate("foo@@bar=1"))
+  assert_true(accepts_tracestate("t@\{"v".repeat(15)}=1"))
+  assert_true(accepts_tracestate("\{"t".repeat(242)}@v=1"))
+  // A key still has to start with a lowercase letter or a digit, so a leading at
+  // sign is out even under the wider reading.
   assert_false(accepts_tracestate("@foo=1"))
-  assert_false(accepts_tracestate("foo@@bar=1"))
 }
 
 ///|

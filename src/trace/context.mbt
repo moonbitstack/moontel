@@ -198,6 +198,10 @@ pub fn TraceState::to_header(self : TraceState) -> String {
 /// half of a broken `tracestate` would hand the next hop something the sender never
 /// wrote, and W3C Trace Context §3.3.1 asks for the header to be dropped instead.
 ///
+/// The one place the reading is wider than §3.3.1's ABNF is the key: the
+/// interoperability suite's checker is followed there, so `foo@` and `foo@@bar` are
+/// list-members like any other. `check_key` says why, and says what is still out.
+///
 /// A key that appears twice is the one thing handled member by member: the first
 /// member with that key wins and the later one is dropped, which is the choice W3C
 /// Trace Context level 2 allows ("pass the duplicate on as-is or drop one of
@@ -341,85 +345,36 @@ fn split_member(
 }
 
 ///|
-/// W3C Trace Context §3.3.1.1 `key`, over `s[start..<end]`.
+/// A tracestate key, over `s[start..<end]`.
+///
+/// The rule is the one the W3C Trace Context interoperability suite's own checker
+/// applies — `[0-9a-z][_0-9a-z-*/@]{0,255}`, 256 characters at most — and not the
+/// narrower ABNF of §3.3.1, which splits a multi-tenant key into a tenant id of at
+/// most 241 characters and a system id of 1 to 14 around exactly one `@`.
+///
+/// The suite's reading is deliberately the wider one, and it is wider in three
+/// shapes the ABNF refuses: `foo@` (no system id), `foo@@bar` (two at signs) and a
+/// system id longer than fourteen characters. Following it keeps this library in
+/// step with what the suite tests, which is what the hop upstream and the hop
+/// downstream are measured by: a key refused here but accepted there breaks the
+/// vendor state on the way through, and vice versa.
+///
+/// What this reading still refuses: an empty key, a key that does not start with a
+/// lowercase letter or a digit (so `@foo` and `FOO`), a character outside the set,
+/// and a key longer than 256 characters.
 fn check_key(s : StringView, start : Int32, end : Int32) -> Unit raise Refused {
   if start == end {
     raise Refused::Field(at=start, want="a tracestate key")
   }
-  // A key is a simple key, or a tenant id and a system id around one `@`. Each
-  // half has its own length limit and its own first-character rule, so the two are
-  // checked as the two halves they are.
-  match find_at(s, start, end) {
-    None =>
-      check_key_part(
-        s,
-        start,
-        end,
-        255,
-        lower=true,
-        at=start,
-        what="a simple key",
-      )
-    Some(pos) => {
-      check_key_part(
-        s,
-        start,
-        pos,
-        240,
-        lower=false,
-        at=start,
-        what="a tenant id",
-      )
-      check_key_part(
-        s,
-        pos + 1,
-        end,
-        13,
-        lower=true,
-        at=pos + 1,
-        what="a system id",
-      )
-    }
-  }
-}
-
-///|
-/// The offset of the first `@` in `s[start..<end]`, if any. A key has at most one
-/// the grammar allows, and a second one falls out as an illegal character in the
-/// system id.
-fn find_at(s : StringView, start : Int32, end : Int32) -> Int32? {
-  let mut i = start
-  while i < end {
-    if s[i].to_int() == 0x40 {
-      return Some(i)
-    }
-    i = i + 1
-  }
-  None
-}
-
-///|
-/// One half of a key: a first character, then up to `rest` characters from
-/// `lcalpha / DIGIT / "_" / "-" / "*" / "/"`. The first character is a lowercase
-/// letter, or for a tenant id a digit too.
-fn check_key_part(
-  s : StringView,
-  start : Int32,
-  end : Int32,
-  rest : Int32,
-  lower~ : Bool,
-  at~ : Int32,
-  what~ : String,
-) -> Unit raise Refused {
-  if start == end {
-    raise Refused::Field(at~, want=what)
-  }
-  if end - start - 1 > rest {
-    raise Refused::TooLong(limit=rest + 1, got=end - start)
+  if end - start > 256 {
+    raise Refused::TooLong(limit=256, got=end - start)
   }
   let first = s[start].to_int()
-  if !(is_lcalpha(first) || (!lower && is_digit(first))) {
-    raise Refused::Field(at=start, want=what)
+  if !(is_lcalpha(first) || is_digit(first)) {
+    raise Refused::Field(
+      at=start,
+      want="a key that starts with a lowercase letter or a digit",
+    )
   }
   let mut i = start + 1
   while i < end {
@@ -429,7 +384,8 @@ fn check_key_part(
       c == 0x5f ||
       c == 0x2d ||
       c == 0x2a ||
-      c == 0x2f) {
+      c == 0x2f ||
+      c == 0x40) {
       raise Refused::Field(at=i, want="a key character")
     }
     i = i + 1

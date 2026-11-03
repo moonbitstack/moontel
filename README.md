@@ -239,6 +239,12 @@ numbers, including a maximum length for string values.
 256; `baggage` at most 64 members and 8192 octets of header. These are the limits the
 two specifications state, and a header past them is refused rather than truncated.
 
+A `tracestate` key is read as the W3C interoperability suite reads it — a lowercase
+letter or a digit, then up to 255 characters from `a-z`, `0-9`, `_`, `-`, `*`, `/` and
+`@` — rather than as the narrower multi-tenant grammar of the specification, so `foo@`
+and `foo@@bar` travel through. A key that starts with `@`, carries anything else, or
+runs past 256 characters still drops the header.
+
 ## What this is not
 
 - **No OTLP export.** A `Sink` is the seam; a sink that speaks OTLP over HTTP is the

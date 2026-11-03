@@ -359,26 +359,34 @@ test "tracestate key with illegal characters discards the header" {
 }
 
 ///|
-test "tracestate multi-tenant keys: the suite accepts what the grammar refuses" {
-  // The suite's own checker takes a key matching `[0-9a-z][_0-9a-z-*/@]{0,255}`,
-  // which admits an empty system id and a second at sign. W3C Trace Context
-  // §3.3.1 defines `multi-tenant-key = tenant-id "@" system-id` with both halves
-  // non-empty and the system id at most 14 characters, so these are refused here.
-  // The divergence is deliberate: a key this hop accepted would be one the next
-  // hop's stricter parser dropped, and the trace would lose the state anyway.
-  for value in ["foo@=1", "foo@@bar=1", "@foo=1"] {
-    let out = hop(hop_tracer(), [
+test "tracestate multi-tenant key format" {
+  // The suite sends keys that the ABNF of W3C Trace Context §3.3.1 refuses — an
+  // empty system id (`foo@`), two at signs (`foo@@bar`), a system id longer than
+  // fourteen characters — and expects them inherited. This library follows the
+  // suite's own checker here rather than the ABNF; the reasoning is on `check_key`
+  // in `src/trace/context.mbt`, and the short version is that the hop that reads a
+  // key and the hop that writes it are tested against the same suite.
+  let tracer = hop_tracer()
+  for
+    value in [
+      "foo@=1,bar=2",
+      "foo@@bar=1,bar=2",
+      "foo@bar@baz=1,bar=2",
+      "t@\{"v".repeat(15)}=1",
+    ] {
+    let out = hop(tracer, [
       ("traceparent", "00-12345678901234567890123456789012-1234567890123456-00"),
       ("tracestate", value),
     ])
-    assert_eq(header(out, "tracestate"), None)
+    assert_eq(header(out, "tracestate"), Some(value))
   }
-  // What the grammar does allow travels through.
-  let out = hop(hop_tracer(), [
+  // What the wider reading still refuses: a key that starts with the at sign takes
+  // the whole header with it, and the members beside it go too.
+  let out = hop(tracer, [
     ("traceparent", "00-12345678901234567890123456789012-1234567890123456-00"),
-    ("tracestate", "tenant@system=1,bar=2"),
+    ("tracestate", "@foo=1,bar=2"),
   ])
-  assert_eq(header(out, "tracestate"), Some("tenant@system=1,bar=2"))
+  assert_eq(header(out, "tracestate"), None)
 }
 
 ///|
