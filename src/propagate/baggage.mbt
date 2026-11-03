@@ -154,7 +154,8 @@ pub fn Baggage::parse(input : StringView) -> Baggage raise @trace.Refused {
 /// The header value: members in order, `key=value` with properties after `;`, and
 /// every character outside the `baggage-octet` set percent-encoded in uppercase
 /// hexadecimal (W3C Baggage §3.2.2.2). Empty when the bag is empty, which on the
-/// wire is the same as sending no header.
+/// wire is the same as sending no header. `encode_value` says why a space is `%20`
+/// rather than the `+` form encoding would use.
 pub fn Baggage::to_header(self : Baggage) -> String {
   let out = StringBuilder()
   for i, entry in self.members {
@@ -400,6 +401,19 @@ fn hex_value(byte : Byte) -> Int32? {
 ///|
 /// Percent-encode a value for the wire: every octet outside `baggage-octet`, and
 /// `%` itself, in uppercase hexadecimal.
+///
+/// A space becomes `%20` and not `+`. Form encoding has spent decades writing a
+/// space as `+`, and one reference implementation of this header still does, but
+/// W3C Baggage §3.2.2.2 allows only the two escapes that keep a value unambiguous:
+/// `+` is itself a `baggage-octet` and means a literal plus, so a hop that read
+/// `DF+28` as "DF 28" would be inventing a space the sender never wrote, and a hop
+/// that read it as "DF+28" would disagree with the one that wrote it. `%20` says
+/// exactly one thing to everybody, which is why the specification asks for it and
+/// why `percent_decode` reads only `%`.
+///
+/// Values outside `baggage-octet` are not the only case: a value that already holds
+/// a `%` gets it escaped, or the next hop would read the following two characters as
+/// an escape the sender never wrote.
 fn encode_value(value : String, out : StringBuilder) -> Unit {
   let raw = @utf8.encode(value)
   for byte in raw {
