@@ -142,7 +142,18 @@ body {
 .controls,
 .annotations,
 .plate-no,
-.copy {
+.copy,
+.marginalia,
+.page-kicker,
+.facts,
+.counter,
+.presets,
+.lab-hint,
+.lab-control label,
+.lab-send,
+.api-filter-wrap label,
+.api-count,
+.api-hint {
   -webkit-user-select: none;
   user-select: none;
 }
@@ -389,9 +400,9 @@ body.is-dragging .ruler {
   align-items: baseline;
   gap: 18px clamp(16px, 3vw, 40px);
   flex-wrap: wrap;
-  /* Inner plates keep a compact head; only the front plate is tall. The 0.3em
+  /* Inner plates keep a compact head; only the front plate is tall. The 0.35em
      is a deliberate small lift off the top edge, not a full drop. */
-  padding: 0.3em 0 12px;
+  padding: 0.35em 0 12px;
   border-bottom: 1px solid var(--rule);
   /* The one element that survives a navigation, so a cross-page view
      transition can carry it between the tall front plate and the compact
