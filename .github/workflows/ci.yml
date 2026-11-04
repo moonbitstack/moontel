@@ -56,6 +56,9 @@ jobs:
 
       # The replay of the recorded reference run is generated from it, so the two
       # cannot drift: a change to the record without regenerating fails here.
+      - name: generated code is up to date
+        run: moon run src/cmd/span --target native -- -C src/examples/03-annotated orders.mbt -o orders.g.mbt --check
+
       - name: the replay of the recorded reference run is up to date
         if: runner.os == 'Linux'
         run: |

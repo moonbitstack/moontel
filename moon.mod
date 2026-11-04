@@ -32,6 +32,9 @@ description = "OpenTelemetry for MoonBit."
 source = "src"
 
 import {
+  "moonbitstack/moonast@0.2.6",
+  "moonbitlang/parser@0.4.6",
+  "moonbitlang/async@0.22.5",
   "moonbitlang/async@0.22.5",
   "moonbitstack/moonasgi@0.10.4",
   "moonbitstack/moonbase@0.4.2",

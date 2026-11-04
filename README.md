@@ -49,6 +49,49 @@ night's events, and a replay that needs the timeline to be exact.
 moon add moonbitstack/moontel
 ```
 
+## Annotations
+
+Trace a function by saying so on it. The function stays as it is, and a generator adds one beside it:
+
+```moonbit
+#tel.span("orders.place", kind=server, attr="item")
+fn place(item : String) -> Int raise Sold {
+  ...
+}
+```
+
+`place_traced` runs it inside a span, and takes what the span needs:
+
+<!-- nocheck -->
+```moonbit
+let receipt = place_traced(tracer, "tea", now=clock)
+let nested = place_traced(tracer, "tea", now=clock, parent=span.context())
+```
+
+The name defaults to the function's. `kind` is `internal`, `server`, `client`, `producer` or
+`consumer`. Each `attr` records a parameter of text, a number or a boolean. What the function raises
+is recorded on the span with an error status and raised on, and the span finishes whichever way the
+call ends, a cancelled one included. Starting a span can be refused, so the wrapper raises even when
+the function does not.
+
+The generator wires in as a dev_build rule, in `moon.mod`:
+
+<!-- nocheck -->
+```
+rule(name: "span", command: "moonx moonbitstack/moontel/cmd/span -C \"$mod_dir\" \"$input\" -o \"$output\"")
+```
+
+and in the `moon.pkg` of the package, which imports `moonbitstack/moontel/trace`:
+
+<!-- nocheck -->
+```
+dev_build(rule: "span", input: "orders.mbt", output: "orders.g.mbt")
+formatter(ignore: [ "orders.g.mbt" ])
+```
+
+`moon run src/examples/03-annotated` shows it. The rest of this page builds spans by hand, which is
+what the generated code does.
+
 ## The two seams
 
 A tracer needs two things it cannot invent for itself.

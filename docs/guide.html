@@ -38,7 +38,7 @@
       <div class="ruler-thumb" id="ruler-thumb"></div>
     </div>
     <div class="ruler-readout" aria-hidden="true">
-      <span id="readout-plate">01 / 09</span>
+      <span id="readout-plate">01 / 10</span>
       <b id="readout-time">0%</b>
     </div>
 
@@ -80,14 +80,15 @@
 
         <nav class="doc-toc" aria-label="Contents">
           <a href="#install"><span>01</span>Install</a>
-          <a href="#first-trace"><span>02</span>The first trace</a>
-          <a href="#span-life"><span>03</span>A span's life</a>
-          <a href="#sampling"><span>04</span>Sampling</a>
-          <a href="#propagation"><span>05</span>Propagation</a>
-          <a href="#asgi"><span>06</span>The middleware</a>
-          <a href="#replay"><span>07</span>Replay</a>
-          <a href="#limits"><span>08</span>Limits</a>
-          <a href="#absent"><span>09</span>Not here</a>
+          <a href="#annotations"><span>02</span>Annotations</a>
+          <a href="#first-trace"><span>03</span>The first trace</a>
+          <a href="#span-life"><span>04</span>A span's life</a>
+          <a href="#sampling"><span>05</span>Sampling</a>
+          <a href="#propagation"><span>06</span>Propagation</a>
+          <a href="#asgi"><span>07</span>The middleware</a>
+          <a href="#replay"><span>08</span>Replay</a>
+          <a href="#limits"><span>09</span>Limits</a>
+          <a href="#absent"><span>10</span>Not here</a>
         </nav>
 
         <section class="doc-section" id="install" data-ruler-section="Install">
@@ -95,9 +96,10 @@
           <div class="doc-body">
             <h2>Install.</h2>
             <p>
-              The module is one dependency. It has no build step, no code generation
-              and no global state: adding it adds a few thousand lines and nothing
-              that runs until you call it.
+              The module is one dependency. The library has no build step and no
+              global state: adding it adds a few thousand lines and nothing that runs
+              until you call it. Generated code is there only if you ask for it, in the
+              next section.
             </p>
 <pre><code>moon add moonbitstack/moontel</code></pre>
             <p>
@@ -134,8 +136,31 @@
           </aside>
         </section>
 
-        <section class="doc-section" id="first-trace" data-ruler-section="First trace">
+        <section class="doc-section" id="annotations" data-ruler-section="Annotations">
           <div class="doc-mark"><span class="plate-no">02</span></div>
+          <div class="doc-body">
+            <h2>Say it on the function.</h2>
+            <p>
+              Most spans wrap one function, so that is where they are written. The
+              function stays as it is, and a generator adds
+              <code>place_traced</code> beside it.
+            </p>
+            <!-- nocheck: a fragment, not a program -->
+            <pre><code><span class="a">#tel.span</span>(<span class="s">"orders.place"</span>, kind=server, attr=<span class="s">"item"</span>)
+<span class="k">fn</span> place(item : String) -&gt; Int <span class="k">raise</span> Sold { ... }
+
+<span class="k">let</span> receipt = place_traced(tracer, <span class="s">"tea"</span>, now=clock)</code></pre>
+            <p>
+              What the function raises is recorded on the span with an error status and
+              raised on. The span finishes whichever way the call ends, a cancelled one
+              included. The rest of this page builds spans by hand, which is what the
+              generated code does.
+            </p>
+          </div>
+        </section>
+
+        <section class="doc-section" id="first-trace" data-ruler-section="First trace">
+          <div class="doc-mark"><span class="plate-no">03</span></div>
           <div class="doc-body">
             <h2>The first trace.</h2>
             <p>
@@ -198,7 +223,7 @@
         </section>
 
         <section class="doc-section" id="span-life" data-ruler-section="A span's life">
-          <div class="doc-mark"><span class="plate-no">03</span></div>
+          <div class="doc-mark"><span class="plate-no">04</span></div>
           <div class="doc-body">
             <h2>A span's life.</h2>
             <p>
@@ -271,7 +296,7 @@ span.<span class="a">finish</span>(at=started + 4_000_000L) <span class="c">// i
         </section>
 
         <section class="doc-section" id="sampling" data-ruler-section="Sampling">
-          <div class="doc-mark"><span class="plate-no">04</span></div>
+          <div class="doc-mark"><span class="plate-no">05</span></div>
           <div class="doc-body">
             <h2>Sampling.</h2>
             <p>
@@ -320,7 +345,7 @@ span.<span class="a">finish</span>(at=started + 4_000_000L) <span class="c">// i
         </section>
 
         <section class="doc-section" id="propagation" data-ruler-section="Propagation">
-          <div class="doc-mark"><span class="plate-no">05</span></div>
+          <div class="doc-mark"><span class="plate-no">06</span></div>
           <div class="doc-body">
             <h2>Propagation.</h2>
             <p>
@@ -381,7 +406,7 @@ tracestate: vendor=abc</pre>
         </section>
 
         <section class="doc-section" id="asgi" data-ruler-section="ASGI">
-          <div class="doc-mark"><span class="plate-no">06</span></div>
+          <div class="doc-mark"><span class="plate-no">07</span></div>
           <div class="doc-body">
             <h2>The ASGI middleware.</h2>
             <p>
@@ -443,7 +468,7 @@ tracestate: vendor=abc</pre>
         </section>
 
         <section class="doc-section" id="replay" data-ruler-section="Replay">
-          <div class="doc-mark"><span class="plate-no">07</span></div>
+          <div class="doc-mark"><span class="plate-no">08</span></div>
           <div class="doc-body">
             <h2>Replay.</h2>
             <p>
@@ -489,7 +514,7 @@ tracestate: vendor=abc</pre>
         </section>
 
         <section class="doc-section" id="limits" data-ruler-section="Limits">
-          <div class="doc-mark"><span class="plate-no">08</span></div>
+          <div class="doc-mark"><span class="plate-no">09</span></div>
           <div class="doc-body">
             <h2>Limits.</h2>
             <p>
@@ -531,7 +556,7 @@ tracestate: vendor=abc</pre>
         </section>
 
         <section class="doc-section" id="absent" data-ruler-section="Not here">
-          <div class="doc-mark"><span class="plate-no">09</span></div>
+          <div class="doc-mark"><span class="plate-no">10</span></div>
           <div class="doc-body">
             <h2>What is deliberately not here.</h2>
             <p>

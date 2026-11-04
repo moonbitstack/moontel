@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/examples/03-annotated"
+
+// Values
+
+// Errors
+type Sold
+
+// Types and methods
+type Kept
+
+// Type aliases
+
+// Traits

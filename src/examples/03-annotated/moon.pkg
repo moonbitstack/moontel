@@ -1,0 +1,9 @@
+// A function traced with `#tel.span`. `orders.g.mbt` comes from `cmd/span`; a project wires it as a
+// dev_build rule.
+import {
+  "moonbitstack/moontel/trace",
+}
+
+pkgtype(kind: "executable")
+
+formatter(ignore: [ "orders.g.mbt" ])
