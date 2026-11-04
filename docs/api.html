@@ -161,7 +161,7 @@
 <article class="api-entry" id="trace-parent_based" data-name="parent_based">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">parent_based</code><code class="api-sig">(root~ : &amp;Sampler) -&gt; ParentBased</code></span>
+    <span class="api-call"><code class="api-name">parent_based</code><code class="api-sig">(root~ : &amp;Sampler, remote_sampled? : &amp;Sampler, remote_unsampled? : &amp;Sampler, local_sampled? : &amp;Sampler, local_unsampled? : &amp;Sampler) -&gt; ParentBased</code></span>
   </div>
   <div class="api-doc"><p>Parent-based sampling over <code>root</code>, which decides for the first span of a trace.</p></div>
 </article>
@@ -430,10 +430,26 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <div class="api-doc"><p>Follows the parent's decision and asks <code>root</code> only when there is no parent.</p>
 <p>This is the sampler to give a service, because it is what keeps a distributed trace whole: the hop that made the decision decided for the whole trace, and every later hop obeys it instead of rolling its own dice.</p>
-<p>A <a href="#trace-TraceContext"><code>TraceContext</code></a> does not say whether it arrived over the wire or was made in this process, so the specification's separate answers for a remote and a local parent collapse into one; with the default delegates — sample when the parent was sampled, drop when it was not — the two tables are the same table.</p></div>
+<p>The specification's five rows are the five fields: <code>root</code> without a parent, then a parent from another process or this one, sampled or not. The default for a sampled parent is <a href="#trace-always"><code>always</code></a> and for an unsampled one <a href="#trace-never"><code>never</code></a>, so a program that names only <code>root</code> follows the parent.</p></div>
   <dl class="api-fields">
     <div>
       <dt>root</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+    <div>
+      <dt>remote_sampled</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+    <div>
+      <dt>remote_unsampled</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+    <div>
+      <dt>local_sampled</dt>
+      <dd>&amp;Sampler</dd>
+    </div>
+    <div>
+      <dt>local_unsampled</dt>
       <dd>&amp;Sampler</dd>
     </div>
   </dl>
@@ -845,7 +861,8 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
     <span class="api-meta">Eq · Debug</span>
   </div>
   <div class="api-doc"><p>The identity of a span: the trace it belongs to, its own id, the flags travelling with it, and the vendor state riding along.</p>
-<p>Ids are octets, not text: sixteen for the trace and eight for the span, as W3C Trace Context lays them out. Hexadecimal is a spelling used at the wire and in logs, and it is produced there rather than stored here.</p></div>
+<p>Ids are octets, not text: sixteen for the trace and eight for the span, as W3C Trace Context lays them out. Hexadecimal is a spelling used at the wire and in logs, and it is produced there rather than stored here.</p>
+<p><code>remote</code> is the specification's <code>IsRemote</code>: true for a context read off the wire, false for one this process minted. It does not travel in any header.</p></div>
   <dl class="api-fields">
     <div>
       <dt>trace_id</dt>
@@ -863,6 +880,10 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
       <dt>state</dt>
       <dd>TraceState</dd>
     </div>
+    <div>
+      <dt>remote</dt>
+      <dd>Bool</dd>
+    </div>
   </dl>
   <div class="api-methods">
 <article class="api-entry api-method" id="trace-TraceContext-is_valid" data-name="TraceContext::is_valid">
@@ -875,7 +896,7 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
 <article class="api-entry api-method" id="trace-TraceContext-new" data-name="TraceContext::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">TraceContext::new</code><code class="api-sig">(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">TraceContext::new</code><code class="api-sig">(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState, remote? : Bool) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>Build a context from ids the caller already has. Nothing is validated: this is the shape a tracer mints and a sink reads, and a caller holding a <a href="#trace-Span"><code>Span</code></a> already has a valid one. A context read off the wire comes from <a href="#propagate-parse"><code>parse</code></a> instead, which does validate.</p></div>
 </article>

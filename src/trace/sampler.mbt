@@ -164,25 +164,43 @@ pub extend Ratio with Sampler::{should_sample, description}
 /// trace whole: the hop that made the decision decided for the whole trace, and
 /// every later hop obeys it instead of rolling its own dice.
 ///
-/// A `TraceContext` does not say whether it arrived over the wire or was made in
-/// this process, so the specification's separate answers for a remote and a local
-/// parent collapse into one; with the default delegates — sample when the parent
-/// was sampled, drop when it was not — the two tables are the same table.
+/// The specification's five rows are the five fields: `root` without a parent,
+/// then a parent from another process or this one, sampled or not. The default
+/// for a sampled parent is `always` and for an unsampled one `never`, so a program
+/// that names only `root` follows the parent.
 pub(all) struct ParentBased {
   root : &Sampler
+  remote_sampled : &Sampler
+  remote_unsampled : &Sampler
+  local_sampled : &Sampler
+  local_unsampled : &Sampler
 }
 
 ///|
 /// Parent-based sampling over `root`, which decides for the first span of a
 /// trace.
-pub fn parent_based(root~ : &Sampler) -> ParentBased {
-  { root, }
+pub fn parent_based(
+  root~ : &Sampler,
+  remote_sampled~ : &Sampler = always,
+  remote_unsampled~ : &Sampler = never,
+  local_sampled~ : &Sampler = always,
+  local_unsampled~ : &Sampler = never,
+) -> ParentBased {
+  { root, remote_sampled, remote_unsampled, local_sampled, local_unsampled, }
 }
 
 ///|
 pub impl Sampler for ParentBased with fn should_sample(self, request) {
   match request.parent {
-    Some(parent) => if parent.sampled() { RecordAndSample } else { Drop }
+    Some(parent) => {
+      let delegate = match (parent.remote, parent.sampled()) {
+        (true, true) => self.remote_sampled
+        (true, false) => self.remote_unsampled
+        (false, true) => self.local_sampled
+        (false, false) => self.local_unsampled
+      }
+      delegate.should_sample(request)
+    }
     None => self.root.should_sample(request)
   }
 }

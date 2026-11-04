@@ -145,3 +145,16 @@ test "what extract reads, inject writes back unchanged" {
   let outgoing = @propagate.inject([], extracted)
   assert_eq(outgoing, inbound)
 }
+
+///|
+test "a context read off the wire is remote, and one minted here is not" {
+  let read = @propagate.parse_traceparent(
+    "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+  )
+  assert_true(read.remote)
+  let made = @trace.TraceContext::new(
+    trace_id=read.trace_id,
+    span_id=read.span_id,
+  )
+  assert_false(made.remote)
+}

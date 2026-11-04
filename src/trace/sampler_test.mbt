@@ -207,3 +207,69 @@ test "a sampler of the caller's own is one trait implementation away" {
     @trace.Drop,
   )
 }
+
+///|
+test "parent-based sampling asks a different delegate for each of the five rows" {
+  // Each row gets the answer the default would not give, so a row read from the
+  // wrong field shows.
+  let sampler = @trace.parent_based(
+    root=@trace.never,
+    remote_sampled=@trace.never,
+    remote_unsampled=@trace.always,
+    local_sampled=@trace.never,
+    local_unsampled=@trace.always,
+  )
+  let trace_id = hex_id("0123456789abcdef0000000000000001")
+  let ask = (remote : Bool, flags : Byte) => {
+    sampler.should_sample({
+      parent: Some(
+        @trace.TraceContext::new(
+          trace_id~,
+          span_id=hex_id("0123456789abcdef"),
+          flags~,
+          remote~,
+        ),
+      ),
+      trace_id,
+      name: "op",
+      kind: @trace.Server,
+    })
+  }
+  assert_eq(ask(true, @trace.sampled_flag), @trace.Drop)
+  assert_eq(ask(true, b'\x00'), @trace.RecordAndSample)
+  assert_eq(ask(false, @trace.sampled_flag), @trace.Drop)
+  assert_eq(ask(false, b'\x00'), @trace.RecordAndSample)
+  assert_eq(
+    sampler.should_sample({
+      parent: None,
+      trace_id,
+      name: "op",
+      kind: @trace.Server,
+    }),
+    @trace.Drop,
+  )
+}
+
+///|
+test "a remote parent and a local one take their own delegate" {
+  let sampler = @trace.parent_based(
+    root=@trace.never,
+    remote_sampled=@trace.never,
+  )
+  let trace_id = hex_id("0123456789abcdef0000000000000001")
+  let parent = @trace.TraceContext::new(
+    trace_id~,
+    span_id=hex_id("0123456789abcdef"),
+    flags=@trace.sampled_flag,
+  )
+  let request = (parent : @trace.TraceContext) => {
+    sampler.should_sample({
+      parent: Some(parent),
+      trace_id,
+      name: "op",
+      kind: @trace.Server,
+    })
+  }
+  assert_eq(request(parent), @trace.RecordAndSample)
+  assert_eq(request({ ..parent, remote: true, }), @trace.Drop)
+}

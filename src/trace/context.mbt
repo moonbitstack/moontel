@@ -50,12 +50,16 @@ pub let random_flag : Byte = b'\x02'
 /// Ids are octets, not text: sixteen for the trace and eight for the span, as
 /// W3C Trace Context lays them out. Hexadecimal is a spelling used at the wire
 /// and in logs, and it is produced there rather than stored here.
+///
+/// `remote` is the specification's `IsRemote`: true for a context read off the
+/// wire, false for one this process minted. It does not travel in any header.
 #derive(Eq, Debug)
 pub(all) struct TraceContext {
   trace_id : Bytes
   span_id : Bytes
   flags : Byte
   state : TraceState
+  remote : Bool
 }
 
 ///|
@@ -74,8 +78,9 @@ pub fn TraceContext::new(
   span_id~ : Bytes,
   flags~ : Byte = b'\x00',
   state~ : TraceState = empty_trace_state,
+  remote~ : Bool = false,
 ) -> TraceContext {
-  { trace_id, span_id, flags, state, }
+  { trace_id, span_id, flags, state, remote, }
 }
 
 ///|

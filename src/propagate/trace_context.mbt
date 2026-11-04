@@ -88,6 +88,7 @@ pub fn parse_traceparent(
     span_id~,
     flags=flags.to_byte(),
     state=@trace.empty_trace_state,
+    remote=true,
   )
 }
 

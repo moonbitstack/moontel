@@ -94,7 +94,7 @@ Four samplers, the ones the OpenTelemetry specification names:
 | `always` | Everything is sampled. |
 | `never` | Nothing is sampled. |
 | `ratio(ratio=0.1)` | A tenth of traces, chosen by the trace id. |
-| `parent_based(root=...)` | The parent's decision, or `root` when there is no parent. |
+| `parent_based(root=...)` | The parent's decision, or `root` when there is no parent. The other four rows, a remote or local parent sampled or not, are arguments too. |
 
 `ratio` reads the low 64 bits of the trace id, so the same trace gets the same answer
 on every hop and in every service, and a service running at a higher rate keeps

@@ -17,7 +17,7 @@ pub let empty_trace_state : TraceState
 
 pub let never : Never
 
-pub fn parent_based(root~ : &Sampler) -> ParentBased
+pub fn parent_based(root~ : &Sampler, remote_sampled? : &Sampler, remote_unsampled? : &Sampler, local_sampled? : &Sampler, local_unsampled? : &Sampler) -> ParentBased
 
 pub let random_flag : Byte
 
@@ -117,6 +117,10 @@ pub impl Sampler for Never
 
 pub(all) struct ParentBased {
   root : &Sampler
+  remote_sampled : &Sampler
+  remote_unsampled : &Sampler
+  local_sampled : &Sampler
+  local_unsampled : &Sampler
 }
 pub fn ParentBased::description(Self) -> String
 pub fn ParentBased::should_sample(Self, SampleRequest) -> Decision
@@ -232,10 +236,11 @@ pub(all) struct TraceContext {
   span_id : Bytes
   flags : Byte
   state : TraceState
+  remote : Bool
 }
 pub fn TraceContext::equal(Self, Self) -> Bool
 pub fn TraceContext::is_valid(Self) -> Bool
-pub fn TraceContext::new(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState) -> Self
+pub fn TraceContext::new(trace_id~ : Bytes, span_id~ : Bytes, flags? : Byte, state? : TraceState, remote? : Bool) -> Self
 pub fn TraceContext::not_equal(Self, Self) -> Bool
 pub fn TraceContext::sampled(Self) -> Bool
 pub fn TraceContext::to_repr(Self) -> @debug.Repr

@@ -32,7 +32,7 @@ pub fn method_and_path(String, String) -> String
 
 pub let never : @trace.Never
 
-pub fn parent_based(root~ : &@trace.Sampler) -> @trace.ParentBased
+pub fn parent_based(root~ : &@trace.Sampler, remote_sampled? : &@trace.Sampler, remote_unsampled? : &@trace.Sampler, local_sampled? : &@trace.Sampler, local_unsampled? : &@trace.Sampler) -> @trace.ParentBased
 
 pub fn parse(StringView, tracestate? : StringView) -> @trace.TraceContext raise @trace.Refused
 

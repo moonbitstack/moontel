@@ -75,7 +75,7 @@ pub fn Tracer::start(
     None => empty_trace_state
   }
   let span = Span::new(
-    { trace_id, span_id, flags, state, },
+    { trace_id, span_id, flags, state, remote: false, },
     match parent {
       Some(p) => Some(p.span_id)
       None => None
