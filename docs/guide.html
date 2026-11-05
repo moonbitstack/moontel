@@ -651,6 +651,12 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               bounds — is the same code, and a gRPC status is translated into the HTTP
               status those rules are written against.
             </p>
+            <p>
+              It is not on the reference page, and that is the toolchain's line rather
+              than a choice: <code>moon info</code> writes the interface of the canonical
+              backend and skips a package that cannot build for it, and this one is
+              native alone. The signatures are here and in the package's own comments.
+            </p>
 <pre><code><span class="k">let</span> reports = traces.<span class="a">flush</span>()
 <span class="k">if</span> reports.dropped &gt; 0 {
   <span class="a">@log.Logger</span>::new(sink=logs, now=millis).warn(

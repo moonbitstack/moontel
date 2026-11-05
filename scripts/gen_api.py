@@ -40,7 +40,6 @@ PACKAGES = (
     ("semconv", "semconv"),
     ("otlp", "otlp"),
     ("otlp-http", "otlp/http"),
-    ("otlp-grpc", "otlp/grpc"),
     ("otlp-p8s", "otlp/p8s"),
     ("log-moonlog", "log/moonlog_bridge"),
 )
@@ -192,23 +191,17 @@ def split_derive(line: str) -> list[str]:
 
 
 def interface_path(directory: str) -> Path:
-    """The interface file of one package.
+    """The interface file of a package, as `moon info` wrote it.
 
-    `moon info` writes the canonical backend's interface and skips a package that
-    cannot build for that backend, which is what a native-only package is. `moon
-    check --target native` leaves the same file under `_build`, so that is where a
-    package like that is read from — which is why the docs are generated after a
-    check.
+    A package that builds on every backend has one. `otlp/grpc` does not: `moon
+    info` writes the canonical backend's interface and skips a package that cannot
+    build for it, and this toolchain has no way to say "write the native one". That
+    package is described in the guide instead.
     """
     source = ROOT / "src" / directory / "pkg.generated.mbti"
-    if source.exists():
-        return source
-    found = sorted((ROOT / "_build" / "native").glob(f"*/check/{directory}/*.mbti"))
-    if not found:
-        raise SystemExit(
-            f"no interface for {directory}: run `moon check --target native` first"
-        )
-    return found[-1]
+    if not source.exists():
+        raise SystemExit(f"no interface for {directory}: run `moon info` first")
+    return source
 
 
 def parse_mbti(path: pathlib.Path, docs: dict[str, str]) -> dict[str, list[Entry]]:
