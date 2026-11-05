@@ -1,0 +1,18 @@
+// One span to a collector over OTLP/gRPC:
+// `moon run src/examples/05-grpc --target native`.
+pkgtype(kind: "executable")
+
+// gRPC is HTTP/2 over a TCP connection, and the channel underneath is a socket: the
+// native backend is the only one with those.
+
+supported_targets = "+native"
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/otlp/grpc",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
+  "moonbitlang/async",
+  "moonbitlang/core/env",
+}

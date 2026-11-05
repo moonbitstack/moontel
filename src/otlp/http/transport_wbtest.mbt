@@ -7,14 +7,14 @@ fn packed(headers : Array[(String, String)]) -> @otlp.Request {
   {
     url: "http://collector.test:4318/v1/traces",
     headers,
-    body: "{\"resourceSpans\":[]}",
+    body: b"{\"resourceSpans\":[]}",
   }
 }
 
 ///|
-test "a plain body is the encoder's text and the caller's headers" {
+test "a plain body is the encoder's bytes and the caller's headers" {
   let (body, headers) = payload(packed([("x-api-key", "secret")]), Plain)
-  assert_eq(body, @moonfetch.Body::Text("{\"resourceSpans\":[]}"))
+  assert_eq(body, @moonfetch.Body::Bytes(b"{\"resourceSpans\":[]}"))
   assert_eq(headers, [("x-api-key", "secret")])
 }
 

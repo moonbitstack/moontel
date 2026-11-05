@@ -1,0 +1,16 @@
+// OTLP over gRPC: the binary protobuf request, carried by a unary call on a channel
+// from `moonrpc`. Split from `otlp` for the same reason `otlp/http` is — a program
+// that only encodes a payload should carry neither an HTTP/2 stack nor a socket.
+import {
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moonrpc",
+  "moonbitstack/moonrpc/net",
+  "moonbitstack/moonhttp/header",
+}
+
+// A channel is a TCP connection, and only the native backend has those, so the
+// whole package is native.
+
+supported_targets = "native"
+
+warnings = "-29"

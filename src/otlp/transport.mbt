@@ -19,21 +19,30 @@ pub extend Failed with Debug::{to_repr}
 /// One OTLP request: where it goes, what it carries, and the headers that
 /// authenticate it.
 ///
-/// The body is text because OTLP/JSON is what this package writes; a transport
-/// that speaks protobuf would take bytes instead, and belongs in a different
-/// implementation of `Transport`.
+/// The body is bytes because OTLP has two encodings and only one of them is text:
+/// the exporter picks the encoding and the transport carries what it was given.
 pub(all) struct Request {
   url : String
   headers : Array[(String, String)]
-  body : String
+  body : Bytes
 }
 
 ///|
-/// What the server said back.
+/// What the server said back. The body is bytes for the same reason: a reply to a
+/// protobuf request is protobuf.
 pub(all) struct Reply {
   status : Int32
   headers : Array[(String, String)]
-  body : String
+  body : Bytes
+}
+
+///|
+/// The reply body read as text, which is what a JSON reply is. Bytes that are not
+/// UTF-8 come back with the bad sequences replaced rather than as an error: a
+/// body that cannot be read is a body with nothing to say, and the status code
+/// already said the important part.
+pub fn Reply::text(self : Reply) -> String {
+  @utf8.decode_lossy(self.body[:])
 }
 
 ///|
@@ -71,7 +80,7 @@ pub fn Reply::retry_after(self : Reply, now~ : Int64) -> Int64? {
 /// data was turned away. A body that is not JSON, or carries no count, answers
 /// `None` rather than zero, because "said nothing" and "refused none" differ.
 pub fn Reply::rejected(self : Reply) -> Int32? {
-  let parsed = @json.parse(self.body[:], preserve_number_repr=true) catch {
+  let parsed = @json.parse(self.text()[:], preserve_number_repr=true) catch {
     _ => return None
   }
   let success = match parsed {

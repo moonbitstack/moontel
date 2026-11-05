@@ -65,7 +65,7 @@
       <main>
         <section class="page-head">
           <span class="marginalia page-kicker">Examples</span>
-          <h1 class="page-title">Four programs,<br /><em>and what they print.</em></h1>
+          <h1 class="page-title">Five programs,<br /><em>and what they print.</em></h1>
           <p class="page-lede">
             No excerpts and no pseudo-code: each listing below is the whole file
             under <code>src/examples</code>, and each output is what that file
@@ -76,6 +76,7 @@
             <div><dt>01</dt><dd>one hop of propagation</dd></div>
             <div><dt>02</dt><dd>a traced ASGI request</dd></div>
             <div><dt>04</dt><dd>three signals, out of the process</dd></div>
+            <div><dt>05</dt><dd>one span, over gRPC</dd></div>
           </dl>
         </section>
 
@@ -425,12 +426,18 @@ POST /orders  10000000 ns  Unset
 ///
 ///     moon run src/examples/04-otlp --target native
 ///     moon run src/examples/04-otlp --target native -- http://localhost:4318
+///     moon run src/examples/04-otlp --target native -- http://localhost:4318 gzip
+///     moon run src/examples/04-otlp --target native -- http://localhost:4318 protobuf
 ///
 /// With an endpoint on the command line the program requires the collector to be
 /// there: it exits non-zero when the batch could not be delivered, which is what
 /// the conformance job in CI runs. Without one it talks to the protocol&#x27;s default
 /// address and reports what happened, so running the examples one after another
 /// stays useful on a machine with no collector.
+///
+/// `gzip` after the endpoint compresses every request body and says so; `protobuf`
+/// sends the binary encoding instead of the JSON one. Either, both or neither, in
+/// any order — the conformance job runs all four combinations that differ.
 #coverage.skip
 async fn main {
   let arguments = @env.args()
@@ -442,12 +449,27 @@ async fn main {
   let required = arguments.length() &gt; 1
   // With no collector named there is nothing to retry against, so one attempt says
   // whether something is listening without spending half a minute finding out.
-  let attempts = if required {
-    5
-  } else {
-    1
+  let attempts = if required { 5 } else { 1 }
+  let mut gzip = false
+  let mut protobuf = false
+  for index in 2..&lt;arguments.length() {
+    match arguments[index] {
+      &quot;gzip&quot; =&gt; gzip = true
+      &quot;protobuf&quot; =&gt; protobuf = true
+      _ =&gt; println(&quot;ignoring \{arguments[index]}: expected gzip or protobuf&quot;)
+    }
   }
-  let transport = @http.HttpTransport::new()
+  let compression = if gzip {
+    @http.Compression::Gzip
+  } else {
+    @http.Compression::Plain
+  }
+  let format = if protobuf {
+    @otlp.BodyFormat::Protobuf
+  } else {
+    @otlp.BodyFormat::Json
+  }
+  let transport = @http.HttpTransport::new(compression~)
   let started = 1_700_000_000_000_000_000L
 
   // One exporter per signal. They share the transport and the resource, and each
@@ -456,8 +478,10 @@ async fn main {
     transport~,
     endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;).with_attribute(
-      &quot;deployment.environment.name&quot;, @trace.Str(&quot;test&quot;),
+      &quot;deployment.environment.name&quot;,
+      @trace.Str(&quot;test&quot;),
     ),
+    format~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -466,6 +490,7 @@ async fn main {
     transport~,
     endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    format~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -474,6 +499,7 @@ async fn main {
     transport~,
     endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    format~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -485,12 +511,9 @@ async fn main {
     rand=random_bytes,
     sampler=@trace.parent_based(root=@trace.always),
   )
-  let span = tracer.start(
-    &quot;GET /orders/42&quot;,
-    kind=@trace.Server,
-    at=started,
-    attributes=[(&quot;http.request.method&quot;, @trace.Str(&quot;GET&quot;))],
-  ) catch {
+  let span = tracer.start(&quot;GET /orders/42&quot;, kind=@trace.Server, at=started, attributes=[
+    (&quot;http.request.method&quot;, @trace.Str(&quot;GET&quot;)),
+  ]) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
   span.add_event(&quot;cache.miss&quot;, at=started + 1_000_000L)
@@ -512,7 +535,8 @@ async fn main {
   span.finish(at=started + 4_000_000L)
 
   // A program that already keeps metrics does not keep a second set: this reads the
-  // snapshot and the bridge turns it into OTLP.
+  // snapshot and the bridge turns it into OTLP. The histogram is registered with its
+  // unit, which the exposition appends to the name and the bridge takes back off.
   let registry = @metric.Registry::new()
   let placed = registry.counter(&quot;orders_placed&quot;, &quot;Orders placed.&quot;)
   placed.inc(by=1.0)
@@ -520,6 +544,7 @@ async fn main {
     &quot;order_latency&quot;,
     &quot;Order latency.&quot;,
     buckets=[0.005, 0.01, 0.025, 0.05, 0.1],
+    unit=&quot;seconds&quot;,
   )
   latency.observe(0.012)
   for metric in @p8s.bridge(registry.collect(at=0.0), at=started) {
@@ -535,9 +560,7 @@ async fn main {
 
   let failed = !delivered(spans) || !delivered(records) || !delivered(points)
   if failed &amp;&amp; required {
-    abort(
-      &quot;a collector was named at \{endpoint} and did not take every signal&quot;,
-    )
+    abort(&quot;a collector was named at \{endpoint} and did not take every signal&quot;)
   }
   if failed {
     println(
@@ -597,25 +620,161 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
           </div>
         </section>
 
+
+        <section class="example" id="grpc" data-ruler-section="05 · grpc">
+          <header class="example-head">
+            <span class="plate-no">05</span>
+            <h2>grpc</h2>
+            <span class="path">src/examples/05-grpc/main.mbt</span>
+            <span class="run">moon run src/examples/05-grpc --target native -- 127.0.0.1:4317</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// One span, over OTLP/gRPC: the same payload the HTTP example sends, carried by a
+/// unary call on a channel that stays open.
+///
+///     moon run src/examples/05-grpc --target native
+///     moon run src/examples/05-grpc --target native -- localhost:4317
+///
+/// The argument is `host:port`, because that is what a channel connects to; the
+/// protocol puts the gRPC port at 4317. With one on the command line the program
+/// requires the collector to be there and exits non-zero when the span could not be
+/// delivered, which is what the conformance job in CI runs.
+#coverage.skip
+async fn main {
+  let arguments = @env.args()
+  let address = if arguments.length() &gt; 1 {
+    arguments[1]
+  } else {
+    &quot;127.0.0.1:4317&quot;
+  }
+  let required = arguments.length() &gt; 1
+  let (host, port) = host_and_port(address)
+  let transport = @grpc.GrpcTransport::connect(host~, port~)
+  // gRPC carries the binary encoding only, so the exporter is built for it. The
+  // endpoint is still a URL: it names the signal, and the transport turns
+  // `/v1/traces` into the method the collector serves.
+  let traces = @otlp.TraceExporter::new(
+    transport~,
+    endpoint=&quot;http://\{address}&quot;,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    format=@otlp.BodyFormat::Protobuf,
+    now=millis,
+    rand=random_bytes,
+    attempts=if required { 5 } else { 1 },
+  )
+  let tracer = @trace.Tracer::new(
+    sink=traces,
+    rand=random_bytes,
+    sampler=@trace.always,
+  )
+  let started = millis()
+  let span = tracer.start(
+    &quot;PUT /orders/42/ship&quot;,
+    kind=@trace.Server,
+    at=started,
+    attributes=[(&quot;http.request.method&quot;, @trace.Str(&quot;PUT&quot;))],
+  ) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+  span.set_attribute(&quot;http.response.status_code&quot;, @trace.Int(204L))
+  span.set_status(@trace.Ok)
+  span.finish(at=started + 2_000_000L)
+  let report = traces.flush()
+  transport.close()
+  println(
+    &quot;gRPC: delivered \{report.delivered}, rejected \{report.rejected}, dropped \{report.dropped}, requests \{report.attempts}&quot;,
+  )
+  if required &amp;&amp; report.delivered != 1 {
+    println(&quot;a collector was named at \{address} and did not take the span&quot;)
+    abort(&quot;the span was not delivered&quot;)
+  }
+}
+
+///|
+/// `host:port`, or `host` alone with the protocol&#x27;s default port.
+fn host_and_port(address : String) -&gt; (String, Int32) {
+  match address.rev_find(&quot;:&quot;) {
+    Some(at) =&gt; {
+      (address[:at].to_owned(), port_of(address[at + 1:]))
+    }
+    None =&gt; (address, 4317)
+  }
+}
+
+///|
+/// The port a `host:port` names, or the protocol&#x27;s 4317 when the text is not a
+/// number: a typo should reach the default rather than a port no one serves.
+fn port_of(text : StringView) -&gt; Int32 {
+  let mut port = 0
+  for digit in text {
+    if digit &lt; &#x27;0&#x27; || digit &gt; &#x27;9&#x27; {
+      return 4317
+    }
+    port = port * 10 + (digit.to_int() - &#x27;0&#x27;.to_int())
+  }
+  if port == 0 { 4317 } else { port }
+}
+
+///|
+/// The clock the exporter uses for batching and for the retry budget. The runtime&#x27;s
+/// is monotonic, which is what those two need.
+fn millis() -&gt; Int64 {
+  @async.now()
+}
+
+///|
+/// Sixteen bytes from the platform&#x27;s entropy source, for a span id and a trace id.
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonseed.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}
+</code></pre></div>
+            <div class="notes">
+              <p>
+                The same span the HTTP example sends, over the other transport the
+                protocol defines. gRPC carries the binary protobuf, so the exporter is
+                built for it; everything else — the queue, the batch, the retry rules and
+                the two size bounds — is the code the HTTP path runs.
+              </p>
+              <p>
+                The argument is <code>host:port</code>, because that is what a channel
+                connects to, and the protocol puts the gRPC port at 4317. The endpoint
+                handed to the exporter is still a URL: it names the signal, and the
+                transport turns <code>/v1/traces</code> into the method a collector
+                serves.
+              </p>
+              <p class="output-label">One run, against a collector on its default gRPC port</p>
+              <pre class="output">gRPC: delivered 1, rejected 0, dropped 0, requests 1</pre>
+            </div>
+          </div>
+        </section>
+
         <section class="doc-section" id="run" data-ruler-section="Run them">
           <div class="doc-mark"><span class="plate-no">04</span></div>
           <div class="doc-body">
             <h2>Run them yourself.</h2>
             <p>
-              The four programs are packages in this repository, so a checkout can
+              The five programs are packages in this repository, so a checkout can
               run them without installing anything else:
             </p>
 <pre><code><span class="a">moon</span> run src/examples/00-hello --target native
 <span class="a">moon</span> run src/examples/01-propagate --target native
 <span class="a">moon</span> run src/examples/02-asgi --target native
-<span class="a">moon</span> run src/examples/04-otlp --target native -- http://localhost:4318</code></pre>
+<span class="a">moon</span> run src/examples/04-otlp --target native -- http://localhost:4318
+<span class="a">moon</span> run src/examples/05-grpc --target native -- 127.0.0.1:4317</code></pre>
             <p>
               <code>00-hello</code> and <code>01-propagate</code> build on every
               target. <code>02-asgi</code> awaits what the application sends, and the
               async runtime has no wasm-gc build, so that target builds a second file
               that says so rather than a program that only looks like the example.
               <code>04-otlp</code> needs a socket, which the JavaScript backends do not
-              have, so it is built for native and wasm only.
+              have, so it is built for native and wasm only; <code>05-grpc</code> needs
+              a channel, which is a TCP connection, so it is native alone.
             </p>
             <p>
               The home page runs a fourth program: it compiles this library to

@@ -117,7 +117,7 @@ jobs:
 
       - name: start the collector
         run: |
-          docker run -d --name collector -p 4318:4318 \
+          docker run -d --name collector -p 4317:4317 -p 4318:4318 \
             -v "$PWD/.github/otel-collector.yaml:/etc/otelcol-contrib/config.yaml" \
             otel/opentelemetry-collector-contrib:0.164.0
           for i in $(seq 60); do
@@ -136,6 +136,16 @@ jobs:
       # compresses must say so.
       - name: send them again, compressed
         run: moon run src/examples/04-otlp --target native -- http://localhost:4318 gzip
+
+      # And once in binary protobuf, which is the encoding the protocol treats as
+      # the default and the one every exporter is required to be able to send.
+      - name: send them once more, in protobuf
+        run: moon run src/examples/04-otlp --target native -- http://localhost:4318 protobuf
+
+      # A different transport entirely: one unary call on a channel, on the port the
+      # protocol puts gRPC at.
+      - name: send a span over gRPC
+        run: moon run src/examples/05-grpc --target native -- 127.0.0.1:4317
 
       - name: the collector parsed every signal
         run: |
@@ -156,6 +166,7 @@ jobs:
               "SeverityNumber: Info(9)",
               "Name: orders_placed",
               "Name: order_latency",
+              "Name           : PUT /orders/42/ship",
               # The histogram's unit travelled in its own field, which is where it
               # belongs once the name no longer carries it.
               "Unit: s",
@@ -166,17 +177,17 @@ jobs:
           if "order_latency_seconds" in text:
               print("the exposition's unit suffix survived the bridge")
               sys.exit(1)
-          # Two runs, one plain and one gzipped: the span is in the log twice only
-          # if both were decoded.
+          # Three runs — plain, gzipped, protobuf — so the span is in the log three
+          # times only if every encoding was decoded.
           spans = text.count("Name           : GET /orders/42")
-          if spans != 2:
-              print(f"expected the span from both runs, saw {spans}")
+          if spans != 3:
+              print(f"expected the span from every run, saw {spans}")
               sys.exit(1)
           traces = text.count("Trace ID")
           if missing:
               print("the collector did not report:", missing)
               sys.exit(1)
-          if traces < 6:
+          if traces < 9:
               print(f"expected the trace id on the span and both records per run, saw {traces}")
               sys.exit(1)
           print(f"the collector parsed all three signals; {traces} records name a trace")

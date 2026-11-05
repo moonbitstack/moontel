@@ -51,7 +51,7 @@ pub fn HttpTransport::new(
             Some({
               status: reply.status,
               headers: reply.headers,
-              body: reply.text(),
+              body: reply.body,
             }),
             "",
           )
@@ -72,10 +72,10 @@ fn payload(
   compression : Compression,
 ) -> (@moonfetch.Body, Array[(String, String)]) {
   match compression {
-    Plain => (@moonfetch.Body::Text(request.body), request.headers)
+    Plain => (@moonfetch.Body::Bytes(request.body), request.headers)
     Gzip =>
       (
-        @moonfetch.Body::Bytes(@gzip.gzip(@utf8.encode(request.body)[:])),
+        @moonfetch.Body::Bytes(@gzip.gzip(request.body[:])),
         with_encoding(request.headers, "gzip"),
       )
   }

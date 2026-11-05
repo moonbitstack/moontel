@@ -99,6 +99,7 @@
               <a href="#semconv">semconv <span data-count-for="semconv">—</span></a>
               <a href="#otlp">otlp <span data-count-for="otlp">—</span></a>
               <a href="#otlp-http">otlp-http <span data-count-for="otlp-http">—</span></a>
+              <a href="#otlp-grpc">otlp-grpc <span data-count-for="otlp-grpc">—</span></a>
               <a href="#otlp-p8s">otlp-p8s <span data-count-for="otlp-p8s">—</span></a>
               <a href="#log-moonlog">log-moonlog <span data-count-for="log-moonlog">—</span></a>
               <a href="#facade">moontel <span>facade</span></a>
@@ -2921,12 +2922,28 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   <div class="api-doc"><p>Encode log records as an OTLP/JSON <code>ExportLogsServiceRequest</code>, the body <code>POST /v1/logs</code> takes.</p>
 <p>Records are grouped by the scope that wrote them, because a scope belongs to the request rather than to a record: one exporter can carry the lines of several loggers and the backend still sees which one wrote what.</p></div>
 </article>
+<article class="api-entry" id="otlp-encode_logs_protobuf" data-name="encode_logs_protobuf">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">encode_logs_protobuf</code><code class="api-sig">(Array[@log.LogRecord], resource? : Resource, scope? : Scope) -&gt; Bytes</code></span>
+  </div>
+  <div class="api-doc"><p>Encode log records as an OTLP <code>ExportLogsServiceRequest</code> in the binary protobuf encoding: the same request as the JSON encoder, for <code>/v1/logs</code> with <code>Content-Type: application/x-protobuf</code>.</p>
+<p>Records are grouped by the scope they were written under, which is what the message nests on; the order of first appearance is kept, so a reader of the payload sees the scopes in the order the program used them.</p></div>
+</article>
 <article class="api-entry" id="otlp-encode_metrics" data-name="encode_metrics">
   <div class="api-line">
     <span class="api-kind">fn</span>
     <span class="api-call"><code class="api-name">encode_metrics</code><code class="api-sig">(Array[Metric], resource? : Resource, scope? : Scope) -&gt; String</code></span>
   </div>
   <div class="api-doc"><p>Encode metrics as an OTLP/JSON <code>ExportMetricsServiceRequest</code>, the body <code>POST /v1/metrics</code> takes.</p></div>
+</article>
+<article class="api-entry" id="otlp-encode_metrics_protobuf" data-name="encode_metrics_protobuf">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">encode_metrics_protobuf</code><code class="api-sig">(Array[Metric], resource? : Resource, scope? : Scope) -&gt; Bytes</code></span>
+  </div>
+  <div class="api-doc"><p>Encode metrics as an OTLP <code>ExportMetricsServiceRequest</code> in the binary protobuf encoding: the same request as the JSON encoder, for <code>/v1/metrics</code> with <code>Content-Type: application/x-protobuf</code>.</p>
+<p>A bucket count and a bound are packed repeated fields, which is what the schema asks for; the counts are the per-bucket ones the point already carries, not a running total.</p></div>
 </article>
 <article class="api-entry" id="otlp-encode_traces" data-name="encode_traces">
   <div class="api-line">
@@ -2935,6 +2952,14 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <div class="api-doc"><p>Encode finished spans as an OTLP/JSON <code>ExportTraceServiceRequest</code>.</p>
 <p>The body is what <code>POST /v1/traces</code> takes: one resource, one scope, and the spans. Field names are the lowerCamelCase of the protobuf schema, ids are hexadecimal and timestamps are decimal strings, which is the mapping the OTLP specification fixes for JSON.</p></div>
+</article>
+<article class="api-entry" id="otlp-encode_traces_protobuf" data-name="encode_traces_protobuf">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">encode_traces_protobuf</code><code class="api-sig">(Array[@trace.SpanData], resource? : Resource, scope? : Scope) -&gt; Bytes</code></span>
+  </div>
+  <div class="api-doc"><p>Encode finished spans as an OTLP <code>ExportTraceServiceRequest</code> in the binary protobuf encoding.</p>
+<p>The same request the JSON encoder produces, in the encoding the protocol treats as the default: <code>/v1/traces</code> with <code>Content-Type: application/x-protobuf</code>. Field numbers are the ones in <code>opentelemetry-proto</code>'s <code>trace/v1/trace.proto</code>, which do not change; an id is the sixteen or eight bytes it is, not the hex of it.</p></div>
 </article>
 <article class="api-entry" id="otlp-moonbit_scope" data-name="moonbit_scope">
   <div class="api-line">
@@ -3098,6 +3123,33 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
 </article>
+<article class="api-entry api-type" id="otlp-BodyFormat" data-name="BodyFormat">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">BodyFormat</code></span>
+  </div>
+  <div class="api-doc"><p>Which of the two OTLP encodings a request body uses.</p>
+<p>The protocol defines binary protobuf and the JSON mapping of it, and says an exporter must be able to send protobuf and may send JSON. Both are here; the JSON one is what this library sent first, and it is still the default because a body a person can read in a log is worth something while a library is young.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Json</code>
+      <p>The protobuf JSON mapping: <code>application/json</code>.</p>
+    </div>
+    <div class="api-variant">
+      <code>Protobuf</code>
+      <p>Binary protobuf: <code>application/x-protobuf</code>.</p>
+    </div>
+  </div>
+  <div class="api-methods">
+<article class="api-entry api-method" id="otlp-BodyFormat-media_type" data-name="BodyFormat::media_type">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">BodyFormat::media_type</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The <code>Content-Type</code> a body of this format is sent under.</p></div>
+</article>
+  </div>
+</article>
 <article class="api-entry api-type" id="otlp-BodyLimits" data-name="BodyLimits">
   <div class="api-line">
     <span class="api-kind">struct</span>
@@ -3209,7 +3261,7 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
 <article class="api-entry api-method" id="otlp-LogsExporter-new" data-name="LogsExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">LogsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">LogsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting log records to <code>endpoint</code>.</p></div>
 </article>
@@ -3305,7 +3357,7 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
 <article class="api-entry api-method" id="otlp-MetricsExporter-new" data-name="MetricsExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">MetricsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">MetricsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting metrics to <code>endpoint</code>.</p></div>
 </article>
@@ -3362,12 +3414,133 @@ how OTLP states the <code>+Inf</code> bucket.</p>
   </div>
   <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
 </article>
+<article class="api-entry api-type" id="otlp-ProtoWriter" data-name="ProtoWriter">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ProtoWriter</code></span>
+  </div>
+  <div class="api-doc"><p>A protobuf writer: the wire format and nothing about any schema.</p>
+<p>The three encoders beside this file know the field numbers; this knows varints, tags, length prefixes and the two fixed-width forms. It is hand-written because the messages this library sends are fifteen shapes with numbers that do not change, and a generator would be a build step in every checkout — and a dependency in the package that is supposed to have none.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>buf</dt>
+      <dd>@buffer.Buffer</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="otlp-ProtoWriter-bool" data-name="ProtoWriter::bool">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::bool</code><code class="api-sig">(Self, Int32, Bool) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>bool</code> field.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-bytes" data-name="ProtoWriter::bytes">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::bytes</code><code class="api-sig">(Self, Int32, BytesView) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>bytes</code> field: a length, then the bytes.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-double" data-name="ProtoWriter::double">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::double</code><code class="api-sig">(Self, Int32, Double) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>double</code> field: eight bytes of IEEE 754, little endian.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-enum_code" data-name="ProtoWriter::enum_code">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::enum_code</code><code class="api-sig">(Self, Int32, Int32) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>An enum field: proto3 puts the number on the wire, not the name.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-finish" data-name="ProtoWriter::finish">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::finish</code><code class="api-sig">(Self) -&gt; Bytes</code></span>
+  </div>
+  <div class="api-doc"><p>The bytes written so far, which is one message.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-fixed32" data-name="ProtoWriter::fixed32">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::fixed32</code><code class="api-sig">(Self, Int32, UInt32) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>fixed32</code> field: four bytes, little endian.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-fixed64" data-name="ProtoWriter::fixed64">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::fixed64</code><code class="api-sig">(Self, Int32, UInt64) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>fixed64</code> field.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-int64" data-name="ProtoWriter::int64">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::int64</code><code class="api-sig">(Self, Int32, Int64) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>An <code>int64</code> field. A negative number is written as ten bytes of two's complement, which is what the wire format asks for and what a reader expects.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-message" data-name="ProtoWriter::message">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::message</code><code class="api-sig">(Self, Int32, Self) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A nested message: its bytes, with their length in front.</p>
+<p>The body is built in a writer of its own, because a length has to be known before the bytes it counts are written. Nesting is shallow here — a span inside a scope inside a resource — so the copy costs nothing worth avoiding.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-new" data-name="ProtoWriter::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::new</code><code class="api-sig">() -&gt; Self</code></span>
+  </div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-packed_doubles" data-name="ProtoWriter::packed_doubles">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::packed_doubles</code><code class="api-sig">(Self, Int32, Array[Double]) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A repeated <code>double</code>, packed: one length-delimited field holding all of them. Proto3 packs repeated numerics by default, and a packed field is what a reader of the schema expects.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-packed_fixed64" data-name="ProtoWriter::packed_fixed64">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::packed_fixed64</code><code class="api-sig">(Self, Int32, Array[UInt64]) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A repeated <code>fixed64</code>, packed.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-string" data-name="ProtoWriter::string">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::string</code><code class="api-sig">(Self, Int32, String) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>string</code> field: UTF-8, length-prefixed like bytes.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-uint" data-name="ProtoWriter::uint">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::uint</code><code class="api-sig">(Self, Int32, UInt64) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A varint field.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-ProtoWriter-uint32" data-name="ProtoWriter::uint32">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ProtoWriter::uint32</code><code class="api-sig">(Self, Int32, Int32) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>A <code>uint32</code> or <code>uint64</code> field written from an <code>Int32</code> a program already has.</p></div>
+</article>
+  </div>
+</article>
 <article class="api-entry api-type" id="otlp-Reply" data-name="Reply">
   <div class="api-line">
     <span class="api-kind">struct</span>
     <span class="api-call"><code class="api-name">Reply</code></span>
   </div>
-  <div class="api-doc"><p>What the server said back.</p></div>
+  <div class="api-doc"><p>What the server said back. The body is bytes for the same reason: a reply to a protobuf request is protobuf.</p></div>
   <dl class="api-fields">
     <div>
       <dt>status</dt>
@@ -3379,7 +3552,7 @@ how OTLP states the <code>+Inf</code> bucket.</p>
     </div>
     <div>
       <dt>body</dt>
-      <dd>String</dd>
+      <dd>Bytes</dd>
     </div>
   </dl>
   <div class="api-methods">
@@ -3398,6 +3571,14 @@ how OTLP states the <code>+Inf</code> bucket.</p>
   <div class="api-doc"><p>How many records of this signal the server said it refused, from the <code>partialSuccess</code> field of the reply body.</p>
 <p>A partial success is an accepted request: the specification says the client MUST NOT retry it, and it says the count is what tells an operator that some data was turned away. A body that is not JSON, or carries no count, answers <code>None</code> rather than zero, because "said nothing" and "refused none" differ.</p></div>
 </article>
+<article class="api-entry api-method" id="otlp-Reply-rejected_protobuf" data-name="Reply::rejected_protobuf">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Reply::rejected_protobuf</code><code class="api-sig">(Self) -&gt; Int32?</code></span>
+  </div>
+  <div class="api-doc"><p>How many records the server said it refused, read out of a binary protobuf reply.</p>
+<p>The three success responses are the same shape: a <code>partial_success</code> field, and inside it the count for that signal. A body that is not protobuf, or carries no count, answers <code>None</code> — "said nothing" and "refused none" are different things, and only the second is good news.</p></div>
+</article>
 <article class="api-entry api-method" id="otlp-Reply-retry_after" data-name="Reply::retry_after">
   <div class="api-line">
     <span class="api-kind">fn</span>
@@ -3405,6 +3586,13 @@ how OTLP states the <code>+Inf</code> bucket.</p>
   </div>
   <div class="api-doc"><p>How long the server asked to be left alone, in milliseconds, from the <code>Retry-After</code> header.</p>
 <p>The header carries either a number of seconds or an HTTP date, and both are read here: a server that says "2026-11-05T10:00:00Z" means the same thing as one that says "30", just less often. A date that has already passed is zero.</p></div>
+</article>
+<article class="api-entry api-method" id="otlp-Reply-text" data-name="Reply::text">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Reply::text</code><code class="api-sig">(Self) -&gt; String</code></span>
+  </div>
+  <div class="api-doc"><p>The reply body read as text, which is what a JSON reply is. Bytes that are not UTF-8 come back with the bad sequences replaced rather than as an error: a body that cannot be read is a body with nothing to say, and the status code already said the important part.</p></div>
 </article>
   </div>
 </article>
@@ -3442,7 +3630,7 @@ how OTLP states the <code>+Inf</code> bucket.</p>
     <span class="api-call"><code class="api-name">Request</code></span>
   </div>
   <div class="api-doc"><p>One OTLP request: where it goes, what it carries, and the headers that authenticate it.</p>
-<p>The body is text because OTLP/JSON is what this package writes; a transport that speaks protobuf would take bytes instead, and belongs in a different implementation of <a href="#otlp-Transport"><code>Transport</code></a>.</p></div>
+<p>The body is bytes because OTLP has two encodings and only one of them is text: the exporter picks the encoding and the transport carries what it was given.</p></div>
   <dl class="api-fields">
     <div>
       <dt>url</dt>
@@ -3454,7 +3642,7 @@ how OTLP states the <code>+Inf</code> bucket.</p>
     </div>
     <div>
       <dt>body</dt>
-      <dd>String</dd>
+      <dd>Bytes</dd>
     </div>
   </dl>
 </article>
@@ -3611,7 +3799,7 @@ how OTLP states the <code>+Inf</code> bucket.</p>
 <article class="api-entry api-method" id="otlp-TraceExporter-new" data-name="TraceExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">TraceExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">TraceExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting spans to <code>endpoint</code> (<code>http://localhost:4318</code> is the protocol's default) through <code>transport</code>.</p>
 <p><code>headers</code> is where authentication goes: an API key for a hosted backend, an organisation and a project for one that wants them. <code>resource</code> describes the program and is sent with every request.</p></div>
@@ -3737,9 +3925,53 @@ cause, and the specification says such a request MUST NOT be retried.</p>
               </div>
             </section>
 
-            <section class="api-package" id="otlp-p8s" data-ruler-section="otlp-p8s">
+            <section class="api-package" id="otlp-grpc" data-ruler-section="otlp-grpc">
               <header class="api-package-head">
                 <span class="plate-no">08</span>
+                <h2>otlp-grpc</h2>
+                <code>moonbitstack/moontel/otlp/grpc</code>
+                <p>
+                  The transport that speaks OTLP over gRPC: one unary call per request on a channel that stays open.
+                </p>
+              </header>
+              <div class="api-entries" data-package="otlp-grpc">
+                <!-- BEGIN otlp-grpc -->
+<!-- Generated by scripts/gen_api.py from pkg.generated.mbti and the documentation comments; do not edit by hand. -->
+<div class="api-group">
+  <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="otlp-grpc-GrpcTransport" data-name="GrpcTransport">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">GrpcTransport</code></span>
+    <span class="api-meta">@otlp.Transport</span>
+  </div>
+  <div class="api-doc"><p>A transport that speaks OTLP over gRPC: one unary call per request, on a channel that stays open between them.</p>
+<p>The protocol's two transports take the same payloads, so this is a different <a href="#otlp-Transport"><code>Transport</code></a> over the same exporters: the queue, the batch, the retry rules and the size bounds are the ones <code>otlp</code> already has, and only the way a request travels is different.</p>
+<p>gRPC carries the binary protobuf encoding and nothing else, so an exporter built on this transport must be built with <code>format=Protobuf</code>. A request that says <code>application/json</code> is refused here rather than sent to a server that would answer with a decode error nobody can act on.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>channel</dt>
+      <dd>@net.Channel</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="otlp-grpc-GrpcTransport-close" data-name="GrpcTransport::close">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">GrpcTransport::close</code><code class="api-sig">(Self) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Close the channel. A channel left open keeps a socket and a reader task alive.</p></div>
+</article>
+  </div>
+</article>
+</div>
+<!-- END otlp-grpc -->
+              </div>
+            </section>
+
+            <section class="api-package" id="otlp-p8s" data-ruler-section="otlp-p8s">
+              <header class="api-package-head">
+                <span class="plate-no">09</span>
                 <h2>otlp-p8s</h2>
                 <code>moonbitstack/moontel/otlp/p8s</code>
                 <p>
@@ -3819,7 +4051,7 @@ cause, and the specification says such a request MUST NOT be retried.</p>
 
             <section class="api-package" id="log-moonlog" data-ruler-section="log-moonlog">
               <header class="api-package-head">
-                <span class="plate-no">09</span>
+                <span class="plate-no">10</span>
                 <h2>log-moonlog</h2>
                 <code>moonbitstack/moontel/log/moonlog_bridge</code>
                 <p>
@@ -3898,7 +4130,7 @@ cause, and the specification says such a request MUST NOT be retried.</p>
 
             <section class="api-package" id="facade" data-ruler-section="the facade">
               <header class="api-package-head">
-                <span class="plate-no">10</span>
+                <span class="plate-no">11</span>
                 <h2>moontel</h2>
                 <code>moonbitstack/moontel</code>
                 <p>

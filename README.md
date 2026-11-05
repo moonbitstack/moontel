@@ -275,6 +275,29 @@ gzipping every request and setting `Content-Encoding: gzip` with it. The body an
 header that describes it are decided in one place, so one cannot arrive without the
 other.
 
+A body has two encodings, and both are here. `format=@otlp.BodyFormat::Protobuf` sends
+the binary protobuf under `Content-Type: application/x-protobuf` — the same fields with
+no field names, about a third of the bytes — which is the encoding the protocol says
+every exporter must be able to send.
+
+gRPC is a transport of its own, `otlp/grpc`, carrying that binary encoding over one
+long-lived channel and one unary call per request:
+
+```moonbit
+let channel = @grpc.GrpcTransport::connect(host="localhost")
+let traces = @otlp.TraceExporter::new(
+  transport=channel,
+  endpoint="http://localhost:4317",
+  format=@otlp.BodyFormat::Protobuf,
+  now=millis,
+  rand=random_bytes,
+)
+```
+
+gRPC has no JSON encoding, so an exporter over it is always built with `Protobuf`; the
+queue, the batch, the retry rules and the size bounds are the same code, and a gRPC
+status is translated into the HTTP status those rules are written against.
+
 ## Logs
 
 A record says when it happened, how urgent it is, what it says and which span it was
@@ -415,6 +438,7 @@ through the package that defines it, not through the facade.
 | `Report`, `Stats` | `delivered, rejected, dropped, attempts` per flush, and since the exporter was made |
 | `BatchPolicy` | `queue_limit 2048, batch 512, delay 5000, timeout 30000` |
 | `BodyLimits` | `request 64 MiB, response 4 MiB` — the protocol's recommended sizes |
+| `BodyFormat` | `Json`, `Protobuf` — `Content-Type` and encoder in one |
 | `Backoff` | `initial 5000, multiplier 1.5, maximum 30000, jitter 0.2` |
 | `Transport` | `async fn send(Self, Request) -> Reply raise Failed` |
 | `Resource`, `Scope` | what produced the telemetry, and which library in it did |
@@ -425,8 +449,9 @@ through the package that defines it, not through the facade.
 | Item | Signature |
 |:--|:--|
 | `HttpTransport::new` | `(timeout? : Int32, compression? : Compression) -> HttpTransport` |
+| `otlp/grpc.GrpcTransport::connect` | `(host~ : String, port? : Int32, encoding?) -> GrpcTransport` — one unary call per request |
 | `Compression` | `Plain`, `Gzip` — the second sets `Content-Encoding` on the request |
-| `bridge` | `(families : Array[MetricFamily], at~ : Int64, start? : Int64) -> Array[Metric]` |
+| `bridge`, `bridge_with_report` | `(families : Array[MetricFamily], at~ : Int64, start? : Int64) -> Array[Metric]` — and the same with what was dropped |
 | `gen_ai_request_model`, `gen_ai_client_inference_duration`, … | 85 attribute keys, 21 metric names, 13 span types and 11 event names |
 
 ## Limits

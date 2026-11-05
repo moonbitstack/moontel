@@ -621,6 +621,36 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               can read. The body and the header are decided together for that reason,
               and the same transport carries all three signals either way.
             </p>
+            <p>
+              The body has two encodings. <code>format=@otlp.BodyFormat::Protobuf</code>
+              sends the binary one, under <code>Content-Type:
+              application/x-protobuf</code>: the same fields, no field names, and roughly
+              a third of the bytes. The protocol requires an exporter to be able to send
+              it and only permits JSON, which is why JSON is the default and protobuf is
+              one argument away.
+            </p>
+            <p>
+              gRPC carries the binary encoding over one long-lived connection, one unary
+              call per request, on the port the protocol puts at 4317. It is a transport
+              of its own — <code>otlp/grpc</code> — because the HTTP path should carry
+              neither an HTTP/2 stack nor a second socket:
+            </p>
+<pre><code><span class="k">let</span> channel = <span class="a">@grpc.GrpcTransport</span>::connect(host=<span class="s">"localhost"</span>)
+<span class="k">let</span> traces = <span class="a">@otlp.TraceExporter</span>::new(
+  transport=channel,
+  endpoint=<span class="s">"http://localhost:4317"</span>,
+  <span class="c">// gRPC has no JSON encoding, and an exporter built for it would be refused</span>
+  format=<span class="a">@otlp.BodyFormat</span>::Protobuf,
+  now=millis,
+  rand=random_bytes,
+)</code></pre>
+            <p>
+              The endpoint is still a URL, because it is what names the signal: the
+              transport turns <code>/v1/traces</code> into the method a collector serves.
+              Everything else — the queue, the batch, the retry rules, the two size
+              bounds — is the same code, and a gRPC status is translated into the HTTP
+              status those rules are written against.
+            </p>
 <pre><code><span class="k">let</span> reports = traces.<span class="a">flush</span>()
 <span class="k">if</span> reports.dropped &gt; 0 {
   <span class="a">@log.Logger</span>::new(sink=logs, now=millis).warn(

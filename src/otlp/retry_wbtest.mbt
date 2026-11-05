@@ -65,13 +65,13 @@ test "the reply reads its own Retry-After header, whatever its case" {
   let reply : Reply = {
     status: 429,
     headers: [("retry-after", "2")],
-    body: "",
+    body: b"",
   }
   assert_eq(reply.retry_after(now=0L), Some(2000L))
   let other : Reply = {
     status: 429,
     headers: [("Retry-After", "3")],
-    body: "",
+    body: b"",
   }
   assert_eq(other.retry_after(now=0L), Some(3000L))
 }
@@ -81,18 +81,18 @@ test "a partial success names how much the server refused" {
   let reply : Reply = {
     status: 200,
     headers: [],
-    body: "{\"partialSuccess\":{\"rejectedSpans\":\"2\",\"errorMessage\":\"too old\"}}",
+    body: b"{\"partialSuccess\":{\"rejectedSpans\":\"2\",\"errorMessage\":\"too old\"}}",
   }
   assert_eq(reply.rejected(), Some(2))
   let number : Reply = {
     status: 200,
     headers: [],
-    body: "{\"partialSuccess\":{\"rejectedLogRecords\":3}}",
+    body: b"{\"partialSuccess\":{\"rejectedLogRecords\":3}}",
   }
   assert_eq(number.rejected(), Some(3))
-  let none : Reply = { status: 200, headers: [], body: "{}", }
+  let none : Reply = { status: 200, headers: [], body: b"{}", }
   assert_eq(none.rejected(), None)
-  let garbage : Reply = { status: 200, headers: [], body: "not json", }
+  let garbage : Reply = { status: 200, headers: [], body: b"not json", }
   assert_eq(garbage.rejected(), None)
 }
 

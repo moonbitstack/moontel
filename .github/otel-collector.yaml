@@ -7,6 +7,10 @@ receivers:
     protocols:
       http:
         endpoint: 0.0.0.0:4318
+      # The gRPC flavour, on the port the protocol puts it at, so the conformance
+      # job can send the same payloads both ways and read them out of one log.
+      grpc:
+        endpoint: 0.0.0.0:4317
 
 exporters:
   debug:

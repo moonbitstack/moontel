@@ -60,7 +60,8 @@ pub struct Outbox[T] {
   transport : &Transport
   url : String
   headers : Array[(String, String)]
-  encode : (Array[T]) -> String
+  encode : (Array[T]) -> Bytes
+  format : BodyFormat
   policy : BatchPolicy
   limits : BodyLimits
   backoff : Backoff
@@ -301,6 +302,7 @@ pub fn TraceExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  format~ : BodyFormat = Json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -309,14 +311,18 @@ pub fn TraceExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> TraceExporter {
   let encode = fn(spans : Array[@trace.SpanData]) {
-    encode_traces(spans, resource~, scope~)
+    match format {
+      Json => @utf8.encode(encode_traces(spans, resource~, scope~))
+      Protobuf => encode_traces_protobuf(spans, resource~, scope~)
+    }
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/traces"),
-      headers: with_content_type(headers),
+      headers: with_content_type(headers, format),
       encode,
+      format,
       policy,
       limits,
       backoff,
@@ -396,6 +402,7 @@ pub fn LogsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  format~ : BodyFormat = Json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -404,14 +411,18 @@ pub fn LogsExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> LogsExporter {
   let encode = fn(records : Array[@log.LogRecord]) {
-    encode_logs(records, resource~, scope~)
+    match format {
+      Json => @utf8.encode(encode_logs(records, resource~, scope~))
+      Protobuf => encode_logs_protobuf(records, resource~, scope~)
+    }
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/logs"),
-      headers: with_content_type(headers),
+      headers: with_content_type(headers, format),
       encode,
+      format,
       policy,
       limits,
       backoff,
@@ -486,6 +497,7 @@ pub fn MetricsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  format~ : BodyFormat = Json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -494,14 +506,18 @@ pub fn MetricsExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> MetricsExporter {
   let encode = fn(metrics : Array[Metric]) {
-    encode_metrics(metrics, resource~, scope~)
+    match format {
+      Json => @utf8.encode(encode_metrics(metrics, resource~, scope~))
+      Protobuf => encode_metrics_protobuf(metrics, resource~, scope~)
+    }
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/metrics"),
-      headers: with_content_type(headers),
+      headers: with_content_type(headers, format),
       encode,
+      format,
       policy,
       limits,
       backoff,
@@ -557,13 +573,14 @@ pub async fn MetricsExporter::run(self : MetricsExporter) -> Unit {
 }
 
 ///|
-/// The caller's headers with the content type this body needs, replacing one that
+/// The caller's headers with the content type this format needs, replacing one that
 /// was already there: a JSON body announced as protobuf is refused by the server
 /// that reads the header first.
 fn with_content_type(
   headers : Array[(String, String)],
+  format : BodyFormat,
 ) -> Array[(String, String)] {
   let out = headers.filter(header => header.0.to_lower() != "content-type")
-  out.push(("Content-Type", "application/json"))
+  out.push(("Content-Type", format.media_type()))
   out
 }

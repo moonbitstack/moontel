@@ -40,6 +40,7 @@ PACKAGES = (
     ("semconv", "semconv"),
     ("otlp", "otlp"),
     ("otlp-http", "otlp/http"),
+    ("otlp-grpc", "otlp/grpc"),
     ("otlp-p8s", "otlp/p8s"),
     ("log-moonlog", "log/moonlog_bridge"),
 )
@@ -188,6 +189,26 @@ def split_derive(line: str) -> list[str]:
         if name:
             names.append(name)
     return names
+
+
+def interface_path(directory: str) -> Path:
+    """The interface file of one package.
+
+    `moon info` writes the canonical backend's interface and skips a package that
+    cannot build for that backend, which is what a native-only package is. `moon
+    check --target native` leaves the same file under `_build`, so that is where a
+    package like that is read from — which is why the docs are generated after a
+    check.
+    """
+    source = ROOT / "src" / directory / "pkg.generated.mbti"
+    if source.exists():
+        return source
+    found = sorted((ROOT / "_build" / "native").glob(f"*/check/{directory}/*.mbti"))
+    if not found:
+        raise SystemExit(
+            f"no interface for {directory}: run `moon check --target native` first"
+        )
+    return found[-1]
 
 
 def parse_mbti(path: pathlib.Path, docs: dict[str, str]) -> dict[str, list[Entry]]:
@@ -639,7 +660,7 @@ def main() -> int:
     page = TARGET.read_text(encoding="utf-8")
     parsed = {
         label: parse_mbti(
-            ROOT / "src" / directory / "pkg.generated.mbti",
+            interface_path(directory),
             collect_docs(ROOT / "src" / directory),
         )
         for label, directory in PACKAGES
@@ -666,7 +687,7 @@ def main() -> int:
     for package, directory in PACKAGES:
         body = build_package(parsed[package], package, anchors)
         missing = missing_names(parsed[package], body)
-        for name in surface_names(ROOT / "src" / directory / "pkg.generated.mbti"):
+        for name in surface_names(interface_path(directory)):
             short = name.split("::")[-1]
             if name not in body and short not in body and name not in missing:
                 missing.append(name)

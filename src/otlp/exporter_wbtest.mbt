@@ -33,12 +33,12 @@ fn scripted(replies : Array[Reply]) -> Script {
 
 ///|
 fn ok() -> Reply {
-  { status: 200, headers: [], body: "", }
+  { status: 200, headers: [], body: b"", }
 }
 
 ///|
 fn status_of(status : Int32) -> Reply {
-  { status, headers: [], body: "", }
+  { status, headers: [], body: b"", }
 }
 
 ///|
@@ -98,7 +98,9 @@ async test "a flush posts the batch to the traces path with the caller's headers
   assert_eq(requests.length(), 1)
   // A trailing slash on the endpoint does not become a double slash in the path.
   assert_eq(requests[0].url, "http://collector.test:4318/v1/traces")
-  assert_true(requests[0].body.contains("\"GET /orders\""))
+  assert_true(
+    @utf8.decode_lossy(requests[0].body[:]).contains("\"GET /orders\""),
+  )
   let mut content_type = ""
   let mut api_key = ""
   for header in requests[0].headers {
@@ -143,7 +145,7 @@ async test "a bad request is not retried" {
 ///|
 async test "Retry-After is honoured as the server wrote it" {
   let script = scripted([
-    { status: 429, headers: [("Retry-After", "2")], body: "", },
+    { status: 429, headers: [("Retry-After", "2")], body: b"", },
     ok(),
   ])
   let pauses = Ref([])
@@ -183,7 +185,7 @@ async test "when the attempts run out the batch is dropped and counted" {
 ///|
 async test "a wait that would overrun the export timeout ends the attempts" {
   let script = scripted([
-    { status: 429, headers: [("Retry-After", "60")], body: "", },
+    { status: 429, headers: [("Retry-After", "60")], body: b"", },
     ok(),
   ])
   let pauses = Ref([])
@@ -202,7 +204,7 @@ async test "a partial success counts what the server refused" {
     {
       status: 200,
       headers: [],
-      body: "{\"partialSuccess\":{\"rejectedSpans\":\"1\",\"errorMessage\":\"stale\"}}",
+      body: b"{\"partialSuccess\":{\"rejectedSpans\":\"1\",\"errorMessage\":\"stale\"}}",
     },
   ])
   let traces = exporter(script, Ref([]))
@@ -311,7 +313,7 @@ async test "a reply over the incoming limit is not retried" {
   // A 200 that rejects nothing would be an acceptance; read past the limit it is a
   // reply this side cannot trust, and the protocol says not to ask again.
   let script = scripted([
-    { status: 200, headers: [], body: "{\"partialSuccess\":{}}", },
+    { status: 200, headers: [], body: b"{\"partialSuccess\":{}}", },
     ok(),
   ])
   let pauses = Ref([])
@@ -329,7 +331,7 @@ async test "a reply over the incoming limit is not retried" {
 async test "a reply exactly at the limit is still read" {
   // The bound is a maximum, not a threshold: a body of exactly the limit is a body
   // this side will parse.
-  let script = scripted([{ status: 200, headers: [], body: "{}", }])
+  let script = scripted([{ status: 200, headers: [], body: b"{}", }])
   let pauses = Ref([])
   let traces = exporter(script, pauses, limits={ request: 4096, response: 2, })
   traces.accept(sampled_span())
