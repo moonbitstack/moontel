@@ -90,8 +90,11 @@ dev_build(rule: "span", input: "orders.mbt", output: "orders.g.mbt")
 formatter(ignore: [ "orders.g.mbt" ])
 ```
 
-`moon run src/examples/03-annotated` shows it. The rest of this page builds spans by hand, which is
-what the generated code does.
+`moon run src/examples/03-annotated` shows it, and the generated file is committed: what an
+annotation means should be readable, not only runnable. `-o <file> --check` with the same arguments
+answers whether the committed file is the one the generator would write — which is what CI runs, so
+the two cannot drift. The rest of this page builds spans by hand, which is what the generated code
+does.
 
 ## The seams
 

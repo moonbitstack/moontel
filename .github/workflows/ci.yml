@@ -54,6 +54,16 @@ jobs:
             fi
           done
 
+      # The wrapper beside an annotated function is generated code, committed so that a
+      # reader of the repository sees what the annotation means. This is what keeps it
+      # the same code the generator would write today.
+      - name: the generated span wrapper is what the generator writes
+        if: runner.os == 'Linux'
+        run: |
+          moon run src/cmd/span --target native -- \
+            src/examples/03-annotated/orders.mbt \
+            -o src/examples/03-annotated/orders.g.mbt --check
+
       # The service that exports three signals needs a collector to talk to, which
       # the `otlp-collector` job supplies; here the compiler is what is checked.
       - name: the export example builds
