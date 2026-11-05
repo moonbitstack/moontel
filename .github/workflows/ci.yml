@@ -135,17 +135,33 @@ jobs:
       - name: the collector parsed every signal
         run: |
           docker logs collector > collector.log
-          grep -q "Name           : GET /orders/42" collector.log
-          grep -q "Kind           : Server" collector.log
-          grep -q "Status code    : Ok" collector.log
-          grep -q "Name: cache.miss" collector.log
-          grep -q "Body: Str(order placed)" collector.log
-          grep -q "SeverityNumber: Info(9)" collector.log
-          grep -q "Name: orders_placed" collector.log
-          grep -q "Name: order_latency" collector.log
-          # The log record names the span it was written in: one trace id appears on
-          # the span and on both records.
-          test "$(grep -c 'Trace ID' collector.log)" -ge 3
+          python3 - <<'EOF'
+          import pathlib
+          import sys
+
+          text = pathlib.Path("collector.log").read_text(errors="replace")
+          # What the collector prints only if it decoded the payload: a request it
+          # accepted and a span it understood are two different things.
+          required = [
+              "Name           : GET /orders/42",
+              "Kind           : Server",
+              "Status code    : Ok",
+              "Name: cache.miss",
+              "Body: Str(order placed)",
+              "SeverityNumber: Info(9)",
+              "Name: orders_placed",
+              "Name: order_latency",
+          ]
+          missing = [want for want in required if want not in text]
+          traces = text.count("Trace ID")
+          if missing:
+              print("the collector did not report:", missing)
+              sys.exit(1)
+          if traces < 3:
+              print(f"expected the trace id on the span and both records, saw {traces}")
+              sys.exit(1)
+          print(f"the collector parsed all three signals; {traces} records name a trace")
+          EOF
 
   # The official W3C Trace Context suite drives a hop built on this library. A
   # context that survives one process must survive the next, and this is the program
