@@ -1,0 +1,9 @@
+// Structured log records: one record, its severity, its attributes, and the
+// trace it belongs to. A logger writes them to a sink; this package never opens a
+// file or a socket, so the same code serves a test, a console and an exporter.
+//
+// OpenTelemetry specification v1.62.0, logs data model and SDK:
+// https://github.com/open-telemetry/opentelemetry-specification/tree/v1.62.0/specification/logs
+import {
+  "moonbitstack/moontel/trace",
+}

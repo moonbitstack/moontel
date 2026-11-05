@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/log/moonlog_bridge"
+
+import {
+  "moonbitstack/moonlog",
+  "moonbitstack/moontel/log",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Bridge {
+  sink : &@log.Sink
+  now : () -> Int64
+  current : @trace.TraceContext?
+  scope : String
+}
+pub fn Bridge::inside(Self, @trace.Span) -> Self
+pub fn Bridge::new(sink~ : &@log.Sink, now~ : () -> Int64, current? : @trace.TraceContext, scope? : String) -> Self
+pub fn Bridge::with_context(Self, @trace.TraceContext) -> Self
+pub fn Bridge::write(Self, @moonlog.Entry) -> Result[Unit, String]
+pub impl @moonlog.Sink for Bridge
+
+// Type aliases
+
+// Traits

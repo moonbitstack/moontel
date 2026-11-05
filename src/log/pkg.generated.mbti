@@ -1,0 +1,120 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/log"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub let discard : Discard
+
+// Errors
+
+// Types and methods
+pub(all) struct Discard {
+}
+pub fn Discard::accept(Self, LogRecord) -> Unit
+pub impl Sink for Discard
+
+pub struct Fanout {
+  sinks : Array[&Sink]
+}
+pub fn Fanout::accept(Self, LogRecord) -> Unit
+pub fn Fanout::new(sinks~ : Array[&Sink]) -> Self
+pub impl Sink for Fanout
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LogRecord {
+  time : Int64?
+  observed : Int64
+  severity : Severity
+  severity_text : String?
+  body : @trace.Value
+  attributes : Array[(String, @trace.Value)]
+  trace_id : Bytes?
+  span_id : Bytes?
+  flags : Byte
+  event_name : String?
+  scope : String
+  dropped : Int32
+}
+pub fn LogRecord::context(Self) -> @trace.TraceContext?
+pub fn LogRecord::equal(Self, Self) -> Bool
+pub fn LogRecord::new(severity~ : Severity, body~ : @trace.Value, at~ : Int64, observed? : Int64, scope? : String) -> Self
+pub fn LogRecord::not_equal(Self, Self) -> Bool
+pub fn LogRecord::severity_text(Self) -> String
+pub fn LogRecord::timestamp(Self) -> Int64
+pub fn LogRecord::to_repr(Self) -> @debug.Repr
+pub fn LogRecord::with_attribute(Self, String, @trace.Value) -> Self
+pub fn LogRecord::with_context(Self, @trace.TraceContext) -> Self
+pub fn LogRecord::with_event_name(Self, String) -> Self
+pub fn LogRecord::with_time(Self, at~ : Int64) -> Self
+
+pub struct Logger {
+  sink : &Sink
+  now : () -> Int64
+  scope : String
+  attributes : Array[(String, @trace.Value)]
+  current : @trace.TraceContext?
+  floor : Severity?
+  trace_based : Bool
+  limits : @trace.Limits
+}
+pub fn Logger::debug(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64) -> Unit
+pub fn Logger::enabled(Self, Severity) -> Bool
+pub fn Logger::error(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64, error? : Error) -> Unit
+pub fn Logger::fatal(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64) -> Unit
+pub fn Logger::info(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64) -> Unit
+pub fn Logger::inside(Self, @trace.Span) -> Self
+pub fn Logger::log(Self, Severity, @trace.Value, attributes? : Array[(String, @trace.Value)], at? : Int64, observed? : Int64, event_name? : String, error? : Error) -> Unit
+pub fn Logger::new(sink~ : &Sink, now~ : () -> Int64, scope? : String, attributes? : Array[(String, @trace.Value)], floor? : Severity, trace_based? : Bool, limits? : @trace.Limits) -> Self
+pub fn Logger::scope(Self) -> String
+pub fn Logger::trace(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64) -> Unit
+pub fn Logger::under(Self, String) -> Self
+pub fn Logger::warn(Self, String, attributes? : Array[(String, @trace.Value)], at? : Int64) -> Unit
+pub fn Logger::with_attribute(Self, String, @trace.Value) -> Self
+pub fn Logger::with_context(Self, @trace.TraceContext) -> Self
+pub fn Logger::write(Self, Severity, String, attributes? : Array[(String, @trace.Value)], at? : Int64, observed? : Int64, event_name? : String, error? : Error) -> Unit
+
+pub struct Recorder {
+  records : @ref.Ref[Array[LogRecord]]
+}
+pub fn Recorder::accept(Self, LogRecord) -> Unit
+pub fn Recorder::len(Self) -> Int32
+pub fn Recorder::new() -> Self
+pub fn Recorder::records(Self) -> Array[LogRecord]
+pub fn Recorder::take(Self) -> Array[LogRecord]
+pub impl Sink for Recorder
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Severity {
+  Trace
+  Debug
+  Info
+  Warn
+  Error
+  Fatal
+}
+pub fn Severity::at_least(Self, Self) -> Bool
+pub fn Severity::equal(Self, Self) -> Bool
+pub fn Severity::not_equal(Self, Self) -> Bool
+pub fn Severity::number(Self) -> Int32
+pub fn Severity::of_name(StringView) -> Self?
+pub fn Severity::text(Self) -> String
+pub fn Severity::to_repr(Self) -> @debug.Repr
+
+pub struct SpanEvents {
+  span : @trace.Span
+}
+pub fn SpanEvents::accept(Self, LogRecord) -> Unit
+pub fn SpanEvents::new(span~ : @trace.Span) -> Self
+pub impl Sink for SpanEvents
+
+// Type aliases
+
+// Traits
+pub(open) trait Sink {
+  fn accept(Self, LogRecord) -> Unit
+}

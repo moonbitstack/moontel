@@ -1,0 +1,7 @@
+// The sink that carries a `moonlog` line into `log`: one logger in the program, and
+// the records it writes also reach a trace and an exporter.
+import {
+  "moonbitstack/moontel/log",
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moonlog",
+}

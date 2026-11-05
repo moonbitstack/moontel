@@ -3,6 +3,7 @@ package "moonbitstack/moontel"
 
 import {
   "moonbitstack/moontel/asgi",
+  "moonbitstack/moontel/log",
   "moonbitstack/moontel/propagate",
   "moonbitstack/moontel/trace",
 }
@@ -73,9 +74,15 @@ pub using @trace {type Event}
 
 pub using @propagate {type Extracted}
 
+pub using @log {type Fanout}
+
 pub using @trace {type Limits}
 
 pub using @trace {type Link}
+
+pub using @log {type LogRecord}
+
+pub using @log {type Logger}
 
 pub using @propagate {type Member}
 
@@ -93,9 +100,13 @@ pub using @trace {type Refused}
 
 pub using @trace {type SampleRequest}
 
+pub using @log {type Severity}
+
 pub using @trace {type Span}
 
 pub using @trace {type SpanData}
+
+pub using @log {type SpanEvents}
 
 pub using @trace {type SpanKind}
 

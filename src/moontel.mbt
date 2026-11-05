@@ -62,3 +62,18 @@ pub using @propagate {
 ///|
 /// The ASGI middleware that opens a server span per request.
 pub using @asgi {type Tracing, method_and_path}
+
+///|
+/// Log records and the logger that writes them.
+///
+/// A program that wants a log sink under this name imports `moontel/log` and writes
+/// `@log.Recorder`, because this facade already has a `Recorder` and a `Sink`: the
+/// trace package's. Two seams with one name, kept apart by the package that owns
+/// them.
+pub using @log {
+  type Fanout,
+  type LogRecord,
+  type Logger,
+  type Severity,
+  type SpanEvents,
+}
