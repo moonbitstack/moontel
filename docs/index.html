@@ -281,8 +281,9 @@
           <span class="plate-no">05 / 05</span>
           <h2>The index.</h2>
           <p class="note">
-            Three packages and a facade. Import the package that owns the type you
-            construct: a re-exported type arrives without its constructors. The
+            Six packages, three of them subpackages, and a facade. Import the package
+            that owns the type you construct: a re-exported type arrives without its
+            constructors. The
             complete reference, down to the last derived method, is on
             <a href="api.html">the API plate</a>.
           </p>
@@ -335,6 +336,40 @@
             <div class="index-row"><span class="name">Tracing::new</span><span class="leader"></span><span class="sig">(tracer~, now~, name?, baggage?, ignore?) → Tracing</span></div>
             <div class="index-row"><span class="name">Tracing::wrap</span><span class="leader"></span><span class="sig">(AsgiApp) → AsgiApp, and Layer for stacking</span></div>
             <div class="index-row"><span class="name">method_and_path</span><span class="leader"></span><span class="sig">(http_method, path) → String</span></div>
+          </div>
+
+          <div class="index-group">
+            <h3>log — records, the logger, the sinks</h3>
+            <div class="index-row"><span class="name">Logger::new</span><span class="leader"></span><span class="sig">(sink~, now~, scope?, attributes?, floor?, trace_based?, limits?) → Logger</span></div>
+            <div class="index-row"><span class="name">Logger::log</span><span class="leader"></span><span class="sig">(Severity, Value, attributes?, at?, observed?, event_name?, error?) → Unit</span></div>
+            <div class="index-row"><span class="name">Logger::write, info, warn, error, …</span><span class="leader"></span><span class="sig">a text body at one severity</span></div>
+            <div class="index-row"><span class="name">Logger::inside, with_context</span><span class="leader"></span><span class="sig">(Span) · (TraceContext) → Logger — the records name that trace</span></div>
+            <div class="index-row"><span class="name">Logger::under, with_attribute, enabled</span><span class="leader"></span><span class="sig">name a scope · carry a field · ask before building a body</span></div>
+            <div class="index-row"><span class="name">LogRecord</span><span class="leader"></span><span class="sig">time, observed, severity, body, attributes, trace_id, span_id, flags, event_name, scope</span></div>
+            <div class="index-row"><span class="name">Severity</span><span class="leader"></span><span class="sig">Trace · Debug · Info · Warn · Error · Fatal, numbered 1 · 5 · 9 · 13 · 17 · 21</span></div>
+            <div class="index-row"><span class="name">Sink, Recorder, Discard, Fanout</span><span class="leader"></span><span class="sig">accept(LogRecord) · in memory · thrown away · several at once</span></div>
+            <div class="index-row"><span class="name">SpanEvents</span><span class="leader"></span><span class="sig">a named record becomes an event on the span it was written in</span></div>
+          </div>
+
+          <div class="index-group">
+            <h3>otlp — the export</h3>
+            <div class="index-row"><span class="name">TraceExporter::new</span><span class="leader"></span><span class="sig">(transport~, endpoint?, headers?, resource?, scope?, policy?, backoff?, attempts?, now~, rand~) → TraceExporter</span></div>
+            <div class="index-row"><span class="name">LogsExporter, MetricsExporter</span><span class="leader"></span><span class="sig">the same shape for the other two signals</span></div>
+            <div class="index-row"><span class="name">flush, tick, run</span><span class="leader"></span><span class="sig">everything now · what is due · keep sending</span></div>
+            <div class="index-row"><span class="name">Report, Stats</span><span class="leader"></span><span class="sig">delivered, rejected, dropped, attempts · the same since the exporter was made</span></div>
+            <div class="index-row"><span class="name">BatchPolicy, Backoff</span><span class="leader"></span><span class="sig">2048 / 512 / 5s / 30s · 5s × 1.5, capped at 30s, jittered</span></div>
+            <div class="index-row"><span class="name">Transport, Request, Reply, Failed</span><span class="leader"></span><span class="sig">send(Request) → Reply raise · the seam a socket plugs into</span></div>
+            <div class="index-row"><span class="name">Resource, Scope</span><span class="leader"></span><span class="sig">service.name and the rest · the instrumentation scope</span></div>
+            <div class="index-row"><span class="name">Metric, DataPoint, Point</span><span class="leader"></span><span class="sig">a family · one series · asDouble / asInt / buckets / quantiles</span></div>
+            <div class="index-row"><span class="name">otlp/http.HttpTransport</span><span class="leader"></span><span class="sig">(timeout?) → HttpTransport — one POST per request on a connection pool</span></div>
+            <div class="index-row"><span class="name">otlp/p8s.bridge</span><span class="leader"></span><span class="sig">(Array[MetricFamily], at~, start?) → Array[Metric]</span></div>
+          </div>
+
+          <div class="index-group">
+            <h3>semconv — the names everyone agrees on</h3>
+            <div class="index-row"><span class="name">gen_ai_operation_name, gen_ai_request_model, …</span><span class="leader"></span><span class="sig">85 attribute keys</span></div>
+            <div class="index-row"><span class="name">gen_ai_client_inference_duration, …</span><span class="leader"></span><span class="sig">21 metric names</span></div>
+            <div class="index-row"><span class="name">gen_ai_client_inference, gen_ai_client_realtime_session_started, …</span><span class="leader"></span><span class="sig">13 span types and 11 event names</span></div>
           </div>
         </div>
       </section>

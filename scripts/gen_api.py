@@ -29,7 +29,20 @@ from dataclasses import dataclass, field
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TARGET = ROOT / "docs" / "api.html"
-PACKAGES = ("trace", "propagate", "asgi")
+# The name a section is anchored under, and the directory its interface is read
+# from. They differ where a package is nested: an anchor with a slash in it is not
+# something a URL can carry.
+PACKAGES = (
+    ("trace", "trace"),
+    ("propagate", "propagate"),
+    ("asgi", "asgi"),
+    ("log", "log"),
+    ("semconv", "semconv"),
+    ("otlp", "otlp"),
+    ("otlp-http", "otlp/http"),
+    ("otlp-p8s", "otlp/p8s"),
+    ("log-moonlog", "log/moonlog_bridge"),
+)
 
 # Methods every type with a derive or an implementation has, in no useful order.
 NOISE = {"equal", "not_equal", "to_repr", "to_string", "output"}
@@ -625,16 +638,16 @@ def missing_names(parsed: dict[str, list[Entry]], body: str) -> list[str]:
 def main() -> int:
     page = TARGET.read_text(encoding="utf-8")
     parsed = {
-        package: parse_mbti(
-            ROOT / "src" / package / "pkg.generated.mbti",
-            collect_docs(ROOT / "src" / package),
+        label: parse_mbti(
+            ROOT / "src" / directory / "pkg.generated.mbti",
+            collect_docs(ROOT / "src" / directory),
         )
-        for package in PACKAGES
+        for label, directory in PACKAGES
     }
 
     # `always` is documented on the type it is the value of, which is where a reader
     # looks for it; the value row repeats the sentence rather than sitting bare.
-    for package in PACKAGES:
+    for package, _directory in PACKAGES:
         by_name = {
             entry.name: entry.doc
             for entry in parsed[package]["errors"] + parsed[package]["types"]
@@ -647,13 +660,13 @@ def main() -> int:
                 entry.doc = by_name[mentioned.group(1)]
 
     anchors = Anchors()
-    for package in PACKAGES:
+    for package, _directory in PACKAGES:
         register(parsed[package], package, anchors)
 
-    for package in PACKAGES:
+    for package, directory in PACKAGES:
         body = build_package(parsed[package], package, anchors)
         missing = missing_names(parsed[package], body)
-        for name in surface_names(ROOT / "src" / package / "pkg.generated.mbti"):
+        for name in surface_names(ROOT / "src" / directory / "pkg.generated.mbti"):
             short = name.split("::")[-1]
             if name not in body and short not in body and name not in missing:
                 missing.append(name)
@@ -679,7 +692,7 @@ def main() -> int:
 
     # A crude guard against a generator that silently produces nothing: every
     # package section has to carry at least one entry.
-    for package in PACKAGES:
+    for package, _directory in PACKAGES:
         if f'id="{package}-' not in page:
             sys.stderr.write(f"no entries generated for {package}\n")
             return 1

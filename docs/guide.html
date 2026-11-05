@@ -555,24 +555,205 @@ tracestate: vendor=abc</pre>
           </aside>
         </section>
 
-        <section class="doc-section" id="absent" data-ruler-section="Not here">
+        <section class="doc-section" id="export" data-ruler-section="Export">
           <div class="doc-mark"><span class="plate-no">10</span></div>
+          <div class="doc-body">
+            <h2>Sending the signals.</h2>
+            <p>
+              A sink decides where spans go, and the library ships one that posts them
+              to a collector with OTLP over HTTP and a JSON body. Three exporters exist,
+              one per signal, and they share the request machinery: a queue, a batch, a
+              retry.
+            </p>
+<pre><code><span class="k">let</span> transport = <span class="a">@http.HttpTransport</span>::new()
+<span class="k">let</span> traces = <span class="a">@otlp.TraceExporter</span>::new(
+  transport~,
+  endpoint=<span class="s">"http://localhost:4318"</span>,
+  headers=[(<span class="s">"x-api-key"</span>, api_key)],
+  resource=<span class="a">@otlp.Resource</span>::of_service(<span class="s">"orders"</span>),
+  now=millis,
+  rand=random_bytes,
+)
+<span class="k">let</span> tracer = <span class="a">@trace.Tracer</span>::new(
+  sink=traces,
+  rand=random_bytes,
+  sampler=<span class="a">@trace.parent_based</span>(root=<span class="a">@trace.always</span>),
+)</code></pre>
+            <p>
+              <code>TraceExporter</code> is a <code>Sink</code>, so it goes where any
+              other sink goes. Accepting a span never waits for the network: it lands in
+              a queue, and <code>flush</code> or <code>run</code> empties it.
+            </p>
+            <p class="output-label">One run of the three-signal example</p>
+            <pre class="output">traces: delivered 1, rejected 0, dropped 0, requests 1
+logs: delivered 2, rejected 0, dropped 0, requests 1
+metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
+            <p>
+              The numbers are the SDK's: a queue of 2048, at most 512 records per
+              request, a request every 5 seconds and 30 seconds for one to finish. Past
+              2048 the newest record is refused and counted — telemetry that costs a
+              request its memory is worse than telemetry that is missing.
+            </p>
+            <p>
+              A refused request is retried when the specification says it may be:
+              <code>429</code>, <code>502</code>, <code>503</code> and <code>504</code>.
+              Any other <code>4xx</code> or <code>5xx</code> is final, and a
+              <code>200</code> with <code>partialSuccess</code> is an acceptance — the
+              protocol says not to send it again. A <code>Retry-After</code> header is
+              honoured in both of its forms, seconds or an HTTP date; without one the
+              wait is 5 seconds, times 1.5, capped at 30, jittered by a fifth.
+            </p>
+<pre><code><span class="k">let</span> reports = traces.<span class="a">flush</span>()
+<span class="k">if</span> reports.dropped &gt; 0 {
+  <span class="a">@log.Logger</span>::new(sink=logs, now=millis).warn(
+    <span class="s">"spans were dropped on the way out"</span>,
+    attributes=[(<span class="s">"count"</span>, <span class="a">@trace.Int</span>(reports.dropped.to_int64()))],
+  )
+}</code></pre>
+          </div>
+          <aside class="doc-aside">
+            <b>Langfuse and LangSmith</b>
+            <p>
+              Both take OTLP, so neither has a client here. Langfuse: base
+              <code>https://cloud.langfuse.com/api/public/otel</code>, header
+              <code>Authorization</code> with <code>Basic</code> and the public and
+              secret keys joined by a colon. LangSmith: base
+              <code>https://api.smith.langchain.com/otel</code>, headers
+              <code>x-api-key</code> and <code>Langsmith-Project</code>.
+            </p>
+            <p>
+              Langfuse documents HTTP with JSON and protobuf and does not take gRPC.
+              LangSmith's examples are all protobuf and say nothing about JSON, so treat
+              a trace arriving there as something to confirm against the service before
+              relying on it.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="logs" data-ruler-section="Logs">
+          <div class="doc-mark"><span class="plate-no">11</span></div>
+          <div class="doc-body">
+            <h2>Logs beside the trace.</h2>
+            <p>
+              A record is a value: when it happened, when it was seen, how urgent it is,
+              what it says, what it carries, and the span it was written in. A logger is
+              what every line from one part of a program shares.
+            </p>
+<pre><code><span class="k">let</span> logger = <span class="a">@log.Logger</span>::new(
+  sink=logs,
+  now=millis,
+  scope=<span class="s">"orders/payments"</span>,
+).inside(span)
+logger.info(<span class="s">"order placed"</span>, attributes=[(<span class="s">"order.id"</span>, <span class="a">@trace.Int</span>(42L))])</code></pre>
+            <p>
+              <code>inside(span)</code> is the whole of the correlation: every record the
+              logger writes then names that span's trace and span ids, which is what
+              lets a backend show the line beside the work it belongs to. A logger
+              without a span still writes; it just cannot say which trace the line is
+              part of.
+            </p>
+            <p>
+              Two filters, both off by default. A floor drops everything less urgent
+              than it, and <code>trace_based</code> drops records written inside a trace
+              that was not sampled, which keeps a sampled-down service from paying for
+              paragraphs about work no backend will see.
+            </p>
+<pre><code><span class="k">let</span> quiet = <span class="a">@log.Logger</span>::new(
+  sink=logs,
+  now=millis,
+  floor=<span class="a">@log.Severity</span>::Warn,
+  trace_based=<span class="k">true</span>,
+)
+<span class="k">if</span> quiet.enabled(<span class="a">@log.Severity</span>::Debug) {
+  <span class="c">// never reached: nothing below WARN is written</span>
+}</code></pre>
+            <p>
+              A record with an event name is also a point in time:
+              <code>SpanEvents</code> puts it on the span as an event, and a
+              <code>Fanout</code> sends the same record on to the exporter as well.
+            </p>
+<pre><code><span class="k">let</span> both = <span class="a">@log.Fanout</span>::new(sinks=[<span class="a">@log.SpanEvents</span>::new(span~), logs])
+<span class="k">let</span> logger = <span class="a">@log.Logger</span>::new(sink=both, now=millis).inside(span)
+logger.log(
+  <span class="a">@log.Severity</span>::Info,
+  <span class="a">@trace.Str</span>(<span class="s">"authorised"</span>),
+  event_name=<span class="s">"order.authorised"</span>,
+)</code></pre>
+          </div>
+          <aside class="doc-aside">
+            <b>An existing logger</b>
+            <p>
+              <code>log/moonlog_bridge</code> takes a line the program already writes
+              through a structured logger and turns it into one of these, with the level,
+              the fields and the caller's file and line. The span still comes from the
+              caller, because only the caller knows which request it is in.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="metrics" data-ruler-section="Metrics">
+          <div class="doc-mark"><span class="plate-no">12</span></div>
+          <div class="doc-body">
+            <h2>Metrics from a snapshot.</h2>
+            <p>
+              This library does not keep a meter. A program that already counts keeps
+              counting, and the bridge turns the snapshot into OTLP: one place where a
+              counter lives, and one place where it leaves.
+            </p>
+<pre><code><span class="k">let</span> registry = <span class="a">@metric.Registry</span>::new()
+<span class="k">let</span> placed = registry.counter(<span class="s">"orders_placed"</span>, <span class="s">"Orders placed."</span>)
+placed.inc(by=<span class="s">1.0</span>)
+<span class="k">for</span> metric <span class="k">in</span> <span class="a">@p8s.bridge</span>(registry.collect(at=<span class="s">0.0</span>), at=millis()) {
+  metrics.record(metric)
+}</code></pre>
+            <p>
+              The conversion is the compatibility specification's table, row by row: a
+              counter is a cumulative monotonic sum, a gauge is a gauge, a histogram is a
+              cumulative histogram with explicit bounds, a summary stays a summary, and
+              info and state sets become non-monotonic sums so a reader can add them up.
+              A gauge histogram has no OTLP instrument and is dropped rather than
+              misrepresented.
+            </p>
+            <p>
+              Names are not touched: a converter that renamed <code>http_requests</code>
+              would break every dashboard built on it. Units are translated to the codes
+              the specification lists, <code>seconds</code> to <code>s</code> and
+              <code>bytes</code> to <code>By</code>.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Two directions, one model</b>
+            <p>
+              A point counts from the start of the process (cumulative) or since the last
+              export (delta), and a reader has to know which before it adds two of them.
+              The bridge always reports what the snapshot is: cumulative.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="absent" data-ruler-section="Not here">
+          <div class="doc-mark"><span class="plate-no">13</span></div>
           <div class="doc-body">
             <h2>What is deliberately not here.</h2>
             <p>
-              moontel is the trace API and the trace SDK. It is not a telemetry
-              pipeline, and the things it leaves out are left out on purpose:
+              moontel produces the three signals and sends them. It is not a telemetry
+              pipeline and not a backend, and the things it leaves out are left out on
+              purpose:
             </p>
             <ul>
               <li>
-                <b>No OTLP exporter.</b> A sink is a trait of one method, and the
-                transport belongs to whoever owns it. Shipping bytes to a collector
-                means writing that method, not configuring this library.
+                <b>No protobuf and no gRPC.</b> OTLP over HTTP carries JSON here. The
+                binary encoding needs a Protobuf wire format, which is a library of its
+                own; when one exists, a second transport is a file, not a rewrite.
               </li>
               <li>
-                <b>No metrics or logs.</b> They are different signals with different
-                data models; folding them into a trace library would make all three
-                worse.
+                <b>No meter.</b> Metrics are read out of a snapshot a program already
+                keeps and translated to OTLP. Counting them here would mean two answers
+                to one question.
+              </li>
+              <li>
+                <b>No storage, no query, no page.</b> A collector, a hosted backend or a
+                local one reads what this sends; none of them is part of this library.
               </li>
               <li>
                 <b>No automatic instrumentation.</b> Nothing wraps your HTTP client or
@@ -591,9 +772,10 @@ tracestate: vendor=abc</pre>
               </li>
             </ul>
             <p>
-              These are the edges of the library, not gaps in it. If a service needs
-              one of them, the seam to build it on is <code>Sink</code>, and the code
-              at that seam says why.
+              These are the edges of the library, not gaps in it. Where a seam exists it
+              is named after what crosses it — <code>Sink</code> for where finished
+              signals go, <code>Transport</code> for how a request is carried — and the
+              code at that seam says why.
             </p>
           </div>
           <aside class="doc-aside">
@@ -601,7 +783,7 @@ tracestate: vendor=abc</pre>
             <p>
               <a href="api.html">The reference</a> lists every public name.<br />
               <a href="showcase.html">The showcase</a> takes a header apart.<br />
-              <a href="examples.html">The examples</a> are three programs you can run.
+              <a href="examples.html">The examples</a> are four programs you can run.
             </p>
           </aside>
         </section>

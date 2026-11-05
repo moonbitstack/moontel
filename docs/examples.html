@@ -65,7 +65,7 @@
       <main>
         <section class="page-head">
           <span class="marginalia page-kicker">Examples</span>
-          <h1 class="page-title">Three programs,<br /><em>and what they print.</em></h1>
+          <h1 class="page-title">Four programs,<br /><em>and what they print.</em></h1>
           <p class="page-lede">
             No excerpts and no pseudo-code: each listing below is the whole file
             under <code>src/examples</code>, and each output is what that file
@@ -75,6 +75,7 @@
             <div><dt>00</dt><dd>a trace, in memory</dd></div>
             <div><dt>01</dt><dd>one hop of propagation</dd></div>
             <div><dt>02</dt><dd>a traced ASGI request</dd></div>
+            <div><dt>04</dt><dd>three signals, out of the process</dd></div>
           </dl>
         </section>
 
@@ -405,22 +406,216 @@ POST /orders  10000000 ns  Unset
           </div>
         </section>
 
+
+        <section class="example" id="otlp" data-ruler-section="04 · otlp">
+          <header class="example-head">
+            <span class="plate-no">04</span>
+            <h2>otlp</h2>
+            <span class="path">src/examples/04-otlp/main.mbt</span>
+            <span class="run">moon run src/examples/04-otlp --target native -- http://localhost:4318</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// All three signals leaving the process over OTLP/HTTP: a server span with an
+/// event, two log records written inside it, and a counter and a histogram turned
+/// into OTLP metrics.
+///
+///     moon run src/examples/04-otlp --target native
+///     moon run src/examples/04-otlp --target native -- http://localhost:4318
+///
+/// With an endpoint on the command line the program requires the collector to be
+/// there: it exits non-zero when the batch could not be delivered, which is what
+/// the conformance job in CI runs. Without one it talks to the protocol&#x27;s default
+/// address and reports what happened, so running the examples one after another
+/// stays useful on a machine with no collector.
+#coverage.skip
+async fn main {
+  let arguments = @env.args()
+  let endpoint = if arguments.length() &gt; 1 {
+    arguments[1]
+  } else {
+    &quot;http://localhost:4318&quot;
+  }
+  let required = arguments.length() &gt; 1
+  // With no collector named there is nothing to retry against, so one attempt says
+  // whether something is listening without spending half a minute finding out.
+  let attempts = if required {
+    5
+  } else {
+    1
+  }
+  let transport = @http.HttpTransport::new()
+  let started = 1_700_000_000_000_000_000L
+
+  // One exporter per signal. They share the transport and the resource, and each
+  // batches and retries on its own.
+  let traces = @otlp.TraceExporter::new(
+    transport~,
+    endpoint~,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;).with_attribute(
+      &quot;deployment.environment.name&quot;, @trace.Str(&quot;test&quot;),
+    ),
+    now=millis,
+    rand=random_bytes,
+    attempts~,
+  )
+  let logs = @otlp.LogsExporter::new(
+    transport~,
+    endpoint~,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    now=millis,
+    rand=random_bytes,
+    attempts~,
+  )
+  let metrics = @otlp.MetricsExporter::new(
+    transport~,
+    endpoint~,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    now=millis,
+    rand=random_bytes,
+    attempts~,
+  )
+
+  // A span the sampler keeps, with one child and one event on it.
+  let tracer = @trace.Tracer::new(
+    sink=traces,
+    rand=random_bytes,
+    sampler=@trace.parent_based(root=@trace.always),
+  )
+  let span = tracer.start(
+    &quot;GET /orders/42&quot;,
+    kind=@trace.Server,
+    at=started,
+    attributes=[(&quot;http.request.method&quot;, @trace.Str(&quot;GET&quot;))],
+  ) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+  span.add_event(&quot;cache.miss&quot;, at=started + 1_000_000L)
+  span.set_attribute(&quot;http.response.status_code&quot;, @trace.Int(200L))
+  span.set_status(@trace.Ok)
+
+  // The same span is what makes the two log records joinable to the trace.
+  let logger = @log.Logger::new(
+    sink=logs,
+    now=millis,
+    scope=&quot;moontel-example/orders&quot;,
+  ).inside(span)
+  logger.info(
+    &quot;order placed&quot;,
+    attributes=[(&quot;order.id&quot;, @trace.Int(42L))],
+    at=started + 2_000_000L,
+  )
+  logger.warn(&quot;payment retried once&quot;, at=started + 3_000_000L)
+  span.finish(at=started + 4_000_000L)
+
+  // A program that already keeps metrics does not keep a second set: this reads the
+  // snapshot and the bridge turns it into OTLP.
+  let registry = @metric.Registry::new()
+  let placed = registry.counter(&quot;orders_placed&quot;, &quot;Orders placed.&quot;)
+  placed.inc(by=1.0)
+  let latency = registry.histogram(
+    &quot;order_latency&quot;,
+    &quot;Order latency.&quot;,
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1],
+  )
+  latency.observe(0.012)
+  for metric in @p8s.bridge(registry.collect(at=0.0), at=started) {
+    metrics.record(metric)
+  }
+
+  let spans = traces.flush()
+  let records = logs.flush()
+  let points = metrics.flush()
+  report(&quot;traces&quot;, spans)
+  report(&quot;logs&quot;, records)
+  report(&quot;metrics&quot;, points)
+
+  let failed = !delivered(spans) || !delivered(records) || !delivered(points)
+  if failed &amp;&amp; required {
+    abort(
+      &quot;a collector was named at \{endpoint} and did not take every signal&quot;,
+    )
+  }
+  if failed {
+    println(
+      &quot;nothing answered at \{endpoint}; start a collector or pass its base URL&quot;,
+    )
+  }
+}
+
+///|
+/// Whether one flush got its whole batch to the collector.
+fn delivered(report : @otlp.Report) -&gt; Bool {
+  report.dropped == 0 &amp;&amp; report.rejected == 0 &amp;&amp; report.attempts &gt; 0
+}
+
+///|
+fn report(signal : String, outcome : @otlp.Report) -&gt; Unit {
+  println(
+    &quot;\{signal}: delivered \{outcome.delivered}, rejected \{outcome.rejected}, &quot; +
+    &quot;dropped \{outcome.dropped}, requests \{outcome.attempts}&quot;,
+  )
+}
+
+///|
+/// The clock the exporters use for batching and for the retry budget, in
+/// milliseconds. The runtime&#x27;s is monotonic, which is what those two need; a
+/// wall-clock reading would be needed only to read a `Retry-After` given as a date,
+/// and this example hands its records the times it wants instead.
+fn millis() -&gt; Int64 {
+  @async.now()
+}
+
+///|
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonseed.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}
+</code></pre></div>
+            <div class="notes">
+              <p>
+                The only example that leaves the machine. A tracer hands its span to an
+                exporter, a logger writes two records inside that same span, and a
+                Prometheus snapshot is translated into OTLP metric points — then all
+                three are posted, batched and retried like any other sink.
+              </p>
+              <p>
+                An endpoint on the command line makes the collector required: the
+                program fails when a signal could not be delivered, which is what the
+                conformance job in CI runs. Without one it talks to the protocol's
+                default address, tries once and says what happened.
+              </p>
+              <p class="output-label">One run, against a collector on its default port</p>
+              <pre class="output">traces: delivered 1, rejected 0, dropped 0, requests 1
+logs: delivered 2, rejected 0, dropped 0, requests 1
+metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
+            </div>
+          </div>
+        </section>
+
         <section class="doc-section" id="run" data-ruler-section="Run them">
-          <div class="doc-mark"><span class="plate-no">03</span></div>
+          <div class="doc-mark"><span class="plate-no">04</span></div>
           <div class="doc-body">
             <h2>Run them yourself.</h2>
             <p>
-              The three programs are packages in this repository, so a checkout can
+              The four programs are packages in this repository, so a checkout can
               run them without installing anything else:
             </p>
 <pre><code><span class="a">moon</span> run src/examples/00-hello --target native
 <span class="a">moon</span> run src/examples/01-propagate --target native
-<span class="a">moon</span> run src/examples/02-asgi --target native</code></pre>
+<span class="a">moon</span> run src/examples/02-asgi --target native
+<span class="a">moon</span> run src/examples/04-otlp --target native -- http://localhost:4318</code></pre>
             <p>
               <code>00-hello</code> and <code>01-propagate</code> build on every
               target. <code>02-asgi</code> awaits what the application sends, and the
               async runtime has no wasm-gc build, so that target builds a second file
               that says so rather than a program that only looks like the example.
+              <code>04-otlp</code> needs a socket, which the JavaScript backends do not
+              have, so it is built for native and wasm only.
             </p>
             <p>
               The home page runs a fourth program: it compiles this library to

@@ -11,8 +11,9 @@
 
 ---
 
-Distributed tracing for MoonBit: spans, the samplers that decide which of them to
-keep, and the headers that carry a trace from one service to the next.
+OpenTelemetry for MoonBit: spans, the samplers that decide which of them to keep, the
+headers that carry a trace from one service to the next, log records written beside a
+span, and the export of all three signals to a collector.
 
 A request that touches five services is one trace with a tree of spans, and every
 service has to agree on the same names, the same ids and the same wire format for
@@ -22,7 +23,7 @@ what to keep, and reads and writes the headers the agreement is written in —
 Baggage.
 
 The [documentation site](https://moonbitstack.github.io/moontel/) has a guide, the
-complete reference, a showcase you can play with, and three runnable examples.
+complete reference, a showcase you can play with, and four runnable examples.
 
 ```moonbit
 fn traced_request(rand : (Int32) -> Bytes, at : Int64) -> @trace.Span raise {
@@ -92,7 +93,7 @@ formatter(ignore: [ "orders.g.mbt" ])
 `moon run src/examples/03-annotated` shows it. The rest of this page builds spans by hand, which is
 what the generated code does.
 
-## The two seams
+## The seams
 
 A tracer needs two things it cannot invent for itself.
 
@@ -121,8 +122,9 @@ fn traced_with_printer(rand : (Int32) -> Bytes, at : Int64) -> Unit raise {
 
 `Recorder` keeps spans in memory, which is what examples and debugging want. `Discard`
 throws them away, which is what a program that only wants trace ids for its logs
-wants. Anything else — OTLP over HTTP, a file, a queue a background task drains — is a
-`Sink` of your own, and the transport stays yours.
+wants. A collector, a file or a queue a background task drains is a `Sink` of your own,
+and the transport stays yours; the library's own exporter is one such sink, and the
+request it makes is handed to a `Transport` for the same reason.
 
 A sink is handed every span that was recorded, including the ones the sampler kept out
 of the trace. `SpanData::sampled` is the bit that separates "keep for counting" from
@@ -231,11 +233,96 @@ at this hop.
 A WebSocket or a lifespan scope is passed straight through: a `Server` span for either
 needs a different set of attributes, and a wrong span is worse than a missing one.
 
+## Sending the signals
+
+A sink decides where spans go, and one that speaks OTLP over HTTP is part of the
+library. It queues what the tracer finishes and posts it, so accepting a span never
+waits for a collector:
+
+```moonbit
+fn traced(now : () -> Int64, rand : (Int32) -> Bytes) -> @trace.Tracer {
+  let transport = @http.HttpTransport::new()
+  let exporter = @otlp.TraceExporter::new(
+    transport~,
+    endpoint="http://localhost:4318",
+    resource=@otlp.Resource::of_service("orders"),
+    now~,
+    rand~,
+  )
+  @trace.Tracer::new(rand~, sink=exporter, sampler=@trace.parent_based(root=@trace.always))
+}
+```
+
+The same shape exists for log records and for metrics. What is inside is the SDK's
+batch processor: a queue of 2048, at most 512 records per request, a request every five
+seconds, thirty seconds for one to finish. A refusal is retried when the protocol says
+it may be — `429`, `502`, `503`, `504` — after the wait a `Retry-After` header asks for,
+or an exponential backoff of five seconds times one and a half, capped at thirty and
+jittered by a fifth. Any other refusal is final. `flush` sends everything now and
+returns what happened to it.
+
+`otlp` writes the request; `otlp/http` carries it. A program that only needs to encode a
+payload, or a test that answers from a script, implements `Transport` and pulls in no
+socket.
+
+## Logs
+
+A record says when it happened, how urgent it is, what it says and which span it was
+written in. A logger is what the lines from one part of a program share:
+
+```moonbit
+fn failing(logs : &@log.Sink, span : @trace.Span, now : () -> Int64) -> Unit {
+  let logger = @log.Logger::new(sink=logs, now~, scope="orders/payments").inside(span)
+  logger.info("order placed", attributes=[("order.id", @trace.Int(42L))])
+  logger.warn("the card was retried once")
+}
+```
+
+A record can carry the failure that caused it: `error=` adds `exception.message`, and
+the line's own attributes win over it when they name that key.
+
+`inside(span)` stamps every record with that span's trace and span ids, which is what
+lets a backend show the line beside the work it belongs to. A logger can drop
+everything below a floor, or everything written inside a trace nobody sampled, and can
+ask first with `enabled`. A record that names itself becomes a span event through
+`SpanEvents`, and a `Fanout` sends the same record to several sinks at once.
+
+`log/moonlog_bridge` does the same for lines a program already writes through a
+structured logger: the level, the fields and the caller's file and line become a record.
+
+## Metrics
+
+There is no meter here. A program that already counts keeps counting, and the bridge
+turns the snapshot it takes into OTLP metrics:
+
+```moonbit
+fn export(metrics : @otlp.MetricsExporter, now : () -> Int64) -> Unit raise {
+  let registry = @metric.Registry::new()
+  let placed = registry.counter("orders_placed", "Orders placed.")
+  placed.inc(by=1.0)
+  for metric in @p8s.bridge(registry.collect(at=0.0), at=now()) {
+    metrics.record(metric)
+  }
+}
+```
+
+A counter becomes a cumulative monotonic sum, a gauge stays a gauge, a histogram
+becomes one with explicit bounds, and a summary stays a summary. Names are not touched —
+a converter that renamed `http_requests` would break every dashboard built on it — and
+units are translated to the codes the compatibility specification lists.
+
+## The GenAI names
+
+`semconv` is constants and nothing else: the attribute keys, metric names, span types
+and event names of the OpenTelemetry GenAI semantic conventions, generated from the
+upstream registry and pinned to a commit. A key spelled by hand is a key no dashboard
+matches, and this package is where the spelling lives.
+
 ## The interface
 
-Three packages, plus a facade that re-exports them. Import the package that owns the
-type you construct — an enum constructor is reached through the package that defines
-it, not through the facade.
+Six packages, three of them subpackages, plus a facade that re-exports four of them.
+Import the package that owns the type you construct — an enum constructor is reached
+through the package that defines it, not through the facade.
 
 ### `trace` — spans, samplers, the sink seam
 
@@ -285,6 +372,44 @@ it, not through the facade.
 | `Tracing::new` | `(tracer~, now~ : () -> Int64, name?, baggage? : Bool, ignore? : Array[String]) -> Tracing` |
 | `Tracing::wrap` | `(AsgiApp) -> AsgiApp`, and `Layer` for stacking with other middleware |
 
+### `log` — records, the logger, the sinks
+
+| Item | Signature |
+|:--|:--|
+| `Logger::new` | `(sink~ : &Sink, now~ : () -> Int64, scope?, attributes?, floor? : Severity, trace_based? : Bool, limits? : Limits) -> Logger` |
+| `Logger::log` | `(severity : Severity, body : Value, attributes?, at? : Int64, observed? : Int64, event_name? : String, error? : Error) -> Unit` |
+| `Logger::write`, `trace`, `debug`, `info`, `warn`, `error`, `fatal` | a text body at one severity |
+| `Logger::inside` | `(Span) -> Logger` — every record it writes names that span |
+| `Logger::with_context` | `(TraceContext) -> Logger` |
+| `Logger::under`, `with_attribute`, `enabled` | name a nested scope, carry a field, ask before building a body |
+| `LogRecord` | `time, observed, severity, severity_text, body, attributes, trace_id, span_id, flags, event_name, scope, dropped` |
+| `LogRecord::with_context`, `with_attribute`, `with_event_name`, `timestamp`, `context` | build one, and read what it names |
+| `Severity` | `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, numbered 1, 5, 9, 13, 17, 21 |
+| `Sink` | `accept(LogRecord) -> Unit` |
+| `Recorder`, `Discard`, `Fanout`, `SpanEvents` | in memory, thrown away, several sinks, and a bridge onto the span |
+
+### `otlp` — the export
+
+| Item | Signature |
+|:--|:--|
+| `TraceExporter::new` | `(transport~ : &Transport, endpoint? : String, headers?, resource? : Resource, scope? : Scope, policy? : BatchPolicy, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes) -> TraceExporter` |
+| `LogsExporter::new`, `MetricsExporter::new` | the same shape for the other two signals |
+| `flush`, `tick`, `run` | send everything, send what is due, keep sending |
+| `Report`, `Stats` | `delivered, rejected, dropped, attempts` per flush, and since the exporter was made |
+| `BatchPolicy` | `queue_limit 2048, batch 512, delay 5000, timeout 30000` |
+| `Backoff` | `initial 5000, multiplier 1.5, maximum 30000, jitter 0.2` |
+| `Transport` | `async fn send(Self, Request) -> Reply raise Failed` |
+| `Resource`, `Scope` | what produced the telemetry, and which library in it did |
+| `Metric`, `MetricKind`, `DataPoint`, `Point`, `Temporality`, `Exemplar` | the OTLP metric shapes, for a producer that has its own numbers |
+
+### `otlp/http`, `otlp/p8s`, `semconv`
+
+| Item | Signature |
+|:--|:--|
+| `HttpTransport::new` | `(timeout? : Int32) -> HttpTransport raise Failed` |
+| `bridge` | `(families : Array[MetricFamily], at~ : Int64, start? : Int64) -> Array[Metric]` |
+| `gen_ai_request_model`, `gen_ai_client_inference_duration`, … | 85 attribute keys, 21 metric names, 13 span types and 11 event names |
+
 ## Limits
 
 A span keeps at most 128 attributes, 128 events and 128 links, and an event at most 128
@@ -304,11 +429,13 @@ runs past 256 characters still drops the header.
 
 ## What this is not
 
-- **No OTLP export.** A `Sink` is the seam; a sink that speaks OTLP over HTTP is the
-  next piece of work, and does not belong in the tracing model.
-- **No metrics and no logs.** Those are separate signals with their own shapes.
+- **No protobuf and no gRPC.** OTLP over HTTP carries JSON here.
+- **No meter.** Metrics are read out of a snapshot a program already keeps and
+  translated to OTLP; nothing is counted twice.
+- **No storage, no query, no page.** A collector or a hosted backend reads what this
+  sends.
 - **No clock, no sockets, no framework.** A tracer is handed its times, its ids and its
-  destination.
+  destination; a transport is handed a request.
 
 ## Examples
 
@@ -316,6 +443,7 @@ runs past 256 characters still drops the header.
 moon run src/examples/00-hello        # a root span, a child, attributes and an event
 moon run src/examples/01-propagate    # reading a request's context, writing the next one's
 moon run src/examples/02-asgi         # the middleware over an application
+moon run src/examples/04-otlp         # three signals, to a collector
 ```
 
 ## Licence
