@@ -60,7 +60,7 @@ async fn hop(
       let payload = @json.parse(body[:], preserve_number_repr=true) catch {
         _ => @json.Json::array([])
       }
-      let span = start_hop(@propagate.extract(http.headers))
+      let extracted = @propagate.extract(http.headers)
       let results : Array[@json.Json] = []
       for action in actions(payload) {
         let url = match field(action, "url") {
@@ -68,19 +68,22 @@ async fn hop(
           _ => continue
         }
         let headers = headers_of(action)
+        // One span per call: three calls made on behalf of one request are three
+        // outbound operations, and the next hop sees three different parents.
+        let span = start_hop(extracted)
         let outgoing = match span {
           Some(span) =>
             @propagate.inject(headers, {
               context: Some(span.context()),
-              baggage: baggage_of(http.headers),
+              baggage: extracted.baggage,
             })
           None => headers
         }
         results.push(forward(url, outgoing))
-      }
-      match span {
-        Some(span) => span.finish(at=0L)
-        None => ()
+        match span {
+          Some(span) => span.finish(at=0L)
+          None => ()
+        }
       }
       let answer = @json.Json::object(Map([("results", @json.Json::array(results))]))
       send(
@@ -119,12 +122,6 @@ fn start_hop(extracted : @propagate.Extracted) -> @trace.Span? {
     Ok(span) => Some(span)
     Err(_) => None
   }
-}
-
-///|
-/// The baggage the request carried, so a hop does not drop what the sender attached.
-fn baggage_of(headers : Array[(String, String)]) -> @propagate.Baggage {
-  @propagate.extract(headers).baggage
 }
 
 ///|

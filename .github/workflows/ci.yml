@@ -134,7 +134,7 @@ jobs:
 
       - name: the collector parsed every signal
         run: |
-          docker logs collector > collector.log
+          docker logs collector > collector.log 2>&1
           python3 - <<'EOF'
           import pathlib
           import sys
