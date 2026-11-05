@@ -109,6 +109,9 @@ jobs:
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: post install
+        run: |
           moon version --all
           moon update
 
@@ -160,6 +163,9 @@ jobs:
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: post install
+        run: |
           moon version --all
           moon update
 
@@ -197,4 +203,4 @@ jobs:
 
       - name: the hop's log
         if: failure()
-        run: cat hop.log
+        run: cat hop.log || true
