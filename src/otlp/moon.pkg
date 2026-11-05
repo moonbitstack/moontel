@@ -1,0 +1,13 @@
+// OTLP over HTTP with a JSON body: the wire format, the batching, and the retry
+// rules, with the request itself left to a `Transport` so this package needs no
+// socket. `otlp/http` supplies the one that talks over the network.
+//
+// OTLP specification (JSON protobuf encoding, retryable status codes, Retry-After):
+// https://opentelemetry.io/docs/specs/otlp/
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/log",
+  "moonbitstack/moonbase/base16",
+  "moonbitlang/core/json",
+  "moonbitlang/async",
+}

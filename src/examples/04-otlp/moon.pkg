@@ -1,0 +1,21 @@
+// All three signals leaving the process over OTLP/HTTP:
+// `moon run src/examples/04-otlp --target native`.
+pkgtype(kind: "executable")
+
+// A connection is the one thing this example cannot do without, and the HTTP client
+// underneath compiles for native and wasm only.
+
+supported_targets = "+native+wasm"
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/log",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/otlp/http",
+  "moonbitstack/moontel/otlp/p8s",
+  "moonbitstack/moonp8s/metric",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
+  "moonbitlang/async",
+  "moonbitlang/core/env",
+}

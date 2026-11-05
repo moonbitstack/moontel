@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/otlp/http"
+
+import {
+  "moonbitstack/moontel/otlp",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct HttpTransport {
+  post : async (@otlp.Request) -> (@otlp.Reply?, String)
+}
+pub fn HttpTransport::new(timeout? : Int32) -> Self
+pub async fn HttpTransport::send(Self, @otlp.Request) -> @otlp.Reply raise @otlp.Failed
+pub impl @otlp.Transport for HttpTransport
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,10 @@
+// The bridge from Prometheus metric families to OTLP metrics: a program that keeps
+// its metrics in `moonp8s` exports them here rather than accumulating a second copy.
+//
+// OpenTelemetry Prometheus and OpenMetrics compatibility:
+// https://github.com/open-telemetry/opentelemetry-specification/blob/v1.62.0/specification/compatibility/prometheus_and_openmetrics.md
+import {
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moonp8s/metric",
+}
