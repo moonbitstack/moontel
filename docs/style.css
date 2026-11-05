@@ -1530,6 +1530,11 @@ code {
   max-width: none;
 }
 
+/* A second note in the same margin: the same rule, a breath of space above it. */
+.doc-aside p + b {
+  margin-top: 10px;
+}
+
 .doc-aside code {
   color: var(--ink-dim);
   font-size: 10px;

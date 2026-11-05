@@ -19,7 +19,8 @@
 /// - a summary is a summary;
 /// - info and state sets are non-monotonic sums, which is what lets a reader add
 ///   them up across series;
-/// - a gauge histogram has no OTLP instrument and is dropped, and said to be.
+/// - a gauge histogram has no OTLP instrument and is dropped, and
+///   `bridge_with_report` names it.
 ///
 /// A name loses the unit the exposition appended: `http_requests` registered with
 /// unit `seconds` is written out as `http_requests_seconds`, and the OTLP name is
@@ -61,6 +62,7 @@ pub fn bridge_with_report(
 ///|
 /// The metrics a bridge produced, and the families it left out.
 pub(all) struct Report {
+  /// The metrics, in the order their families arrived.
   metrics : Array[@otlp.Metric]
   /// The families whose kind has no OTLP instrument, in the order they arrived.
   dropped : Array[Dropped]
