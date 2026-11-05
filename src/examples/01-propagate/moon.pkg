@@ -5,6 +5,6 @@ pkgtype(kind: "executable")
 import {
   "moonbitstack/moontel/trace",
   "moonbitstack/moontel/propagate",
-  "moonbitstack/moonrand",
-  "moonbitstack/moonrand/system",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
 }

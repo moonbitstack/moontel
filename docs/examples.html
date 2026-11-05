@@ -144,7 +144,7 @@ fn main {
 /// to the edge is the one that knows what to do when there is none; here that is to
 /// stop rather than to trace with predictable ids.
 fn random_bytes(width : Int32) -&gt; Bytes {
-  @moonrand.bytes(width, @system.source) catch {
+  @moonseed.bytes(width, @system.source) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
 }</code></pre></div>
@@ -239,7 +239,7 @@ fn main {
 
 ///|
 fn random_bytes(width : Int32) -&gt; Bytes {
-  @moonrand.bytes(width, @system.source) catch {
+  @moonseed.bytes(width, @system.source) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
 }</code></pre></div>
@@ -375,7 +375,7 @@ fn clock() -&gt; () -&gt; Int64 {
 
 ///|
 fn random_bytes(width : Int32) -&gt; Bytes {
-  @moonrand.bytes(width, @system.source) catch {
+  @moonseed.bytes(width, @system.source) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
 }</code></pre></div>

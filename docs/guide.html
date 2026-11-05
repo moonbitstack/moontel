@@ -114,8 +114,8 @@
   <span class="s">"moonbitstack/moontel/asgi"</span>,
   <span class="c">// The entropy source below, only for these examples;</span>
   <span class="c">// your runtime may have one of its own.</span>
-  <span class="s">"moonbitstack/moonrand"</span>,
-  <span class="s">"moonbitstack/moonrand/system"</span>,
+  <span class="s">"moonbitstack/moonseed"</span>,
+  <span class="s">"moonbitstack/moonseed/system"</span>,
 }</code></pre>
             <p>
               A type is reached through the package that defines it:
@@ -193,7 +193,7 @@
 }
 
 <span class="k">fn</span> random_bytes(width : Int32) -&gt; Bytes {
-  <span class="a">@moonrand.bytes</span>(width, <span class="a">@system.source</span>) <span class="k">catch</span> {
+  <span class="a">@moonseed.bytes</span>(width, <span class="a">@system.source</span>) <span class="k">catch</span> {
     _ =&gt; abort(<span class="s">"the platform has no entropy source"</span>)
   }
 }</code></pre>

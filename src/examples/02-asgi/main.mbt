@@ -96,7 +96,7 @@ fn clock() -> () -> Int64 {
 
 ///|
 fn random_bytes(width : Int32) -> Bytes {
-  @moonrand.bytes(width, @system.source) catch {
+  @moonseed.bytes(width, @system.source) catch {
     _ => abort("the platform has no entropy source")
   }
 }

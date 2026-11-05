@@ -7,6 +7,6 @@ pkgtype(kind: "executable")
 // than the facade over it.
 import {
   "moonbitstack/moontel/trace",
-  "moonbitstack/moonrand",
-  "moonbitstack/moonrand/system",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
 }

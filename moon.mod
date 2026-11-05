@@ -36,7 +36,7 @@ import {
   "moonbitlang/parser@0.4.6",
   "moonbitlang/async@0.22.5",
   "moonbitlang/async@0.22.5",
-  "moonbitstack/moonasgi@0.10.4",
-  "moonbitstack/moonbase@0.4.2",
-  "moonbitstack/moonrand@0.1.0",
+  "moonbitstack/moonasgi@0.10.6",
+  "moonbitstack/moonbase@0.4.3",
+  "moonbitstack/moonseed@0.1.1",
 }

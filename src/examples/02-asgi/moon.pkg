@@ -7,8 +7,8 @@ import {
   "moonbitstack/moontel/asgi",
   "moonbitstack/moonasgi/spec",
   "moonbitlang/async",
-  "moonbitstack/moonrand",
-  "moonbitstack/moonrand/system",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
 }
 
 // Driving an application means awaiting what it sends, and the async runtime this
