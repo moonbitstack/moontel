@@ -1,0 +1,7 @@
+// Names of the OpenTelemetry GenAI semantic conventions: the attribute keys, the
+// metric names, the span types and the event names that a backend, a dashboard
+// and a collector all agree on. Constants only, no code and no dependency, so any
+// library can name what it records without pulling a runtime in.
+//
+// OpenTelemetry semantic conventions for generative AI:
+// https://github.com/open-telemetry/semantic-conventions-genai

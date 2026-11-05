@@ -1,0 +1,271 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/semconv"
+
+// Values
+pub let gen_ai_agent_description : String
+
+pub let gen_ai_agent_id : String
+
+pub let gen_ai_agent_name : String
+
+pub let gen_ai_agent_version : String
+
+pub let gen_ai_client_embeddings : String
+
+pub let gen_ai_client_embeddings_duration : String
+
+pub let gen_ai_client_embeddings_exception : String
+
+pub let gen_ai_client_embeddings_operation_input_tokens : String
+
+pub let gen_ai_client_fetch_response_exception : String
+
+pub let gen_ai_client_inference : String
+
+pub let gen_ai_client_inference_duration : String
+
+pub let gen_ai_client_inference_exception : String
+
+pub let gen_ai_client_inference_operation_details : String
+
+pub let gen_ai_client_inference_operation_input_tokens : String
+
+pub let gen_ai_client_inference_operation_output_tokens : String
+
+pub let gen_ai_client_inference_time_per_output_chunk : String
+
+pub let gen_ai_client_inference_time_to_first_chunk : String
+
+pub let gen_ai_client_inference_usage_cache_read_input_tokens : String
+
+pub let gen_ai_client_inference_usage_cache_write_input_tokens : String
+
+pub let gen_ai_client_inference_usage_input_tokens : String
+
+pub let gen_ai_client_inference_usage_output_tokens : String
+
+pub let gen_ai_client_inference_usage_reasoning_output_tokens : String
+
+pub let gen_ai_client_invoke_agent_exception : String
+
+pub let gen_ai_client_operation_duration : String
+
+pub let gen_ai_client_operation_exception : String
+
+pub let gen_ai_client_realtime_session_ended : String
+
+pub let gen_ai_client_realtime_session_started : String
+
+pub let gen_ai_conversation_compacted : String
+
+pub let gen_ai_conversation_id : String
+
+pub let gen_ai_create_agent_client : String
+
+pub let gen_ai_data_source_id : String
+
+pub let gen_ai_embeddings_dimension_count : String
+
+pub let gen_ai_evaluation_explanation : String
+
+pub let gen_ai_evaluation_name : String
+
+pub let gen_ai_evaluation_result : String
+
+pub let gen_ai_evaluation_score_label : String
+
+pub let gen_ai_evaluation_score_value : String
+
+pub let gen_ai_execute_tool_duration : String
+
+pub let gen_ai_execute_tool_exception : String
+
+pub let gen_ai_execute_tool_internal : String
+
+pub let gen_ai_fetch_response_client : String
+
+pub let gen_ai_input_messages : String
+
+pub let gen_ai_input_messages_ref : String
+
+pub let gen_ai_invoke_agent_client : String
+
+pub let gen_ai_invoke_agent_duration : String
+
+pub let gen_ai_invoke_agent_exception : String
+
+pub let gen_ai_invoke_agent_inference_calls : String
+
+pub let gen_ai_invoke_agent_internal : String
+
+pub let gen_ai_invoke_agent_tool_calls : String
+
+pub let gen_ai_main_agent_description : String
+
+pub let gen_ai_main_agent_id : String
+
+pub let gen_ai_main_agent_name : String
+
+pub let gen_ai_memory_client : String
+
+pub let gen_ai_memory_query_text : String
+
+pub let gen_ai_memory_record_count : String
+
+pub let gen_ai_memory_record_id : String
+
+pub let gen_ai_memory_records : String
+
+pub let gen_ai_memory_store_id : String
+
+pub let gen_ai_operation_name : String
+
+pub let gen_ai_output_messages : String
+
+pub let gen_ai_output_messages_ref : String
+
+pub let gen_ai_output_type : String
+
+pub let gen_ai_plan_internal : String
+
+pub let gen_ai_prompt_name : String
+
+pub let gen_ai_prompt_variable : String
+
+pub let gen_ai_prompt_version : String
+
+pub let gen_ai_provider_name : String
+
+pub let gen_ai_realtime_inference_client : String
+
+pub let gen_ai_realtime_session_id : String
+
+pub let gen_ai_request_choice_count : String
+
+pub let gen_ai_request_encoding_formats : String
+
+pub let gen_ai_request_frequency_penalty : String
+
+pub let gen_ai_request_max_tokens : String
+
+pub let gen_ai_request_model : String
+
+pub let gen_ai_request_presence_penalty : String
+
+pub let gen_ai_request_previous_response_id : String
+
+pub let gen_ai_request_reasoning_level : String
+
+pub let gen_ai_request_seed : String
+
+pub let gen_ai_request_stop_sequences : String
+
+pub let gen_ai_request_stream : String
+
+pub let gen_ai_request_stream_cursor : String
+
+pub let gen_ai_request_temperature : String
+
+pub let gen_ai_request_top_k : String
+
+pub let gen_ai_request_top_p : String
+
+pub let gen_ai_response_finish_reasons : String
+
+pub let gen_ai_response_id : String
+
+pub let gen_ai_response_model : String
+
+pub let gen_ai_response_status : String
+
+pub let gen_ai_response_time_to_first_chunk : String
+
+pub let gen_ai_retrieval : String
+
+pub let gen_ai_retrieval_client : String
+
+pub let gen_ai_retrieval_documents : String
+
+pub let gen_ai_retrieval_duration : String
+
+pub let gen_ai_retrieval_query_text : String
+
+pub let gen_ai_retrieval_top_k : String
+
+pub let gen_ai_server_request_duration : String
+
+pub let gen_ai_server_time_per_output_token : String
+
+pub let gen_ai_server_time_to_first_token : String
+
+pub let gen_ai_skill_description : String
+
+pub let gen_ai_skill_name : String
+
+pub let gen_ai_skill_resource_name : String
+
+pub let gen_ai_skill_source_uri : String
+
+pub let gen_ai_system_instructions : String
+
+pub let gen_ai_system_instructions_ref : String
+
+pub let gen_ai_token_modality : String
+
+pub let gen_ai_tool_call_arguments : String
+
+pub let gen_ai_tool_call_id : String
+
+pub let gen_ai_tool_call_result : String
+
+pub let gen_ai_tool_definitions : String
+
+pub let gen_ai_tool_definitions_ref : String
+
+pub let gen_ai_tool_description : String
+
+pub let gen_ai_tool_name : String
+
+pub let gen_ai_tool_type : String
+
+pub let gen_ai_transfer_mode : String
+
+pub let gen_ai_transfer_target_name : String
+
+pub let gen_ai_usage_audio_cache_read_input_tokens : String
+
+pub let gen_ai_usage_audio_input_tokens : String
+
+pub let gen_ai_usage_audio_output_tokens : String
+
+pub let gen_ai_usage_cache_read_input_tokens : String
+
+pub let gen_ai_usage_cache_write_input_tokens : String
+
+pub let gen_ai_usage_image_cache_read_input_tokens : String
+
+pub let gen_ai_usage_image_input_tokens : String
+
+pub let gen_ai_usage_image_output_tokens : String
+
+pub let gen_ai_usage_input_tokens : String
+
+pub let gen_ai_usage_output_tokens : String
+
+pub let gen_ai_usage_reasoning_output_tokens : String
+
+pub let gen_ai_usage_text_cache_read_input_tokens : String
+
+pub let gen_ai_usage_text_input_tokens : String
+
+pub let gen_ai_usage_text_output_tokens : String
+
+pub let gen_ai_user_speech_internal : String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
