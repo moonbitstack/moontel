@@ -58,5 +58,6 @@ import {
   "moonbitstack/moonseed@0.1.1",
   "moonbitstack/moonfetch@0.1.5",
   "moonbitstack/moonlog@0.1.6",
+  "moonbitstack/moonzip@0.3.6",
   "moonbitstack/moonp8s@0.1.0",
 }

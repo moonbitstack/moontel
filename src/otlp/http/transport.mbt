@@ -16,20 +16,32 @@ pub struct HttpTransport {
 }
 
 ///|
-/// A transport that gives one request `timeout` milliseconds before abandoning it.
+/// How a transport packs the body it is handed.
+///
+/// The protocol lets a client compress and requires it to say so; a server must
+/// accept both, so this is the sender's choice and nobody else's.
+pub(all) enum Compression {
+  /// The bytes the encoder produced, as they are.
+  Plain
+  /// The same bytes under gzip, with `Content-Encoding: gzip` on the request.
+  Gzip
+}
+
+///|
+/// A transport that gives one request `timeout` milliseconds before abandoning it,
+/// and that packs the body the way `compression` says.
 ///
 /// Headers travel on each `Request`, not here: one transport can carry a trace
 /// request and a log request to two backends that want different keys.
-pub fn HttpTransport::new(timeout~ : Int32 = 10000) -> HttpTransport {
+pub fn HttpTransport::new(
+  timeout~ : Int32 = 10000,
+  compression~ : Compression = Plain,
+) -> HttpTransport {
   {
     post: async fn(request) {
+      let (body, headers) = payload(request, compression)
       let outcome = Ok(
-        @moonfetch.post(
-          request.url[:],
-          body=@moonfetch.Body::Text(request.body),
-          headers=request.headers,
-          timeout~,
-        ),
+        @moonfetch.post(request.url[:], body~, headers~, timeout~),
       ) catch {
         error => Err("\{error}")
       }
@@ -47,6 +59,38 @@ pub fn HttpTransport::new(timeout~ : Int32 = 10000) -> HttpTransport {
       }
     },
   }
+}
+
+///|
+/// The body as the wire takes it, and the headers that describe it.
+///
+/// The two are decided together on purpose: a gzipped body that does not say so is
+/// a request no server can read, so the header is set here rather than left to a
+/// caller who might forget it.
+fn payload(
+  request : @otlp.Request,
+  compression : Compression,
+) -> (@moonfetch.Body, Array[(String, String)]) {
+  match compression {
+    Plain => (@moonfetch.Body::Text(request.body), request.headers)
+    Gzip =>
+      (
+        @moonfetch.Body::Bytes(@gzip.gzip(@utf8.encode(request.body)[:])),
+        with_encoding(request.headers, "gzip"),
+      )
+  }
+}
+
+///|
+/// The headers with `Content-Encoding` set to `encoding`, replacing one a caller
+/// wrote: the body decides the header, not the other way round.
+fn with_encoding(
+  headers : Array[(String, String)],
+  encoding : String,
+) -> Array[(String, String)] {
+  let out = headers.filter(header => header.0.to_lower() != "content-encoding")
+  out.push(("Content-Encoding", encoding))
+  out
 }
 
 ///|

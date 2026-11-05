@@ -10,10 +10,15 @@ import {
 // Errors
 
 // Types and methods
+pub(all) enum Compression {
+  Plain
+  Gzip
+}
+
 pub struct HttpTransport {
   post : async (@otlp.Request) -> (@otlp.Reply?, String)
 }
-pub fn HttpTransport::new(timeout? : Int32) -> Self
+pub fn HttpTransport::new(timeout? : Int32, compression? : Compression) -> Self
 pub async fn HttpTransport::send(Self, @otlp.Request) -> @otlp.Reply raise @otlp.Failed
 pub impl @otlp.Transport for HttpTransport
 

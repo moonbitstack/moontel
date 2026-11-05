@@ -1,16 +1,22 @@
 // A transport for `otlp` over HTTP, on the connection pool of `moonfetch`. Split
 // from `otlp` so that encoding a payload needs neither a socket nor a TLS stack.
 import {
+  "moonbitlang/core/encoding/utf8",
   "moonbitstack/moontel/otlp",
   "moonbitstack/moonfetch",
+  "moonbitstack/moonzip/gzip",
 }
 
 // A connection is the one thing this package needs and the JavaScript backends do
 // not have: the HTTP client it is built on compiles for native and wasm only, so
-// this file does too. Encoding, batching and retrying stay available everywhere.
+// this file does too, and so does its test. Encoding, batching and retrying stay
+// available everywhere.
 
 options(
-  targets: { "transport.mbt": [ "native", "wasm" ] },
+  targets: {
+    "transport.mbt": [ "native", "wasm" ],
+    "transport_wbtest.mbt": [ "native", "wasm" ],
+  },
 )
 
 // The imports above belong to `transport.mbt`, which the JavaScript backends leave

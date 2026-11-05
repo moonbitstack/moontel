@@ -612,6 +612,15 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               large to read is not one an attempt can fix. <code>limits</code> moves
               either number.
             </p>
+            <p>
+              A request body may be compressed, and a collector has to accept both
+              forms:
+              <code>HttpTransport::new(compression=<span class="a">@http.Compression</span>::Gzip)</code>
+              puts the body under gzip and sets <code>Content-Encoding: gzip</code> with
+              it, because a compressed body that does not say so is a request no server
+              can read. The body and the header are decided together for that reason,
+              and the same transport carries all three signals either way.
+            </p>
 <pre><code><span class="k">let</span> reports = traces.<span class="a">flush</span>()
 <span class="k">if</span> reports.dropped &gt; 0 {
   <span class="a">@log.Logger</span>::new(sink=logs, now=millis).warn(

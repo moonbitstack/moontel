@@ -8,12 +8,17 @@
 ///
 ///     moon run src/examples/04-otlp --target native
 ///     moon run src/examples/04-otlp --target native -- http://localhost:4318
+///     moon run src/examples/04-otlp --target native -- http://localhost:4318 gzip
 ///
 /// With an endpoint on the command line the program requires the collector to be
 /// there: it exits non-zero when the batch could not be delivered, which is what
 /// the conformance job in CI runs. Without one it talks to the protocol's default
 /// address and reports what happened, so running the examples one after another
 /// stays useful on a machine with no collector.
+///
+/// `gzip` after the endpoint compresses every request body and says so. It is the
+/// one thing a client may do to a request that the protocol leaves open, and the
+/// conformance job runs the example both ways.
 #coverage.skip
 async fn main {
   let arguments = @env.args()
@@ -26,7 +31,12 @@ async fn main {
   // With no collector named there is nothing to retry against, so one attempt says
   // whether something is listening without spending half a minute finding out.
   let attempts = if required { 5 } else { 1 }
-  let transport = @http.HttpTransport::new()
+  let compression = if arguments.length() > 2 && arguments[2] == "gzip" {
+    @http.Compression::Gzip
+  } else {
+    @http.Compression::Plain
+  }
+  let transport = @http.HttpTransport::new(compression~)
   let started = 1_700_000_000_000_000_000L
 
   // One exporter per signal. They share the transport and the resource, and each

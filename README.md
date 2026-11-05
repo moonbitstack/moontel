@@ -270,6 +270,11 @@ either number.
 payload, or a test that answers from a script, implements `Transport` and pulls in no
 socket.
 
+A body may be compressed: `HttpTransport::new(compression=@http.Compression::Gzip)`
+gzipping every request and setting `Content-Encoding: gzip` with it. The body and the
+header that describes it are decided in one place, so one cannot arrive without the
+other.
+
 ## Logs
 
 A record says when it happened, how urgent it is, what it says and which span it was
@@ -419,7 +424,8 @@ through the package that defines it, not through the facade.
 
 | Item | Signature |
 |:--|:--|
-| `HttpTransport::new` | `(timeout? : Int32) -> HttpTransport raise Failed` |
+| `HttpTransport::new` | `(timeout? : Int32, compression? : Compression) -> HttpTransport` |
+| `Compression` | `Plain`, `Gzip` — the second sets `Content-Encoding` on the request |
 | `bridge` | `(families : Array[MetricFamily], at~ : Int64, start? : Int64) -> Array[Metric]` |
 | `gen_ai_request_model`, `gen_ai_client_inference_duration`, … | 85 attribute keys, 21 metric names, 13 span types and 11 event names |
 

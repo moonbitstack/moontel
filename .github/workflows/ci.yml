@@ -132,6 +132,11 @@ jobs:
       - name: send the three signals
         run: moon run src/examples/04-otlp --target native -- http://localhost:4318
 
+      # The same payload, gzipped: a server must take both, and a client that
+      # compresses must say so.
+      - name: send them again, compressed
+        run: moon run src/examples/04-otlp --target native -- http://localhost:4318 gzip
+
       - name: the collector parsed every signal
         run: |
           docker logs collector > collector.log 2>&1
@@ -161,12 +166,18 @@ jobs:
           if "order_latency_seconds" in text:
               print("the exposition's unit suffix survived the bridge")
               sys.exit(1)
+          # Two runs, one plain and one gzipped: the span is in the log twice only
+          # if both were decoded.
+          spans = text.count("Name           : GET /orders/42")
+          if spans != 2:
+              print(f"expected the span from both runs, saw {spans}")
+              sys.exit(1)
           traces = text.count("Trace ID")
           if missing:
               print("the collector did not report:", missing)
               sys.exit(1)
-          if traces < 3:
-              print(f"expected the trace id on the span and both records, saw {traces}")
+          if traces < 6:
+              print(f"expected the trace id on the span and both records per run, saw {traces}")
               sys.exit(1)
           print(f"the collector parsed all three signals; {traces} records name a trace")
           EOF
