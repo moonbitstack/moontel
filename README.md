@@ -298,8 +298,8 @@ turns the snapshot it takes into OTLP metrics:
 ```moonbit
 fn export(metrics : @otlp.MetricsExporter, now : () -> Int64) -> Unit raise {
   let registry = @metric.Registry::new()
-  let placed = registry.counter("orders_placed", "Orders placed.")
-  placed.inc(by=1.0)
+  let latency = registry.histogram("order_latency", "Latency.", unit="seconds")
+  latency.observe(elapsed)
   for metric in @p8s.bridge(registry.collect(at=0.0), at=now()) {
     metrics.record(metric)
   }
@@ -307,9 +307,16 @@ fn export(metrics : @otlp.MetricsExporter, now : () -> Int64) -> Unit raise {
 ```
 
 A counter becomes a cumulative monotonic sum, a gauge stays a gauge, a histogram
-becomes one with explicit bounds, and a summary stays a summary. Names are not touched —
-a converter that renamed `http_requests` would break every dashboard built on it — and
-units are translated to the codes the compatibility specification lists.
+becomes one with explicit bounds, and a summary stays a summary. A gauge histogram has
+no OTLP instrument and is dropped; `bridge_with_report` returns the families it dropped
+alongside the metrics, so a program can count them.
+
+The name a program registered is the name OTLP sees. A registry appends the unit to the
+name it writes — `order_latency` with unit `seconds` is exposed as
+`order_latency_seconds` — and the suffix comes back off here, because it is the
+exposition's doing rather than a rename. The unit travels in its own field, translated
+to the code the compatibility specification lists, `s` or `By`. A name that does not end
+in its own unit, and a `_total`, are left as they are.
 
 ## The GenAI names
 

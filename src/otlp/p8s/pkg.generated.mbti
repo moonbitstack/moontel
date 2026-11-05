@@ -9,9 +9,20 @@ import {
 // Values
 pub fn bridge(Array[@metric.MetricFamily], at~ : Int64, start? : Int64) -> Array[@otlp.Metric]
 
+pub fn bridge_with_report(Array[@metric.MetricFamily], at~ : Int64, start? : Int64) -> Report
+
 // Errors
 
 // Types and methods
+pub(all) struct Dropped {
+  name : String
+  kind : @metric.Kind
+}
+
+pub(all) struct Report {
+  metrics : Array[@otlp.Metric]
+  dropped : Array[Dropped]
+}
 
 // Type aliases
 

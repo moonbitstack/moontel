@@ -15,7 +15,11 @@ fn named(metrics : Array[@otlp.Metric], name : String) -> @otlp.Metric? {
 ///|
 test "a counter becomes a cumulative monotonic sum under the name it had" {
   let registry = @metric.Registry::new()
-  let counter = registry.counter("http_requests", "HTTP requests.")
+  let counter = registry.counter(
+    "http_requests",
+    "HTTP requests.",
+    unit="seconds",
+  )
   counter.inc(by=2.0)
   let metrics = bridge(
     registry.collect(at=1700000000.0),
@@ -23,10 +27,10 @@ test "a counter becomes a cumulative monotonic sum under the name it had" {
   )
   let metric = named(metrics, "http_requests").unwrap()
   assert_eq(metric.kind, @otlp.Sum(temporality=Cumulative, monotonic=true))
-  // The compatibility rules say the Prometheus name is used as it stands.
-  assert_eq(metric.name, "http_requests")
+  // The unit is the exposition's, not the name's: the name it was registered under
+  // is the name OTLP sees, and the unit travels in its own field.
   assert_eq(metric.description, "HTTP requests.")
-  assert_eq(metric.unit, "")
+  assert_eq(metric.unit, "s")
   assert_eq(metric.points.length(), 1)
   assert_eq(metric.points[0].point, @otlp.AsDouble(2.0))
   // A point with no timestamp of its own is dated when the snapshot was taken.
@@ -142,18 +146,49 @@ test "a gauge histogram has no OTLP instrument and is dropped" {
 }
 
 ///|
+test "a dropped family is counted, by name and by kind" {
+  let registry = @metric.Registry::new()
+  registry.register(
+    "samples",
+    "Samples.",
+    @metric.GaugeHistogram::new(buckets=[1.0]),
+  )
+  registry.gauge("kept", "Kept.").set(1.0)
+  let report = bridge_with_report(registry.collect(at=0.0), at=0L)
+  assert_eq(report.metrics.length(), 1)
+  assert_eq(report.dropped.length(), 1)
+  assert_eq(report.dropped[0].name, "samples")
+  assert_eq(report.dropped[0].kind.code(), "gaugehistogram")
+}
+
+///|
+test "only a suffix that is really there is taken off" {
+  let registry = @metric.Registry::new()
+  // The name does not end in its unit, so the unit is the only thing that travels.
+  ignore(registry.counter("errors", "Errors.", unit="seconds"))
+  let metrics = bridge(registry.collect(at=0.0), at=0L)
+  let metric = named(metrics, "errors").unwrap()
+  assert_eq(metric.unit, "s")
+  // A registry prefix is part of the name, and stays.
+  let prefixed = @metric.Registry::new(prefix="app")
+  ignore(prefixed.counter("uptime", "Uptime.", unit="seconds"))
+  let bridged = bridge(prefixed.collect(at=0.0), at=0L)
+  assert_eq(named(bridged, "app_uptime").unwrap().unit, "s")
+}
+
+///|
 test "a unit the compatibility table names travels as its UCUM code" {
   let registry = @metric.Registry::new()
   ignore(registry.counter("bytes_written", "Written.", unit="bytes"))
   ignore(registry.counter("uptime", "Uptime.", unit="seconds"))
   ignore(registry.counter("widgets", "Widgets.", unit="widgets"))
   let metrics = bridge(registry.collect(at=0.0), at=0L)
-  // The metric keeps the name it was registered under, suffix and all: the
-  // compatibility rules do not let a converter rename a Prometheus metric.
-  assert_eq(named(metrics, "bytes_written_bytes").unwrap().unit, "By")
-  assert_eq(named(metrics, "uptime_seconds").unwrap().unit, "s")
+  // The registry appends the unit so an exposition reads well; a backend does not
+  // want it twice, once in the name and once in the field.
+  assert_eq(named(metrics, "bytes_written").unwrap().unit, "By")
+  assert_eq(named(metrics, "uptime").unwrap().unit, "s")
   // A unit the table does not know is not a unit this library may invent.
-  assert_eq(named(metrics, "widgets_widgets").unwrap().unit, "widgets")
+  assert_eq(named(metrics, "widgets").unwrap().unit, "widgets")
 }
 
 ///|

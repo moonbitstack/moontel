@@ -19,10 +19,12 @@
 /// - a summary is a summary;
 /// - info and state sets are non-monotonic sums, which is what lets a reader add
 ///   them up across series;
-/// - a gauge histogram has no OTLP equivalent and is dropped.
+/// - a gauge histogram has no OTLP instrument and is dropped, and said to be.
 ///
-/// Names are not touched: the specification says the Prometheus name becomes the
-/// OTLP name, which is why `http_requests_total` stays spelled that way.
+/// A name loses the unit the exposition appended: `http_requests` registered with
+/// unit `seconds` is written out as `http_requests_seconds`, and the OTLP name is
+/// `http_requests` with `s` in the unit field. A name that does not end in its own
+/// unit is left as it is, and so is `_total`.
 ///
 /// `at` is when the snapshot was taken, in nanoseconds; a point that carries no
 /// timestamp of its own is dated with it.
@@ -31,14 +33,46 @@ pub fn bridge(
   at~ : Int64,
   start? : Int64,
 ) -> Array[@otlp.Metric] {
+  bridge_with_report(families, at~, start?).metrics
+}
+
+///|
+/// What a bridge did: the metrics it produced, and the families it dropped.
+///
+/// A caller that only wants the metrics calls `bridge`; one that keeps a count of
+/// what did not survive the conversion — a gauge histogram, and nothing else today —
+/// calls this and reads `dropped`.
+pub fn bridge_with_report(
+  families : Array[@metric.MetricFamily],
+  at~ : Int64,
+  start? : Int64,
+) -> Report {
   let metrics : Array[@otlp.Metric] = []
+  let dropped : Array[Dropped] = []
   for family in families {
     match convert(family, at, start) {
       Some(metric) => metrics.push(metric)
-      None => ()
+      None => dropped.push({ name: family.name, kind: family.kind, })
     }
   }
-  metrics
+  { metrics, dropped, }
+}
+
+///|
+/// The metrics a bridge produced, and the families it left out.
+pub(all) struct Report {
+  metrics : Array[@otlp.Metric]
+  /// The families whose kind has no OTLP instrument, in the order they arrived.
+  dropped : Array[Dropped]
+}
+
+///|
+/// A family the bridge left out, and what it was.
+pub(all) struct Dropped {
+  /// The family name as it arrived, unit suffix and all.
+  name : String
+  /// The Prometheus kind, which is what decided it.
+  kind : @metric.Kind
 }
 
 ///|
@@ -113,10 +147,11 @@ fn convert(
         }
     }
   }
+  let unit = family.unit
   let metric : @otlp.Metric = {
-    name: family.name,
+    name: otlp_name(family.name, unit),
     description: family.help,
-    unit: match family.unit {
+    unit: match unit {
       Some(unit) => ucum(unit)
       None => ""
     },
@@ -180,6 +215,33 @@ fn exemplars_of(
 ///|
 fn nanos(seconds : Double) -> Int64 {
   (seconds * 1000000000.0).to_int64()
+}
+
+///|
+/// The name OTLP carries: the family name without the unit suffix the exposition
+/// appended.
+///
+/// The compatibility specification says a Prometheus name is not to be altered, and
+/// for a name read off an exposition that is the right rule. This bridge is usually
+/// handed the snapshot of a registry that appended the unit itself — `apply_unit` in
+/// `moonp8s` does exactly that — so the suffix is the exposition's doing rather than
+/// part of the name, and taking it off recovers the name the author wrote. The
+/// collector's Prometheus receiver has the same switch, for the same reason.
+///
+/// Only a suffix that is really there is removed: a family registered as `errors`
+/// with unit `seconds` keeps its name, because nothing appended anything to it.
+fn otlp_name(name : String, unit : String?) -> String {
+  match unit {
+    Some(unit) => {
+      let suffix = "_" + unit
+      if name.length() > suffix.length() && name.has_suffix(suffix[:]) {
+        name[:name.length() - suffix.length()].to_owned()
+      } else {
+        name
+      }
+    }
+    None => name
+  }
 }
 
 ///|

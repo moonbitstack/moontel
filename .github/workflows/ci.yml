@@ -151,8 +151,16 @@ jobs:
               "SeverityNumber: Info(9)",
               "Name: orders_placed",
               "Name: order_latency",
+              # The histogram's unit travelled in its own field, which is where it
+              # belongs once the name no longer carries it.
+              "Unit: s",
           ]
           missing = [want for want in required if want not in text]
+          # The bridge takes off the unit suffix the exposition appends, so the name
+          # on the wire is the one the program registered.
+          if "order_latency_seconds" in text:
+              print("the exposition's unit suffix survived the bridge")
+              sys.exit(1)
           traces = text.count("Trace ID")
           if missing:
               print("the collector did not report:", missing)

@@ -701,8 +701,8 @@ logger.log(
               counter lives, and one place where it leaves.
             </p>
 <pre><code><span class="k">let</span> registry = <span class="a">@metric.Registry</span>::new()
-<span class="k">let</span> placed = registry.counter(<span class="s">"orders_placed"</span>, <span class="s">"Orders placed."</span>)
-placed.inc(by=<span class="s">1.0</span>)
+<span class="k">let</span> latency = registry.histogram(<span class="s">"order_latency"</span>, <span class="s">"Latency."</span>, unit=<span class="s">"seconds"</span>)
+latency.observe(elapsed)
 <span class="k">for</span> metric <span class="k">in</span> <span class="a">@p8s.bridge</span>(registry.collect(at=<span class="s">0.0</span>), at=millis()) {
   metrics.record(metric)
 }</code></pre>
@@ -712,16 +712,30 @@ placed.inc(by=<span class="s">1.0</span>)
               cumulative histogram with explicit bounds, a summary stays a summary, and
               info and state sets become non-monotonic sums so a reader can add them up.
               A gauge histogram has no OTLP instrument and is dropped rather than
-              misrepresented.
+              misrepresented; <code>bridge_with_report</code> hands back the families it
+              dropped, by name and by kind, for a program that would rather count them
+              than wonder.
             </p>
             <p>
-              Names are not touched: a converter that renamed <code>http_requests</code>
-              would break every dashboard built on it. Units are translated to the codes
-              the specification lists, <code>seconds</code> to <code>s</code> and
-              <code>bytes</code> to <code>By</code>.
+              The name a program registered is the name OTLP sees. A registry appends the
+              unit to the name it writes — <code>order_latency</code> with unit
+              <code>seconds</code> is exposed as <code>order_latency_seconds</code> — and
+              that suffix comes back off here, because it is the exposition's doing and
+              not a rename. The unit then travels in its own field, translated to the
+              code the specification lists, <code>seconds</code> to <code>s</code> and
+              <code>bytes</code> to <code>By</code>. A name that does not end in its own
+              unit, and a <code>_total</code>, are left alone.
             </p>
           </div>
           <aside class="doc-aside">
+            <b>Why the suffix comes off</b>
+            <p>
+              The compatibility specification says a Prometheus name must not be altered,
+              and for a name read off an exposition it is right: that name is what the
+              dashboards were built on. A name a registry made up by appending a unit is a
+              different thing, and the collector's Prometheus receiver has the same
+              switch for the same reason.
+            </p>
             <b>Two directions, one model</b>
             <p>
               A point counts from the start of the process (cumulative) or since the last

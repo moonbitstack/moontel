@@ -3713,9 +3713,57 @@ cause, and the specification says such a request MUST NOT be retried.</p>
   <div class="api-doc"><p>Turn a snapshot of Prometheus families into OTLP metrics.</p>
 <p>A program that already keeps metrics does not need a second meter: it hands the snapshot it has to this function, and the result goes to <code>otlp.MetricsExporter</code> unchanged. Nothing is accumulated here — a counter that has been counting since the process started keeps its total, which is what the mapping below says a cumulative sum is.</p>
 <p>The conversion follows the OpenTelemetry compatibility specification's table for Prometheus and OpenMetrics, one row at a time:</p>
-<p>- a counter is a monotonic, cumulative sum; - a gauge is a gauge, and so is a family with no type metadata; - a histogram is a cumulative histogram with explicit bounds; - a summary is a summary; - info and state sets are non-monotonic sums, which is what lets a reader add   them up across series; - a gauge histogram has no OTLP equivalent and is dropped.</p>
-<p>Names are not touched: the specification says the Prometheus name becomes the OTLP name, which is why <code>http_requests_total</code> stays spelled that way.</p>
+<p>- a counter is a monotonic, cumulative sum; - a gauge is a gauge, and so is a family with no type metadata; - a histogram is a cumulative histogram with explicit bounds; - a summary is a summary; - info and state sets are non-monotonic sums, which is what lets a reader add   them up across series; - a gauge histogram has no OTLP instrument and is dropped, and said to be.</p>
+<p>A name loses the unit the exposition appended: <code>http_requests</code> registered with unit <code>seconds</code> is written out as <code>http_requests_seconds</code>, and the OTLP name is <code>http_requests</code> with <code>s</code> in the unit field. A name that does not end in its own unit is left as it is, and so is <code>_total</code>.</p>
 <p><code>at</code> is when the snapshot was taken, in nanoseconds; a point that carries no timestamp of its own is dated with it.</p></div>
+</article>
+<article class="api-entry" id="otlp-p8s-bridge_with_report" data-name="bridge_with_report">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">bridge_with_report</code><code class="api-sig">(Array[@metric.MetricFamily], at~ : Int64, start? : Int64) -&gt; Report</code></span>
+  </div>
+  <div class="api-doc"><p>What a bridge did: the metrics it produced, and the families it dropped.</p>
+<p>A caller that only wants the metrics calls <a href="#otlp-p8s-bridge"><code>bridge</code></a>; one that keeps a count of what did not survive the conversion — a gauge histogram, and nothing else today — calls this and reads <code>dropped</code>.</p></div>
+</article>
+</div>
+<div class="api-group">
+  <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="otlp-p8s-Dropped" data-name="Dropped">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Dropped</code></span>
+  </div>
+  <div class="api-doc"><p>A family the bridge left out, and what it was.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>name</dt>
+      <dd>String</dd>
+      <dd class="api-field-doc"><p>The family name as it arrived, unit suffix and all.</p></dd>
+    </div>
+    <div>
+      <dt>kind</dt>
+      <dd>@metric.Kind</dd>
+      <dd class="api-field-doc"><p>The Prometheus kind, which is what decided it.</p></dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="otlp-p8s-Report" data-name="Report">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Report</code></span>
+  </div>
+  <div class="api-doc"><p>The metrics a bridge produced, and the families it left out.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>metrics</dt>
+      <dd>Array[@otlp.Metric]</dd>
+    </div>
+    <div>
+      <dt>dropped</dt>
+      <dd>Array[Dropped]</dd>
+      <dd class="api-field-doc"><p>The families whose kind has no OTLP instrument, in the order they arrived.</p></dd>
+    </div>
+  </dl>
 </article>
 </div>
 <!-- END otlp-p8s -->

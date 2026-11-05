@@ -89,13 +89,17 @@ async fn main {
   span.finish(at=started + 4_000_000L)
 
   // A program that already keeps metrics does not keep a second set: this reads the
-  // snapshot and the bridge turns it into OTLP.
+  // snapshot and the bridge turns it into OTLP. The histogram is registered with its
+  // unit, which the exposition appends to the name and the bridge takes back off.
   let registry = @metric.Registry::new()
   let placed = registry.counter("orders_placed", "Orders placed.")
   placed.inc(by=1.0)
-  let latency = registry.histogram("order_latency", "Order latency.", buckets=[
-    0.005, 0.01, 0.025, 0.05, 0.1,
-  ])
+  let latency = registry.histogram(
+    "order_latency",
+    "Order latency.",
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1],
+    unit="seconds",
+  )
   latency.observe(0.012)
   for metric in @p8s.bridge(registry.collect(at=0.0), at=started) {
     metrics.record(metric)
