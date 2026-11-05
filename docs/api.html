@@ -2964,6 +2964,13 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <div class="api-doc"><p>The defaults, from the SDK specification's batch processor table.</p></div>
 </article>
+<article class="api-entry" id="otlp-recommended_body_limits" data-name="recommended_body_limits">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">recommended_body_limits</code><code class="api-sig">: BodyLimits</code></span>
+  </div>
+  <div class="api-doc"><p>The bounds the specification recommends: 64 MiB out, 4 MiB back.</p></div>
+</article>
 <article class="api-entry" id="otlp-retry_after_milliseconds" data-name="retry_after_milliseconds">
   <div class="api-line">
     <span class="api-kind">fn</span>
@@ -3091,6 +3098,27 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
 </article>
+<article class="api-entry api-type" id="otlp-BodyLimits" data-name="BodyLimits">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">BodyLimits</code></span>
+  </div>
+  <div class="api-doc"><p>How much body this side will send in one request, and how much of a reply it will read.</p>
+<p>Both bounds are the protocol's. OTLP's "OTLP/HTTP Request" section says a client SHOULD limit the body it sends — 64 MiB is the recommended default — and MUST NOT make the request when the limit is exceeded. Its "OTLP/HTTP Response" section says a client MUST limit what it parses back, recommends 4 MiB, and calls a reply over the limit a failure that retrying cannot fix.</p>
+<p>A program that sends large attribute values or long log bodies raises <code>request</code>; one that talks to a collector which answers with a page of diagnostics lowers <code>response</code>.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>request</dt>
+      <dd>Int32</dd>
+      <dd class="api-field-doc"><p>The most bytes one request may carry, before any compression.</p></dd>
+    </div>
+    <div>
+      <dt>response</dt>
+      <dd>Int32</dd>
+      <dd class="api-field-doc"><p>The most bytes of a reply this side will read.</p></dd>
+    </div>
+  </dl>
+</article>
 <article class="api-entry api-type" id="otlp-DataPoint" data-name="DataPoint">
   <div class="api-line">
     <span class="api-kind">struct</span>
@@ -3181,7 +3209,7 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
 <article class="api-entry api-method" id="otlp-LogsExporter-new" data-name="LogsExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">LogsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">LogsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting log records to <code>endpoint</code>.</p></div>
 </article>
@@ -3277,7 +3305,7 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
 <article class="api-entry api-method" id="otlp-MetricsExporter-new" data-name="MetricsExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">MetricsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">MetricsExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting metrics to <code>endpoint</code>.</p></div>
 </article>
@@ -3583,7 +3611,7 @@ how OTLP states the <code>+Inf</code> bucket.</p>
 <article class="api-entry api-method" id="otlp-TraceExporter-new" data-name="TraceExporter::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">TraceExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">TraceExporter::new</code><code class="api-sig">(transport~ : &amp;Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -&gt; Int64, rand~ : (Int32) -&gt; Bytes, pause? : async (Int64) -&gt; Unit) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>An exporter posting spans to <code>endpoint</code> (<code>http://localhost:4318</code> is the protocol's default) through <code>transport</code>.</p>
 <p><code>headers</code> is where authentication goes: an API key for a hosted backend, an organisation and a project for one that wants them. <code>resource</code> describes the program and is sent with every request.</p></div>

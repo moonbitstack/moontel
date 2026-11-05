@@ -70,12 +70,14 @@ fn exporter(
   pauses : Ref[Array[Int64]],
   attempts~ : Int32 = 3,
   timeout~ : Int64 = 30000L,
+  limits~ : BodyLimits = recommended_body_limits,
 ) -> TraceExporter {
   TraceExporter::new(
     transport=script,
     endpoint="http://collector.test:4318/",
     headers=[("x-api-key", "secret")],
     policy=BatchPolicy::new(timeout~),
+    limits~,
     attempts~,
     now=() => 0L,
     rand=_ => b"\x00\x00\x00\x00",
@@ -286,4 +288,52 @@ async test "the metrics and logs exporters post to their own paths" {
   assert_eq(logged.delivered, 1)
   assert_eq(script.requests.val[0].url, "http://collector.test:4318/v1/metrics")
   assert_eq(script2.requests.val[0].url, "http://collector.test:4318/v1/logs")
+}
+
+///|
+async test "a body over the outgoing limit is dropped without a request" {
+  let script = scripted([ok()])
+  let pauses = Ref([])
+  // An encoded span is far more than four bytes, so nothing here can be sent.
+  let traces = exporter(script, pauses, limits={ request: 4, response: 4096, })
+  traces.accept(sampled_span())
+  let report = traces.flush()
+  assert_eq(report.attempts, 0)
+  assert_eq(report.dropped, 1)
+  assert_eq(script.requests.val.length(), 0)
+  // A request that was never made is not one the stats may count.
+  assert_eq(traces.stats().requests, 0L)
+  assert_eq(traces.stats().dropped, 1L)
+}
+
+///|
+async test "a reply over the incoming limit is not retried" {
+  // A 200 that rejects nothing would be an acceptance; read past the limit it is a
+  // reply this side cannot trust, and the protocol says not to ask again.
+  let script = scripted([
+    { status: 200, headers: [], body: "{\"partialSuccess\":{}}", },
+    ok(),
+  ])
+  let pauses = Ref([])
+  let traces = exporter(script, pauses, limits={ request: 4096, response: 8, })
+  traces.accept(sampled_span())
+  let report = traces.flush()
+  assert_eq(report.attempts, 1)
+  assert_eq(report.delivered, 0)
+  assert_eq(report.dropped, 1)
+  assert_eq(script.requests.val.length(), 1)
+  assert_eq(pauses.val.length(), 0)
+}
+
+///|
+async test "a reply exactly at the limit is still read" {
+  // The bound is a maximum, not a threshold: a body of exactly the limit is a body
+  // this side will parse.
+  let script = scripted([{ status: 200, headers: [], body: "{}", }])
+  let pauses = Ref([])
+  let traces = exporter(script, pauses, limits={ request: 4096, response: 2, })
+  traces.accept(sampled_span())
+  let report = traces.flush()
+  assert_eq(report.delivered, 1)
+  assert_eq(report.dropped, 0)
 }

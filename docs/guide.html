@@ -603,6 +603,15 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               honoured in both of its forms, seconds or an HTTP date; without one the
               wait is 5 seconds, times 1.5, capped at 30, jittered by a fifth.
             </p>
+            <p>
+              Two bounds guard the memory at either end of a request, both from the
+              protocol's own numbers: a body of 64 MiB is the most this side will send,
+              and a reply of 4 MiB the most it will read. Past the first, the request is
+              not made at all and the records are counted as dropped; past the second,
+              the reply is not parsed and the batch is not retried, because a reply too
+              large to read is not one an attempt can fix. <code>limits</code> moves
+              either number.
+            </p>
 <pre><code><span class="k">let</span> reports = traces.<span class="a">flush</span>()
 <span class="k">if</span> reports.dropped &gt; 0 {
   <span class="a">@log.Logger</span>::new(sink=logs, now=millis).warn(

@@ -261,6 +261,11 @@ or an exponential backoff of five seconds times one and a half, capped at thirty
 jittered by a fifth. Any other refusal is final. `flush` sends everything now and
 returns what happened to it.
 
+Two bounds come from the protocol as well: this side sends no body over 64 MiB and reads
+no reply over 4 MiB. A body past the first is never sent — the records are counted as
+dropped — and a reply past the second is never parsed and never retried. `limits` moves
+either number.
+
 `otlp` writes the request; `otlp/http` carries it. A program that only needs to encode a
 payload, or a test that answers from a script, implements `Transport` and pulls in no
 socket.
@@ -404,6 +409,7 @@ through the package that defines it, not through the facade.
 | `flush`, `tick`, `run` | send everything, send what is due, keep sending |
 | `Report`, `Stats` | `delivered, rejected, dropped, attempts` per flush, and since the exporter was made |
 | `BatchPolicy` | `queue_limit 2048, batch 512, delay 5000, timeout 30000` |
+| `BodyLimits` | `request 64 MiB, response 4 MiB` — the protocol's recommended sizes |
 | `Backoff` | `initial 5000, multiplier 1.5, maximum 30000, jitter 0.2` |
 | `Transport` | `async fn send(Self, Request) -> Reply raise Failed` |
 | `Resource`, `Scope` | what produced the telemetry, and which library in it did |

@@ -62,6 +62,7 @@ pub struct Outbox[T] {
   headers : Array[(String, String)]
   encode : (Array[T]) -> String
   policy : BatchPolicy
+  limits : BodyLimits
   backoff : Backoff
   attempts : Int32
   pause : async (Int64) -> Unit
@@ -166,6 +167,13 @@ async fn[T] Outbox::send_one(self : Outbox[T], chunk : Array[T]) -> Report {
     headers: self.headers,
     body: (self.encode)(chunk),
   }
+  // A body over the limit is not sent at all: the protocol says not to make the
+  // request, and a request never made is not one the stats may count.
+  if request.body.length() > self.limits.request {
+    report = { ..report, dropped: count, }
+    self.count(report, 0L)
+    return report
+  }
   let deadline = (self.now)() + self.policy.timeout
   let mut pending = true
   while pending {
@@ -173,21 +181,30 @@ async fn[T] Outbox::send_one(self : Outbox[T], chunk : Array[T]) -> Report {
     let answer = Ok(self.transport.send(request)) catch { error => Err(error) }
     let wait = match answer {
       Ok(reply) =>
-        match verdict(reply.status) {
-          Accepted => {
-            let rejected = reply.rejected().unwrap_or(0)
-            report = {
-              ..report,
-              delivered: report.delivered + count - rejected,
-              rejected: report.rejected + rejected,
+        // A reply this side will not read is a reply it cannot learn anything from,
+        // and the protocol calls that a failure retrying cannot fix. The bytes are
+        // already here — the limit is on parsing them, which is where a hostile or
+        // misconfigured server would otherwise cost a program its memory.
+        if reply.body.length() > self.limits.response {
+          report = { ..report, dropped: report.dropped + count, }
+          None
+        } else {
+          match verdict(reply.status) {
+            Accepted => {
+              let rejected = reply.rejected().unwrap_or(0)
+              report = {
+                ..report,
+                delivered: report.delivered + count - rejected,
+                rejected: report.rejected + rejected,
+              }
+              None
             }
-            None
+            Rejected => {
+              report = { ..report, rejected: report.rejected + count, }
+              None
+            }
+            Retry => Some(self.backoff_wait(reply, report.attempts))
           }
-          Rejected => {
-            report = { ..report, rejected: report.rejected + count, }
-            None
-          }
-          Retry => Some(self.backoff_wait(reply, report.attempts))
         }
       // No reply at all: the connection failed or the server hung up, and the
       // protocol says to come back with the same request.
@@ -204,15 +221,26 @@ async fn[T] Outbox::send_one(self : Outbox[T], chunk : Array[T]) -> Report {
         }
     }
   }
+  self.count(report, 1L)
+  report
+}
+
+///|
+/// Fold one request's report into what this exporter has done so far. `requests` is
+/// one when a request was really made: a body over the limit is not one.
+fn[T] Outbox::count(
+  self : Outbox[T],
+  report : Report,
+  requests : Int64,
+) -> Unit {
   let stats = self.stats.val
   self.stats.val = {
     delivered: stats.delivered + report.delivered.to_int64(),
     rejected: stats.rejected + report.rejected.to_int64(),
     dropped: stats.dropped + report.dropped.to_int64(),
     refused: stats.refused,
-    requests: stats.requests + 1L,
+    requests: stats.requests + requests,
   }
-  report
 }
 
 ///|
@@ -273,6 +301,7 @@ pub fn TraceExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
   now~ : () -> Int64,
@@ -289,6 +318,7 @@ pub fn TraceExporter::new(
       headers: with_content_type(headers),
       encode,
       policy,
+      limits,
       backoff,
       attempts,
       pause,
@@ -366,6 +396,7 @@ pub fn LogsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
   now~ : () -> Int64,
@@ -382,6 +413,7 @@ pub fn LogsExporter::new(
       headers: with_content_type(headers),
       encode,
       policy,
+      limits,
       backoff,
       attempts,
       pause,
@@ -454,6 +486,7 @@ pub fn MetricsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
+  limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
   now~ : () -> Int64,
@@ -470,6 +503,7 @@ pub fn MetricsExporter::new(
       headers: with_content_type(headers),
       encode,
       policy,
+      limits,
       backoff,
       attempts,
       pause,
