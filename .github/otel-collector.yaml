@@ -1,0 +1,25 @@
+# The collector the conformance job starts: OTLP over HTTP on its default port, and
+# the debug exporter at full detail, which prints every span, log record and metric
+# point it accepted. The job then reads those lines, so an accepted request and a
+# parsed payload are told apart.
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]

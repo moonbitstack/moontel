@@ -1,0 +1,19 @@
+// The service the W3C Trace Context suite drives: a hop that reads the context a
+// request arrived with and writes it back onto the requests it forwards.
+//
+// W3C Trace Context: https://www.w3.org/TR/trace-context/
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/propagate",
+  "moonbitstack/moonasgi/spec",
+  "moonbitstack/mooncat",
+  "moonbitstack/moonfetch",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
+  "moonbitlang/async",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/env",
+  "moonbitlang/core/json",
+}

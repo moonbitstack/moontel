@@ -49,10 +49,15 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           for dir in src/examples/*/; do
-            if grep -q 'kind: "executable"' "$dir/moon.pkg" && ! grep -q 'supported_targets = "js"' "$dir/moon.pkg"; then
+            if grep -q 'kind: "executable"' "$dir/moon.pkg" && ! grep -q 'supported_targets' "$dir/moon.pkg"; then
               moon run "$dir" --target native > /dev/null
             fi
           done
+
+      # The service that exports three signals needs a collector to talk to, which
+      # the `otlp-collector` job supplies; here the compiler is what is checked.
+      - name: the export example builds
+        run: moon build src/examples/04-otlp --target native
 
       # The replay of the recorded reference run is generated from it, so the two
       # cannot drift: a change to the record without regenerating fails here.
@@ -74,6 +79,12 @@ jobs:
           python3 scripts/gen_version.py
           git diff --exit-code docs/api.html docs/version.js
 
+      # The semantic conventions come from a pinned commit of the upstream registry,
+      # and the generator is what says so: a constant edited by hand fails here.
+      - name: the semantic conventions are up to date
+        if: runner.os == 'Linux'
+        run: python3 scripts/gen_semconv.py --check
+
       - name: lint (fmt is clean)
         run: |
           moon fmt && git diff --exit-code
@@ -81,3 +92,109 @@ jobs:
       - name: interfaces are up to date
         run: |
           moon info --target all && git diff --exit-code
+
+  # The three signals, posted to a real collector and read back out of it. A request
+  # the collector accepted and a payload it could parse are two different things, and
+  # only the second one is worth reporting.
+  otlp-collector:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+          moon version --all
+          moon update
+
+      - name: start the collector
+        run: |
+          docker run -d --name collector -p 4318:4318 \
+            -v "$PWD/.github/otel-collector.yaml:/etc/otelcol-contrib/config.yaml" \
+            otel/opentelemetry-collector-contrib:0.164.0
+          for i in $(seq 60); do
+            if docker logs collector 2>&1 | grep -q "Everything is ready"; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs collector
+          exit 1
+
+      - name: send the three signals
+        run: moon run src/examples/04-otlp --target native -- http://localhost:4318
+
+      - name: the collector parsed every signal
+        run: |
+          docker logs collector > collector.log
+          grep -q "Name           : GET /orders/42" collector.log
+          grep -q "Kind           : Server" collector.log
+          grep -q "Status code    : Ok" collector.log
+          grep -q "Name: cache.miss" collector.log
+          grep -q "Body: Str(order placed)" collector.log
+          grep -q "SeverityNumber: Info(9)" collector.log
+          grep -q "Name: orders_placed" collector.log
+          grep -q "Name: order_latency" collector.log
+          # The log record names the span it was written in: one trace id appears on
+          # the span and on both records.
+          test "$(grep -c 'Trace ID' collector.log)" -ge 3
+
+  # The official W3C Trace Context suite drives a hop built on this library. A
+  # context that survives one process must survive the next, and this is the program
+  # that says whether it does.
+  trace-context:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+          moon version --all
+          moon update
+
+      - name: the hop builds against this tree
+        run: |
+          moon work init
+          moon work use . integration/trace-context
+          moon build integration/trace-context/src --target native
+
+      - name: the suite's own dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet aiohttp multidict
+
+      - name: start the hop
+        run: |
+          moon run integration/trace-context/src --target native -- 8080 > hop.log 2>&1 &
+          for i in $(seq 60); do
+            if curl -sf -o /dev/null -X POST -H 'content-type: application/json' -d '[]' \
+              http://127.0.0.1:8080/probe; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat hop.log
+          exit 1
+
+      # STRICT_LEVEL 2 and SPEC_LEVEL 1 are the suite's defaults for a level 1
+      # implementation, which is what W3C Trace Context asks of a hop.
+      - name: run the suite
+        run: |
+          cd integration/trace-context/w3c
+          SERVICE_ENDPOINT=http://127.0.0.1:8080 \
+            ../../../.venv/bin/python3 test.py
+
+      - name: the hop's log
+        if: failure()
+        run: cat hop.log
