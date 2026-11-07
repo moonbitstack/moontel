@@ -143,7 +143,7 @@ fn write_span(w : JsonWriter, span : @trace.SpanData) -> Unit {
 ///|
 /// The number OTLP gives a span kind: `SPAN_KIND_INTERNAL` is 1, and the four kinds
 /// that describe a position in a distributed call follow it.
-fn kind_code(kind : @trace.SpanKind) -> Int32 {
+pub fn kind_code(kind : @trace.SpanKind) -> Int32 {
   match kind {
     @trace.Internal => 1
     @trace.Server => 2

@@ -3,7 +3,6 @@ package "moonbitstack/moontel/otlp"
 
 import {
   "moonbitlang/async",
-  "moonbitlang/core/buffer",
   "moonbitlang/core/debug",
   "moonbitlang/core/ref",
   "moonbitstack/moontel/log",
@@ -13,15 +12,13 @@ import {
 // Values
 pub fn encode_logs(Array[@log.LogRecord], resource? : Resource, scope? : Scope) -> String
 
-pub fn encode_logs_protobuf(Array[@log.LogRecord], resource? : Resource, scope? : Scope) -> Bytes
-
 pub fn encode_metrics(Array[Metric], resource? : Resource, scope? : Scope) -> String
-
-pub fn encode_metrics_protobuf(Array[Metric], resource? : Resource, scope? : Scope) -> Bytes
 
 pub fn encode_traces(Array[@trace.SpanData], resource? : Resource, scope? : Scope) -> String
 
-pub fn encode_traces_protobuf(Array[@trace.SpanData], resource? : Resource, scope? : Scope) -> Bytes
+pub let json : &Encoding
+
+pub fn kind_code(@trace.SpanKind) -> Int32
 
 pub let moonbit_scope : Scope
 
@@ -34,6 +31,8 @@ pub let otlp_batch : BatchPolicy
 pub let recommended_body_limits : BodyLimits
 
 pub fn retry_after_milliseconds(StringView, now~ : Int64) -> Int64?
+
+pub fn temporality_code(Temporality) -> Int32
 
 pub let unknown_service : Resource
 
@@ -121,12 +120,15 @@ pub fn Exemplar::equal(Self, Self) -> Bool
 pub fn Exemplar::not_equal(Self, Self) -> Bool
 pub fn Exemplar::to_repr(Self) -> @debug.Repr
 
+pub struct JsonEncoding {
+}
+
 pub struct LogsExporter {
   outbox : Outbox[@log.LogRecord]
 }
 pub fn LogsExporter::accept(Self, @log.LogRecord) -> Unit
 pub async fn LogsExporter::flush(Self) -> Report
-pub fn LogsExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
+pub fn LogsExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, encoding? : &Encoding, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
 pub async fn LogsExporter::run(Self) -> Unit
 pub fn LogsExporter::stats(Self) -> Stats
 pub async fn LogsExporter::tick(Self) -> Report
@@ -160,7 +162,7 @@ pub struct MetricsExporter {
   outbox : Outbox[Metric]
 }
 pub async fn MetricsExporter::flush(Self) -> Report
-pub fn MetricsExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
+pub fn MetricsExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, encoding? : &Encoding, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
 pub fn MetricsExporter::record(Self, Metric) -> Unit
 pub async fn MetricsExporter::run(Self) -> Unit
 pub fn MetricsExporter::stats(Self) -> Stats
@@ -172,7 +174,7 @@ pub struct Outbox[T] {
   url : String
   headers : Array[(String, String)]
   encode : (Array[T]) -> Bytes
-  format : BodyFormat
+  encoding : &Encoding
   policy : BatchPolicy
   limits : BodyLimits
   backoff : Backoff
@@ -196,25 +198,6 @@ pub fn Point::equal(Self, Self) -> Bool
 pub fn Point::not_equal(Self, Self) -> Bool
 pub fn Point::to_repr(Self) -> @debug.Repr
 
-pub struct ProtoWriter {
-  buf : @buffer.Buffer
-}
-pub fn ProtoWriter::bool(Self, Int32, Bool) -> Unit
-pub fn ProtoWriter::bytes(Self, Int32, BytesView) -> Unit
-pub fn ProtoWriter::double(Self, Int32, Double) -> Unit
-pub fn ProtoWriter::enum_code(Self, Int32, Int32) -> Unit
-pub fn ProtoWriter::finish(Self) -> Bytes
-pub fn ProtoWriter::fixed32(Self, Int32, UInt32) -> Unit
-pub fn ProtoWriter::fixed64(Self, Int32, UInt64) -> Unit
-pub fn ProtoWriter::int64(Self, Int32, Int64) -> Unit
-pub fn ProtoWriter::message(Self, Int32, Self) -> Unit
-pub fn ProtoWriter::new() -> Self
-pub fn ProtoWriter::packed_doubles(Self, Int32, Array[Double]) -> Unit
-pub fn ProtoWriter::packed_fixed64(Self, Int32, Array[UInt64]) -> Unit
-pub fn ProtoWriter::string(Self, Int32, String) -> Unit
-pub fn ProtoWriter::uint(Self, Int32, UInt64) -> Unit
-pub fn ProtoWriter::uint32(Self, Int32, Int32) -> Unit
-
 pub(all) struct Reply {
   status : Int32
   headers : Array[(String, String)]
@@ -222,7 +205,6 @@ pub(all) struct Reply {
 }
 pub fn Reply::header(Self, String) -> String?
 pub fn Reply::rejected(Self) -> Int32?
-pub fn Reply::rejected_protobuf(Self) -> Int32?
 pub fn Reply::retry_after(Self, now~ : Int64) -> Int64?
 pub fn Reply::text(Self) -> String
 
@@ -292,7 +274,7 @@ pub struct TraceExporter {
 }
 pub fn TraceExporter::accept(Self, @trace.SpanData) -> Unit
 pub async fn TraceExporter::flush(Self) -> Report
-pub fn TraceExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, format? : BodyFormat, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
+pub fn TraceExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, encoding? : &Encoding, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
 pub async fn TraceExporter::run(Self) -> Unit
 pub fn TraceExporter::stats(Self) -> Stats
 pub async fn TraceExporter::tick(Self) -> Report
@@ -312,6 +294,14 @@ pub fn Verdict::to_repr(Self) -> @debug.Repr
 // Type aliases
 
 // Traits
+pub(open) trait Encoding {
+  fn format(Self) -> BodyFormat
+  fn traces(Self, Array[@trace.SpanData], Resource, Scope) -> Bytes
+  fn logs(Self, Array[@log.LogRecord], Resource, Scope) -> Bytes
+  fn metrics(Self, Array[Metric], Resource, Scope) -> Bytes
+  fn rejected(Self, Bytes) -> Int32?
+}
+
 pub(open) trait Transport {
   async fn send(Self, Request) -> Reply raise Failed
 }

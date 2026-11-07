@@ -62,4 +62,5 @@ import {
   "moonbitstack/moonp8s@0.1.1",
   "moonbitstack/moonrpc@0.21.13",
   "moonbitstack/moonhttp@0.15.9",
+  "moonbitstack/moonproto@0.1.0",
 }

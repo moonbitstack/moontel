@@ -1,0 +1,15 @@
+// The generator behind `otlp/proto`: the OTLP message types, written out of the
+// schema the protocol publishes. Run it from the repository root; `--check` says
+// whether the committed files are the ones it would write today.
+supported_targets = "+native+wasm"
+
+pkgtype(kind: "executable")
+
+import {
+  "moonbitstack/moonproto/desc",
+  "moonbitstack/moonproto/gen",
+  "moonbitstack/moonproto/parser",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/core/env",
+}

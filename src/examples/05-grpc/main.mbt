@@ -30,7 +30,7 @@ async fn main {
     transport~,
     endpoint="http://\{address}",
     resource=@otlp.Resource::of_service("moontel-example"),
-    format=@otlp.BodyFormat::Protobuf,
+    encoding=@binary.protobuf,
     now=millis,
     rand=random_bytes,
     attempts=if required { 5 } else { 1 },

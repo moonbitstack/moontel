@@ -61,7 +61,7 @@ pub struct Outbox[T] {
   url : String
   headers : Array[(String, String)]
   encode : (Array[T]) -> Bytes
-  format : BodyFormat
+  encoding : &Encoding
   policy : BatchPolicy
   limits : BodyLimits
   backoff : Backoff
@@ -192,7 +192,7 @@ async fn[T] Outbox::send_one(self : Outbox[T], chunk : Array[T]) -> Report {
         } else {
           match verdict(reply.status) {
             Accepted => {
-              let rejected = reply.rejected().unwrap_or(0)
+              let rejected = self.encoding.rejected(reply.body).unwrap_or(0)
               report = {
                 ..report,
                 delivered: report.delivered + count - rejected,
@@ -302,7 +302,7 @@ pub fn TraceExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
-  format~ : BodyFormat = Json,
+  encoding~ : &Encoding = json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -311,18 +311,15 @@ pub fn TraceExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> TraceExporter {
   let encode = fn(spans : Array[@trace.SpanData]) {
-    match format {
-      Json => @utf8.encode(encode_traces(spans, resource~, scope~))
-      Protobuf => encode_traces_protobuf(spans, resource~, scope~)
-    }
+    encoding.traces(spans, resource, scope)
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/traces"),
-      headers: with_content_type(headers, format),
+      headers: with_content_type(headers, encoding.format()),
       encode,
-      format,
+      encoding,
       policy,
       limits,
       backoff,
@@ -402,7 +399,7 @@ pub fn LogsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
-  format~ : BodyFormat = Json,
+  encoding~ : &Encoding = json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -411,18 +408,15 @@ pub fn LogsExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> LogsExporter {
   let encode = fn(records : Array[@log.LogRecord]) {
-    match format {
-      Json => @utf8.encode(encode_logs(records, resource~, scope~))
-      Protobuf => encode_logs_protobuf(records, resource~, scope~)
-    }
+    encoding.logs(records, resource, scope)
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/logs"),
-      headers: with_content_type(headers, format),
+      headers: with_content_type(headers, encoding.format()),
       encode,
-      format,
+      encoding,
       policy,
       limits,
       backoff,
@@ -497,7 +491,7 @@ pub fn MetricsExporter::new(
   resource~ : Resource = unknown_service,
   scope~ : Scope = moonbit_scope,
   policy~ : BatchPolicy = otlp_batch,
-  format~ : BodyFormat = Json,
+  encoding~ : &Encoding = json,
   limits~ : BodyLimits = recommended_body_limits,
   backoff~ : Backoff = otlp_backoff,
   attempts~ : Int32 = 5,
@@ -506,18 +500,15 @@ pub fn MetricsExporter::new(
   pause~ : async (Int64) -> Unit = pause_milliseconds,
 ) -> MetricsExporter {
   let encode = fn(metrics : Array[Metric]) {
-    match format {
-      Json => @utf8.encode(encode_metrics(metrics, resource~, scope~))
-      Protobuf => encode_metrics_protobuf(metrics, resource~, scope~)
-    }
+    encoding.metrics(metrics, resource, scope)
   }
   {
     outbox: {
       transport,
       url: signal_url(endpoint, "/v1/metrics"),
-      headers: with_content_type(headers, format),
+      headers: with_content_type(headers, encoding.format()),
       encode,
-      format,
+      encoding,
       policy,
       limits,
       backoff,

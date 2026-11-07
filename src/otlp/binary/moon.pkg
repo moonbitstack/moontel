@@ -1,0 +1,34 @@
+// The OTLP messages, written out of the protocol's schema, and the encoder that
+// fills them in and hands them to the binary writer. Split from `otlp` so that a
+// program sending JSON carries neither this package nor a schema runtime.
+import {
+  "moonbitstack/moontel/log",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moonproto/desc",
+  "moonbitstack/moonproto/json",
+  "moonbitstack/moonproto/proto",
+  "moonbitstack/moonproto/reflect",
+}
+
+// The test reads the JSON body of the same span, so the two encodings can be
+// compared without a parser built for the test.
+import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json" @corejson,
+} for "wbtest"
+
+// The generated files are the tool's output, not this repository's handwriting:
+// formatting them would mean a reader cannot regenerate and get the same bytes.
+formatter(
+  ignore: [
+    "common.g.mbt",
+    "resource.g.mbt",
+    "trace.g.mbt",
+    "logs.g.mbt",
+    "metrics.g.mbt",
+    "trace_service.g.mbt",
+    "logs_service.g.mbt",
+    "metrics_service.g.mbt",
+  ],
+)

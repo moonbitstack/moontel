@@ -11,6 +11,7 @@ import {
   "moonbitstack/moontel/trace",
   "moonbitstack/moontel/log",
   "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/otlp/binary",
   "moonbitstack/moontel/otlp/http",
   "moonbitstack/moontel/otlp/p8s",
   "moonbitstack/moonp8s/metric",

@@ -340,7 +340,7 @@ fn write_exemplar(w : JsonWriter, exemplar : Exemplar) -> Unit {
 }
 
 ///|
-fn temporality_code(temporality : Temporality) -> Int32 {
+pub fn temporality_code(temporality : Temporality) -> Int32 {
   match temporality {
     Delta => 1
     Cumulative => 2

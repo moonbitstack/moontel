@@ -1,0 +1,2112 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/otlp/binary"
+
+import {
+  "moonbitstack/moonproto/desc",
+  "moonbitstack/moonproto/json",
+  "moonbitstack/moonproto/reflect",
+  "moonbitstack/moontel/log",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub let anyValue_type : &@reflect.MessageType
+
+pub let arrayValue_type : &@reflect.MessageType
+
+pub fn encode_logs(Array[@log.LogRecord], resource? : @otlp.Resource, scope? : @otlp.Scope) -> Bytes
+
+pub fn encode_metrics(Array[@otlp.Metric], resource? : @otlp.Resource, scope? : @otlp.Scope) -> Bytes
+
+pub fn encode_traces(Array[@trace.SpanData], resource? : @otlp.Resource, scope? : @otlp.Scope) -> Bytes
+
+pub let entityRef_type : &@reflect.MessageType
+
+pub let exemplar_type : &@reflect.MessageType
+
+pub let exponentialHistogramDataPoint_Buckets_type : &@reflect.MessageType
+
+pub let exponentialHistogramDataPoint_type : &@reflect.MessageType
+
+pub let exponentialHistogram_type : &@reflect.MessageType
+
+pub let exportLogsPartialSuccess_type : &@reflect.MessageType
+
+pub let exportLogsServiceRequest_type : &@reflect.MessageType
+
+pub let exportLogsServiceResponse_type : &@reflect.MessageType
+
+pub let exportMetricsPartialSuccess_type : &@reflect.MessageType
+
+pub let exportMetricsServiceRequest_type : &@reflect.MessageType
+
+pub let exportMetricsServiceResponse_type : &@reflect.MessageType
+
+pub let exportTracePartialSuccess_type : &@reflect.MessageType
+
+pub let exportTraceServiceRequest_type : &@reflect.MessageType
+
+pub let exportTraceServiceResponse_type : &@reflect.MessageType
+
+pub fn file_descriptor_common_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_logs_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_logs_service_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_metrics_service_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_resource_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub fn file_descriptor_trace_service_proto() -> @reflect.FileDescriptor raise @desc.Refused
+
+pub let gauge_type : &@reflect.MessageType
+
+pub let histogramDataPoint_type : &@reflect.MessageType
+
+pub let histogram_type : &@reflect.MessageType
+
+pub let instrumentationScope_type : &@reflect.MessageType
+
+pub let keyValueList_type : &@reflect.MessageType
+
+pub let keyValue_type : &@reflect.MessageType
+
+pub let logRecord_type : &@reflect.MessageType
+
+pub let logsData_type : &@reflect.MessageType
+
+pub let metric_type : &@reflect.MessageType
+
+pub let metricsData_type : &@reflect.MessageType
+
+pub let numberDataPoint_type : &@reflect.MessageType
+
+pub let protobuf : &@otlp.Encoding
+
+pub let resourceLogs_type : &@reflect.MessageType
+
+pub let resourceMetrics_type : &@reflect.MessageType
+
+pub let resourceSpans_type : &@reflect.MessageType
+
+pub let resource_type : &@reflect.MessageType
+
+pub let scopeLogs_type : &@reflect.MessageType
+
+pub let scopeMetrics_type : &@reflect.MessageType
+
+pub let scopeSpans_type : &@reflect.MessageType
+
+pub let span_Event_type : &@reflect.MessageType
+
+pub let span_Link_type : &@reflect.MessageType
+
+pub let span_type : &@reflect.MessageType
+
+pub let status_type : &@reflect.MessageType
+
+pub let sum_type : &@reflect.MessageType
+
+pub let summaryDataPoint_ValueAtQuantile_type : &@reflect.MessageType
+
+pub let summaryDataPoint_type : &@reflect.MessageType
+
+pub let summary_type : &@reflect.MessageType
+
+pub let tracesData_type : &@reflect.MessageType
+
+// Errors
+
+// Types and methods
+pub(all) enum AggregationTemporality {
+  AGGREGATION_TEMPORALITY_UNSPECIFIED
+  AGGREGATION_TEMPORALITY_DELTA
+  AGGREGATION_TEMPORALITY_CUMULATIVE
+  Unknown(Int32)
+}
+pub fn AggregationTemporality::code(Self) -> Int32
+pub fn AggregationTemporality::of(Int32) -> Self
+
+pub struct AnyValue {
+  mut value : AnyValue_Value
+  mut unknown_fields : Bytes
+}
+pub fn AnyValue::array_value(Self) -> @reflect.Value
+pub fn AnyValue::bool_value(Self) -> Bool
+pub fn AnyValue::bytes_value(Self) -> Bytes
+pub fn AnyValue::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn AnyValue::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn AnyValue::double_value(Self) -> Double
+pub fn AnyValue::fresh(Self) -> Self
+pub fn AnyValue::from_json(String) -> Self raise @json.Refused
+pub fn AnyValue::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn AnyValue::get_unknown(Self) -> @reflect.RawFields
+pub fn AnyValue::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn AnyValue::int_value(Self) -> Int64
+pub fn AnyValue::is_valid(Self) -> Bool
+pub fn AnyValue::kvlist_value(Self) -> @reflect.Value
+pub fn AnyValue::message_type(Self) -> &@reflect.MessageType
+pub fn AnyValue::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn AnyValue::new() -> Self
+pub fn AnyValue::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn AnyValue::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn AnyValue::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn AnyValue::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn AnyValue::set_array_value(Self, @reflect.Value) -> Unit
+pub fn AnyValue::set_bool_value(Self, Bool) -> Unit
+pub fn AnyValue::set_bytes_value(Self, Bytes) -> Unit
+pub fn AnyValue::set_double_value(Self, Double) -> Unit
+pub fn AnyValue::set_int_value(Self, Int64) -> Unit
+pub fn AnyValue::set_kvlist_value(Self, @reflect.Value) -> Unit
+pub fn AnyValue::set_string_value(Self, String) -> Unit
+pub fn AnyValue::set_string_value_strindex(Self, Int32) -> Unit
+pub fn AnyValue::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn AnyValue::set_value(Self, AnyValue_Value) -> Unit
+pub fn AnyValue::string_value(Self) -> String
+pub fn AnyValue::string_value_strindex(Self) -> Int32
+pub fn AnyValue::to_json(Self) -> String raise @json.Refused
+pub fn AnyValue::value(Self) -> AnyValue_Value
+pub fn AnyValue::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for AnyValue
+pub impl @reflect.Message for AnyValue
+
+pub struct AnyValueType {
+  marker : Unit
+}
+pub fn AnyValueType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn AnyValueType::new() -> Self
+pub fn AnyValueType::new_message(Self) -> &@reflect.Message
+pub fn AnyValueType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for AnyValueType
+
+pub(all) enum AnyValue_Value {
+  String_value(String)
+  Bool_value(Bool)
+  Int_value(Int64)
+  Double_value(Double)
+  Array_value(ArrayValue)
+  Kvlist_value(KeyValueList)
+  Bytes_value(Bytes)
+  String_value_strindex(Int32)
+  NoValue
+}
+
+pub struct ArrayValue {
+  values : Array[AnyValue]
+  mut unknown_fields : Bytes
+}
+pub fn ArrayValue::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ArrayValue::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ArrayValue::fresh(Self) -> Self
+pub fn ArrayValue::from_json(String) -> Self raise @json.Refused
+pub fn ArrayValue::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ArrayValue::get_unknown(Self) -> @reflect.RawFields
+pub fn ArrayValue::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ArrayValue::is_valid(Self) -> Bool
+pub fn ArrayValue::message_type(Self) -> &@reflect.MessageType
+pub fn ArrayValue::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ArrayValue::new() -> Self
+pub fn ArrayValue::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ArrayValue::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ArrayValue::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ArrayValue::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ArrayValue::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ArrayValue::to_json(Self) -> String raise @json.Refused
+pub fn ArrayValue::values(Self) -> &@reflect.ListField
+pub fn ArrayValue::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ArrayValue
+pub impl @reflect.Message for ArrayValue
+
+pub struct ArrayValueType {
+  marker : Unit
+}
+pub fn ArrayValueType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ArrayValueType::new() -> Self
+pub fn ArrayValueType::new_message(Self) -> &@reflect.Message
+pub fn ArrayValueType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ArrayValueType
+
+pub(all) enum DataPointFlags {
+  DATA_POINT_FLAGS_DO_NOT_USE
+  DATA_POINT_FLAGS_NO_RECORDED_VALUE_MASK
+  Unknown(Int32)
+}
+pub fn DataPointFlags::code(Self) -> Int32
+pub fn DataPointFlags::of(Int32) -> Self
+
+pub struct EntityRef {
+  mut schema_url : String?
+  mut type_ : String?
+  id_keys : Array[String]
+  description_keys : Array[String]
+  mut unknown_fields : Bytes
+}
+pub fn EntityRef::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn EntityRef::description_keys(Self) -> &@reflect.ListField
+pub fn EntityRef::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn EntityRef::fresh(Self) -> Self
+pub fn EntityRef::from_json(String) -> Self raise @json.Refused
+pub fn EntityRef::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn EntityRef::get_unknown(Self) -> @reflect.RawFields
+pub fn EntityRef::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn EntityRef::id_keys(Self) -> &@reflect.ListField
+pub fn EntityRef::is_valid(Self) -> Bool
+pub fn EntityRef::message_type(Self) -> &@reflect.MessageType
+pub fn EntityRef::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn EntityRef::new() -> Self
+pub fn EntityRef::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn EntityRef::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn EntityRef::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn EntityRef::schema_url(Self) -> String
+pub fn EntityRef::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn EntityRef::set_schema_url(Self, String) -> Unit
+pub fn EntityRef::set_type_(Self, String) -> Unit
+pub fn EntityRef::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn EntityRef::to_json(Self) -> String raise @json.Refused
+pub fn EntityRef::type_(Self) -> String
+pub fn EntityRef::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for EntityRef
+pub impl @reflect.Message for EntityRef
+
+pub struct EntityRefType {
+  marker : Unit
+}
+pub fn EntityRefType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn EntityRefType::new() -> Self
+pub fn EntityRefType::new_message(Self) -> &@reflect.Message
+pub fn EntityRefType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for EntityRefType
+
+pub struct Exemplar {
+  filtered_attributes : Array[KeyValue]
+  mut time_unix_nano : UInt64?
+  mut span_id : Bytes?
+  mut trace_id : Bytes?
+  mut value : Exemplar_Value
+  mut unknown_fields : Bytes
+}
+pub fn Exemplar::as_double(Self) -> Double
+pub fn Exemplar::as_int(Self) -> Int64
+pub fn Exemplar::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Exemplar::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Exemplar::filtered_attributes(Self) -> &@reflect.ListField
+pub fn Exemplar::fresh(Self) -> Self
+pub fn Exemplar::from_json(String) -> Self raise @json.Refused
+pub fn Exemplar::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Exemplar::get_unknown(Self) -> @reflect.RawFields
+pub fn Exemplar::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Exemplar::is_valid(Self) -> Bool
+pub fn Exemplar::message_type(Self) -> &@reflect.MessageType
+pub fn Exemplar::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Exemplar::new() -> Self
+pub fn Exemplar::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Exemplar::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Exemplar::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Exemplar::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Exemplar::set_as_double(Self, Double) -> Unit
+pub fn Exemplar::set_as_int(Self, Int64) -> Unit
+pub fn Exemplar::set_span_id(Self, Bytes) -> Unit
+pub fn Exemplar::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn Exemplar::set_trace_id(Self, Bytes) -> Unit
+pub fn Exemplar::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Exemplar::set_value(Self, Exemplar_Value) -> Unit
+pub fn Exemplar::span_id(Self) -> Bytes
+pub fn Exemplar::time_unix_nano(Self) -> UInt64
+pub fn Exemplar::to_json(Self) -> String raise @json.Refused
+pub fn Exemplar::trace_id(Self) -> Bytes
+pub fn Exemplar::value(Self) -> Exemplar_Value
+pub fn Exemplar::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Exemplar
+pub impl @reflect.Message for Exemplar
+
+pub struct ExemplarType {
+  marker : Unit
+}
+pub fn ExemplarType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExemplarType::new() -> Self
+pub fn ExemplarType::new_message(Self) -> &@reflect.Message
+pub fn ExemplarType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExemplarType
+
+pub(all) enum Exemplar_Value {
+  As_double(Double)
+  As_int(Int64)
+  NoValue
+}
+
+pub struct ExponentialHistogram {
+  data_points : Array[ExponentialHistogramDataPoint]
+  mut aggregation_temporality : AggregationTemporality?
+  mut unknown_fields : Bytes
+}
+pub fn ExponentialHistogram::aggregation_temporality(Self) -> Int32
+pub fn ExponentialHistogram::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExponentialHistogram::data_points(Self) -> &@reflect.ListField
+pub fn ExponentialHistogram::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogram::fresh(Self) -> Self
+pub fn ExponentialHistogram::from_json(String) -> Self raise @json.Refused
+pub fn ExponentialHistogram::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogram::get_unknown(Self) -> @reflect.RawFields
+pub fn ExponentialHistogram::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExponentialHistogram::is_valid(Self) -> Bool
+pub fn ExponentialHistogram::message_type(Self) -> &@reflect.MessageType
+pub fn ExponentialHistogram::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogram::new() -> Self
+pub fn ExponentialHistogram::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogram::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogram::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogram::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExponentialHistogram::set_aggregation_temporality(Self, Int32) -> Unit
+pub fn ExponentialHistogram::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExponentialHistogram::to_json(Self) -> String raise @json.Refused
+pub fn ExponentialHistogram::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExponentialHistogram
+pub impl @reflect.Message for ExponentialHistogram
+
+pub struct ExponentialHistogramDataPoint {
+  attributes : Array[KeyValue]
+  mut start_time_unix_nano : UInt64?
+  mut time_unix_nano : UInt64?
+  mut count : UInt64?
+  mut sum : Double?
+  mut scale : Int32?
+  mut zero_count : UInt64?
+  mut positive : ExponentialHistogramDataPoint_Buckets?
+  mut negative : ExponentialHistogramDataPoint_Buckets?
+  mut flags : UInt32?
+  exemplars : Array[Exemplar]
+  mut min : Double?
+  mut max : Double?
+  mut zero_threshold : Double?
+  mut unknown_fields : Bytes
+}
+pub fn ExponentialHistogramDataPoint::attributes(Self) -> &@reflect.ListField
+pub fn ExponentialHistogramDataPoint::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExponentialHistogramDataPoint::count(Self) -> UInt64
+pub fn ExponentialHistogramDataPoint::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogramDataPoint::exemplars(Self) -> &@reflect.ListField
+pub fn ExponentialHistogramDataPoint::flags(Self) -> UInt32
+pub fn ExponentialHistogramDataPoint::fresh(Self) -> Self
+pub fn ExponentialHistogramDataPoint::from_json(String) -> Self raise @json.Refused
+pub fn ExponentialHistogramDataPoint::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint::get_unknown(Self) -> @reflect.RawFields
+pub fn ExponentialHistogramDataPoint::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExponentialHistogramDataPoint::is_valid(Self) -> Bool
+pub fn ExponentialHistogramDataPoint::max(Self) -> Double
+pub fn ExponentialHistogramDataPoint::message_type(Self) -> &@reflect.MessageType
+pub fn ExponentialHistogramDataPoint::min(Self) -> Double
+pub fn ExponentialHistogramDataPoint::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint::negative(Self) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint::new() -> Self
+pub fn ExponentialHistogramDataPoint::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint::positive(Self) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogramDataPoint::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogramDataPoint::scale(Self) -> Int32
+pub fn ExponentialHistogramDataPoint::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExponentialHistogramDataPoint::set_count(Self, UInt64) -> Unit
+pub fn ExponentialHistogramDataPoint::set_flags(Self, UInt32) -> Unit
+pub fn ExponentialHistogramDataPoint::set_max(Self, Double) -> Unit
+pub fn ExponentialHistogramDataPoint::set_min(Self, Double) -> Unit
+pub fn ExponentialHistogramDataPoint::set_negative(Self, @reflect.Value) -> Unit
+pub fn ExponentialHistogramDataPoint::set_positive(Self, @reflect.Value) -> Unit
+pub fn ExponentialHistogramDataPoint::set_scale(Self, Int32) -> Unit
+pub fn ExponentialHistogramDataPoint::set_start_time_unix_nano(Self, UInt64) -> Unit
+pub fn ExponentialHistogramDataPoint::set_sum(Self, Double) -> Unit
+pub fn ExponentialHistogramDataPoint::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn ExponentialHistogramDataPoint::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExponentialHistogramDataPoint::set_zero_count(Self, UInt64) -> Unit
+pub fn ExponentialHistogramDataPoint::set_zero_threshold(Self, Double) -> Unit
+pub fn ExponentialHistogramDataPoint::start_time_unix_nano(Self) -> UInt64
+pub fn ExponentialHistogramDataPoint::sum(Self) -> Double
+pub fn ExponentialHistogramDataPoint::time_unix_nano(Self) -> UInt64
+pub fn ExponentialHistogramDataPoint::to_json(Self) -> String raise @json.Refused
+pub fn ExponentialHistogramDataPoint::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub fn ExponentialHistogramDataPoint::zero_count(Self) -> UInt64
+pub fn ExponentialHistogramDataPoint::zero_threshold(Self) -> Double
+pub impl @reflect.Fresh for ExponentialHistogramDataPoint
+pub impl @reflect.Message for ExponentialHistogramDataPoint
+
+pub struct ExponentialHistogramDataPointType {
+  marker : Unit
+}
+pub fn ExponentialHistogramDataPointType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogramDataPointType::new() -> Self
+pub fn ExponentialHistogramDataPointType::new_message(Self) -> &@reflect.Message
+pub fn ExponentialHistogramDataPointType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExponentialHistogramDataPointType
+
+pub struct ExponentialHistogramDataPoint_Buckets {
+  mut offset : Int32?
+  bucket_counts : Array[UInt64]
+  mut unknown_fields : Bytes
+}
+pub fn ExponentialHistogramDataPoint_Buckets::bucket_counts(Self) -> &@reflect.ListField
+pub fn ExponentialHistogramDataPoint_Buckets::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogramDataPoint_Buckets::fresh(Self) -> Self
+pub fn ExponentialHistogramDataPoint_Buckets::from_json(String) -> Self raise @json.Refused
+pub fn ExponentialHistogramDataPoint_Buckets::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint_Buckets::get_unknown(Self) -> @reflect.RawFields
+pub fn ExponentialHistogramDataPoint_Buckets::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExponentialHistogramDataPoint_Buckets::is_valid(Self) -> Bool
+pub fn ExponentialHistogramDataPoint_Buckets::message_type(Self) -> &@reflect.MessageType
+pub fn ExponentialHistogramDataPoint_Buckets::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint_Buckets::new() -> Self
+pub fn ExponentialHistogramDataPoint_Buckets::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExponentialHistogramDataPoint_Buckets::offset(Self) -> Int32
+pub fn ExponentialHistogramDataPoint_Buckets::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::set_offset(Self, Int32) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExponentialHistogramDataPoint_Buckets::to_json(Self) -> String raise @json.Refused
+pub fn ExponentialHistogramDataPoint_Buckets::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExponentialHistogramDataPoint_Buckets
+pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets
+
+pub struct ExponentialHistogramDataPoint_BucketsType {
+  marker : Unit
+}
+pub fn ExponentialHistogramDataPoint_BucketsType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogramDataPoint_BucketsType::new() -> Self
+pub fn ExponentialHistogramDataPoint_BucketsType::new_message(Self) -> &@reflect.Message
+pub fn ExponentialHistogramDataPoint_BucketsType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExponentialHistogramDataPoint_BucketsType
+
+pub struct ExponentialHistogramType {
+  marker : Unit
+}
+pub fn ExponentialHistogramType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExponentialHistogramType::new() -> Self
+pub fn ExponentialHistogramType::new_message(Self) -> &@reflect.Message
+pub fn ExponentialHistogramType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExponentialHistogramType
+
+pub struct ExportLogsPartialSuccess {
+  mut rejected_log_records : Int64?
+  mut error_message : String?
+  mut unknown_fields : Bytes
+}
+pub fn ExportLogsPartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportLogsPartialSuccess::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsPartialSuccess::error_message(Self) -> String
+pub fn ExportLogsPartialSuccess::fresh(Self) -> Self
+pub fn ExportLogsPartialSuccess::from_json(String) -> Self raise @json.Refused
+pub fn ExportLogsPartialSuccess::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsPartialSuccess::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportLogsPartialSuccess::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportLogsPartialSuccess::is_valid(Self) -> Bool
+pub fn ExportLogsPartialSuccess::message_type(Self) -> &@reflect.MessageType
+pub fn ExportLogsPartialSuccess::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsPartialSuccess::new() -> Self
+pub fn ExportLogsPartialSuccess::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsPartialSuccess::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsPartialSuccess::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsPartialSuccess::rejected_log_records(Self) -> Int64
+pub fn ExportLogsPartialSuccess::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportLogsPartialSuccess::set_error_message(Self, String) -> Unit
+pub fn ExportLogsPartialSuccess::set_rejected_log_records(Self, Int64) -> Unit
+pub fn ExportLogsPartialSuccess::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportLogsPartialSuccess::to_json(Self) -> String raise @json.Refused
+pub fn ExportLogsPartialSuccess::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportLogsPartialSuccess
+pub impl @reflect.Message for ExportLogsPartialSuccess
+
+pub struct ExportLogsPartialSuccessType {
+  marker : Unit
+}
+pub fn ExportLogsPartialSuccessType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsPartialSuccessType::new() -> Self
+pub fn ExportLogsPartialSuccessType::new_message(Self) -> &@reflect.Message
+pub fn ExportLogsPartialSuccessType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportLogsPartialSuccessType
+
+pub struct ExportLogsServiceRequest {
+  resource_logs : Array[ResourceLogs]
+  mut unknown_fields : Bytes
+}
+pub fn ExportLogsServiceRequest::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportLogsServiceRequest::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsServiceRequest::fresh(Self) -> Self
+pub fn ExportLogsServiceRequest::from_json(String) -> Self raise @json.Refused
+pub fn ExportLogsServiceRequest::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceRequest::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportLogsServiceRequest::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportLogsServiceRequest::is_valid(Self) -> Bool
+pub fn ExportLogsServiceRequest::message_type(Self) -> &@reflect.MessageType
+pub fn ExportLogsServiceRequest::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceRequest::new() -> Self
+pub fn ExportLogsServiceRequest::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceRequest::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsServiceRequest::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsServiceRequest::resource_logs(Self) -> &@reflect.ListField
+pub fn ExportLogsServiceRequest::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportLogsServiceRequest::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportLogsServiceRequest::to_json(Self) -> String raise @json.Refused
+pub fn ExportLogsServiceRequest::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportLogsServiceRequest
+pub impl @reflect.Message for ExportLogsServiceRequest
+
+pub struct ExportLogsServiceRequestType {
+  marker : Unit
+}
+pub fn ExportLogsServiceRequestType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsServiceRequestType::new() -> Self
+pub fn ExportLogsServiceRequestType::new_message(Self) -> &@reflect.Message
+pub fn ExportLogsServiceRequestType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportLogsServiceRequestType
+
+pub struct ExportLogsServiceResponse {
+  mut partial_success : ExportLogsPartialSuccess?
+  mut unknown_fields : Bytes
+}
+pub fn ExportLogsServiceResponse::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportLogsServiceResponse::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsServiceResponse::fresh(Self) -> Self
+pub fn ExportLogsServiceResponse::from_json(String) -> Self raise @json.Refused
+pub fn ExportLogsServiceResponse::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceResponse::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportLogsServiceResponse::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportLogsServiceResponse::is_valid(Self) -> Bool
+pub fn ExportLogsServiceResponse::message_type(Self) -> &@reflect.MessageType
+pub fn ExportLogsServiceResponse::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceResponse::new() -> Self
+pub fn ExportLogsServiceResponse::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportLogsServiceResponse::partial_success(Self) -> @reflect.Value
+pub fn ExportLogsServiceResponse::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsServiceResponse::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportLogsServiceResponse::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportLogsServiceResponse::set_partial_success(Self, @reflect.Value) -> Unit
+pub fn ExportLogsServiceResponse::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportLogsServiceResponse::to_json(Self) -> String raise @json.Refused
+pub fn ExportLogsServiceResponse::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportLogsServiceResponse
+pub impl @reflect.Message for ExportLogsServiceResponse
+
+pub struct ExportLogsServiceResponseType {
+  marker : Unit
+}
+pub fn ExportLogsServiceResponseType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportLogsServiceResponseType::new() -> Self
+pub fn ExportLogsServiceResponseType::new_message(Self) -> &@reflect.Message
+pub fn ExportLogsServiceResponseType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportLogsServiceResponseType
+
+pub struct ExportMetricsPartialSuccess {
+  mut rejected_data_points : Int64?
+  mut error_message : String?
+  mut unknown_fields : Bytes
+}
+pub fn ExportMetricsPartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportMetricsPartialSuccess::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsPartialSuccess::error_message(Self) -> String
+pub fn ExportMetricsPartialSuccess::fresh(Self) -> Self
+pub fn ExportMetricsPartialSuccess::from_json(String) -> Self raise @json.Refused
+pub fn ExportMetricsPartialSuccess::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsPartialSuccess::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportMetricsPartialSuccess::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportMetricsPartialSuccess::is_valid(Self) -> Bool
+pub fn ExportMetricsPartialSuccess::message_type(Self) -> &@reflect.MessageType
+pub fn ExportMetricsPartialSuccess::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsPartialSuccess::new() -> Self
+pub fn ExportMetricsPartialSuccess::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsPartialSuccess::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsPartialSuccess::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsPartialSuccess::rejected_data_points(Self) -> Int64
+pub fn ExportMetricsPartialSuccess::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportMetricsPartialSuccess::set_error_message(Self, String) -> Unit
+pub fn ExportMetricsPartialSuccess::set_rejected_data_points(Self, Int64) -> Unit
+pub fn ExportMetricsPartialSuccess::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportMetricsPartialSuccess::to_json(Self) -> String raise @json.Refused
+pub fn ExportMetricsPartialSuccess::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportMetricsPartialSuccess
+pub impl @reflect.Message for ExportMetricsPartialSuccess
+
+pub struct ExportMetricsPartialSuccessType {
+  marker : Unit
+}
+pub fn ExportMetricsPartialSuccessType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsPartialSuccessType::new() -> Self
+pub fn ExportMetricsPartialSuccessType::new_message(Self) -> &@reflect.Message
+pub fn ExportMetricsPartialSuccessType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportMetricsPartialSuccessType
+
+pub struct ExportMetricsServiceRequest {
+  resource_metrics : Array[ResourceMetrics]
+  mut unknown_fields : Bytes
+}
+pub fn ExportMetricsServiceRequest::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportMetricsServiceRequest::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsServiceRequest::fresh(Self) -> Self
+pub fn ExportMetricsServiceRequest::from_json(String) -> Self raise @json.Refused
+pub fn ExportMetricsServiceRequest::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceRequest::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportMetricsServiceRequest::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportMetricsServiceRequest::is_valid(Self) -> Bool
+pub fn ExportMetricsServiceRequest::message_type(Self) -> &@reflect.MessageType
+pub fn ExportMetricsServiceRequest::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceRequest::new() -> Self
+pub fn ExportMetricsServiceRequest::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceRequest::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsServiceRequest::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsServiceRequest::resource_metrics(Self) -> &@reflect.ListField
+pub fn ExportMetricsServiceRequest::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportMetricsServiceRequest::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportMetricsServiceRequest::to_json(Self) -> String raise @json.Refused
+pub fn ExportMetricsServiceRequest::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportMetricsServiceRequest
+pub impl @reflect.Message for ExportMetricsServiceRequest
+
+pub struct ExportMetricsServiceRequestType {
+  marker : Unit
+}
+pub fn ExportMetricsServiceRequestType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsServiceRequestType::new() -> Self
+pub fn ExportMetricsServiceRequestType::new_message(Self) -> &@reflect.Message
+pub fn ExportMetricsServiceRequestType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportMetricsServiceRequestType
+
+pub struct ExportMetricsServiceResponse {
+  mut partial_success : ExportMetricsPartialSuccess?
+  mut unknown_fields : Bytes
+}
+pub fn ExportMetricsServiceResponse::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportMetricsServiceResponse::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsServiceResponse::fresh(Self) -> Self
+pub fn ExportMetricsServiceResponse::from_json(String) -> Self raise @json.Refused
+pub fn ExportMetricsServiceResponse::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceResponse::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportMetricsServiceResponse::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportMetricsServiceResponse::is_valid(Self) -> Bool
+pub fn ExportMetricsServiceResponse::message_type(Self) -> &@reflect.MessageType
+pub fn ExportMetricsServiceResponse::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceResponse::new() -> Self
+pub fn ExportMetricsServiceResponse::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportMetricsServiceResponse::partial_success(Self) -> @reflect.Value
+pub fn ExportMetricsServiceResponse::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsServiceResponse::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportMetricsServiceResponse::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportMetricsServiceResponse::set_partial_success(Self, @reflect.Value) -> Unit
+pub fn ExportMetricsServiceResponse::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportMetricsServiceResponse::to_json(Self) -> String raise @json.Refused
+pub fn ExportMetricsServiceResponse::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportMetricsServiceResponse
+pub impl @reflect.Message for ExportMetricsServiceResponse
+
+pub struct ExportMetricsServiceResponseType {
+  marker : Unit
+}
+pub fn ExportMetricsServiceResponseType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportMetricsServiceResponseType::new() -> Self
+pub fn ExportMetricsServiceResponseType::new_message(Self) -> &@reflect.Message
+pub fn ExportMetricsServiceResponseType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportMetricsServiceResponseType
+
+pub struct ExportTracePartialSuccess {
+  mut rejected_spans : Int64?
+  mut error_message : String?
+  mut unknown_fields : Bytes
+}
+pub fn ExportTracePartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportTracePartialSuccess::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTracePartialSuccess::error_message(Self) -> String
+pub fn ExportTracePartialSuccess::fresh(Self) -> Self
+pub fn ExportTracePartialSuccess::from_json(String) -> Self raise @json.Refused
+pub fn ExportTracePartialSuccess::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTracePartialSuccess::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportTracePartialSuccess::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportTracePartialSuccess::is_valid(Self) -> Bool
+pub fn ExportTracePartialSuccess::message_type(Self) -> &@reflect.MessageType
+pub fn ExportTracePartialSuccess::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTracePartialSuccess::new() -> Self
+pub fn ExportTracePartialSuccess::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTracePartialSuccess::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTracePartialSuccess::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTracePartialSuccess::rejected_spans(Self) -> Int64
+pub fn ExportTracePartialSuccess::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportTracePartialSuccess::set_error_message(Self, String) -> Unit
+pub fn ExportTracePartialSuccess::set_rejected_spans(Self, Int64) -> Unit
+pub fn ExportTracePartialSuccess::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportTracePartialSuccess::to_json(Self) -> String raise @json.Refused
+pub fn ExportTracePartialSuccess::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportTracePartialSuccess
+pub impl @reflect.Message for ExportTracePartialSuccess
+
+pub struct ExportTracePartialSuccessType {
+  marker : Unit
+}
+pub fn ExportTracePartialSuccessType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTracePartialSuccessType::new() -> Self
+pub fn ExportTracePartialSuccessType::new_message(Self) -> &@reflect.Message
+pub fn ExportTracePartialSuccessType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportTracePartialSuccessType
+
+pub struct ExportTraceServiceRequest {
+  resource_spans : Array[ResourceSpans]
+  mut unknown_fields : Bytes
+}
+pub fn ExportTraceServiceRequest::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportTraceServiceRequest::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTraceServiceRequest::fresh(Self) -> Self
+pub fn ExportTraceServiceRequest::from_json(String) -> Self raise @json.Refused
+pub fn ExportTraceServiceRequest::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceRequest::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportTraceServiceRequest::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportTraceServiceRequest::is_valid(Self) -> Bool
+pub fn ExportTraceServiceRequest::message_type(Self) -> &@reflect.MessageType
+pub fn ExportTraceServiceRequest::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceRequest::new() -> Self
+pub fn ExportTraceServiceRequest::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceRequest::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTraceServiceRequest::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTraceServiceRequest::resource_spans(Self) -> &@reflect.ListField
+pub fn ExportTraceServiceRequest::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportTraceServiceRequest::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportTraceServiceRequest::to_json(Self) -> String raise @json.Refused
+pub fn ExportTraceServiceRequest::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportTraceServiceRequest
+pub impl @reflect.Message for ExportTraceServiceRequest
+
+pub struct ExportTraceServiceRequestType {
+  marker : Unit
+}
+pub fn ExportTraceServiceRequestType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTraceServiceRequestType::new() -> Self
+pub fn ExportTraceServiceRequestType::new_message(Self) -> &@reflect.Message
+pub fn ExportTraceServiceRequestType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportTraceServiceRequestType
+
+pub struct ExportTraceServiceResponse {
+  mut partial_success : ExportTracePartialSuccess?
+  mut unknown_fields : Bytes
+}
+pub fn ExportTraceServiceResponse::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ExportTraceServiceResponse::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTraceServiceResponse::fresh(Self) -> Self
+pub fn ExportTraceServiceResponse::from_json(String) -> Self raise @json.Refused
+pub fn ExportTraceServiceResponse::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceResponse::get_unknown(Self) -> @reflect.RawFields
+pub fn ExportTraceServiceResponse::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ExportTraceServiceResponse::is_valid(Self) -> Bool
+pub fn ExportTraceServiceResponse::message_type(Self) -> &@reflect.MessageType
+pub fn ExportTraceServiceResponse::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceResponse::new() -> Self
+pub fn ExportTraceServiceResponse::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ExportTraceServiceResponse::partial_success(Self) -> @reflect.Value
+pub fn ExportTraceServiceResponse::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTraceServiceResponse::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ExportTraceServiceResponse::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ExportTraceServiceResponse::set_partial_success(Self, @reflect.Value) -> Unit
+pub fn ExportTraceServiceResponse::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ExportTraceServiceResponse::to_json(Self) -> String raise @json.Refused
+pub fn ExportTraceServiceResponse::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ExportTraceServiceResponse
+pub impl @reflect.Message for ExportTraceServiceResponse
+
+pub struct ExportTraceServiceResponseType {
+  marker : Unit
+}
+pub fn ExportTraceServiceResponseType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ExportTraceServiceResponseType::new() -> Self
+pub fn ExportTraceServiceResponseType::new_message(Self) -> &@reflect.Message
+pub fn ExportTraceServiceResponseType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ExportTraceServiceResponseType
+
+pub struct Gauge {
+  data_points : Array[NumberDataPoint]
+  mut unknown_fields : Bytes
+}
+pub fn Gauge::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Gauge::data_points(Self) -> &@reflect.ListField
+pub fn Gauge::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Gauge::fresh(Self) -> Self
+pub fn Gauge::from_json(String) -> Self raise @json.Refused
+pub fn Gauge::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Gauge::get_unknown(Self) -> @reflect.RawFields
+pub fn Gauge::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Gauge::is_valid(Self) -> Bool
+pub fn Gauge::message_type(Self) -> &@reflect.MessageType
+pub fn Gauge::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Gauge::new() -> Self
+pub fn Gauge::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Gauge::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Gauge::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Gauge::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Gauge::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Gauge::to_json(Self) -> String raise @json.Refused
+pub fn Gauge::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Gauge
+pub impl @reflect.Message for Gauge
+
+pub struct GaugeType {
+  marker : Unit
+}
+pub fn GaugeType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn GaugeType::new() -> Self
+pub fn GaugeType::new_message(Self) -> &@reflect.Message
+pub fn GaugeType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for GaugeType
+
+pub struct Histogram {
+  data_points : Array[HistogramDataPoint]
+  mut aggregation_temporality : AggregationTemporality?
+  mut unknown_fields : Bytes
+}
+pub fn Histogram::aggregation_temporality(Self) -> Int32
+pub fn Histogram::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Histogram::data_points(Self) -> &@reflect.ListField
+pub fn Histogram::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Histogram::fresh(Self) -> Self
+pub fn Histogram::from_json(String) -> Self raise @json.Refused
+pub fn Histogram::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Histogram::get_unknown(Self) -> @reflect.RawFields
+pub fn Histogram::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Histogram::is_valid(Self) -> Bool
+pub fn Histogram::message_type(Self) -> &@reflect.MessageType
+pub fn Histogram::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Histogram::new() -> Self
+pub fn Histogram::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Histogram::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Histogram::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Histogram::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Histogram::set_aggregation_temporality(Self, Int32) -> Unit
+pub fn Histogram::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Histogram::to_json(Self) -> String raise @json.Refused
+pub fn Histogram::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Histogram
+pub impl @reflect.Message for Histogram
+
+pub struct HistogramDataPoint {
+  attributes : Array[KeyValue]
+  mut start_time_unix_nano : UInt64?
+  mut time_unix_nano : UInt64?
+  mut count : UInt64?
+  mut sum : Double?
+  bucket_counts : Array[UInt64]
+  explicit_bounds : Array[Double]
+  exemplars : Array[Exemplar]
+  mut flags : UInt32?
+  mut min : Double?
+  mut max : Double?
+  mut unknown_fields : Bytes
+}
+pub fn HistogramDataPoint::attributes(Self) -> &@reflect.ListField
+pub fn HistogramDataPoint::bucket_counts(Self) -> &@reflect.ListField
+pub fn HistogramDataPoint::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn HistogramDataPoint::count(Self) -> UInt64
+pub fn HistogramDataPoint::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn HistogramDataPoint::exemplars(Self) -> &@reflect.ListField
+pub fn HistogramDataPoint::explicit_bounds(Self) -> &@reflect.ListField
+pub fn HistogramDataPoint::flags(Self) -> UInt32
+pub fn HistogramDataPoint::fresh(Self) -> Self
+pub fn HistogramDataPoint::from_json(String) -> Self raise @json.Refused
+pub fn HistogramDataPoint::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn HistogramDataPoint::get_unknown(Self) -> @reflect.RawFields
+pub fn HistogramDataPoint::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn HistogramDataPoint::is_valid(Self) -> Bool
+pub fn HistogramDataPoint::max(Self) -> Double
+pub fn HistogramDataPoint::message_type(Self) -> &@reflect.MessageType
+pub fn HistogramDataPoint::min(Self) -> Double
+pub fn HistogramDataPoint::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn HistogramDataPoint::new() -> Self
+pub fn HistogramDataPoint::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn HistogramDataPoint::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn HistogramDataPoint::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn HistogramDataPoint::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn HistogramDataPoint::set_count(Self, UInt64) -> Unit
+pub fn HistogramDataPoint::set_flags(Self, UInt32) -> Unit
+pub fn HistogramDataPoint::set_max(Self, Double) -> Unit
+pub fn HistogramDataPoint::set_min(Self, Double) -> Unit
+pub fn HistogramDataPoint::set_start_time_unix_nano(Self, UInt64) -> Unit
+pub fn HistogramDataPoint::set_sum(Self, Double) -> Unit
+pub fn HistogramDataPoint::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn HistogramDataPoint::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn HistogramDataPoint::start_time_unix_nano(Self) -> UInt64
+pub fn HistogramDataPoint::sum(Self) -> Double
+pub fn HistogramDataPoint::time_unix_nano(Self) -> UInt64
+pub fn HistogramDataPoint::to_json(Self) -> String raise @json.Refused
+pub fn HistogramDataPoint::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for HistogramDataPoint
+pub impl @reflect.Message for HistogramDataPoint
+
+pub struct HistogramDataPointType {
+  marker : Unit
+}
+pub fn HistogramDataPointType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn HistogramDataPointType::new() -> Self
+pub fn HistogramDataPointType::new_message(Self) -> &@reflect.Message
+pub fn HistogramDataPointType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for HistogramDataPointType
+
+pub struct HistogramType {
+  marker : Unit
+}
+pub fn HistogramType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn HistogramType::new() -> Self
+pub fn HistogramType::new_message(Self) -> &@reflect.Message
+pub fn HistogramType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for HistogramType
+
+pub struct InstrumentationScope {
+  mut name : String?
+  mut version : String?
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  mut unknown_fields : Bytes
+}
+pub fn InstrumentationScope::attributes(Self) -> &@reflect.ListField
+pub fn InstrumentationScope::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn InstrumentationScope::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn InstrumentationScope::dropped_attributes_count(Self) -> UInt32
+pub fn InstrumentationScope::fresh(Self) -> Self
+pub fn InstrumentationScope::from_json(String) -> Self raise @json.Refused
+pub fn InstrumentationScope::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn InstrumentationScope::get_unknown(Self) -> @reflect.RawFields
+pub fn InstrumentationScope::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn InstrumentationScope::is_valid(Self) -> Bool
+pub fn InstrumentationScope::message_type(Self) -> &@reflect.MessageType
+pub fn InstrumentationScope::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn InstrumentationScope::name(Self) -> String
+pub fn InstrumentationScope::new() -> Self
+pub fn InstrumentationScope::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn InstrumentationScope::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn InstrumentationScope::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn InstrumentationScope::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn InstrumentationScope::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn InstrumentationScope::set_name(Self, String) -> Unit
+pub fn InstrumentationScope::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn InstrumentationScope::set_version(Self, String) -> Unit
+pub fn InstrumentationScope::to_json(Self) -> String raise @json.Refused
+pub fn InstrumentationScope::version(Self) -> String
+pub fn InstrumentationScope::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for InstrumentationScope
+pub impl @reflect.Message for InstrumentationScope
+
+pub struct InstrumentationScopeType {
+  marker : Unit
+}
+pub fn InstrumentationScopeType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn InstrumentationScopeType::new() -> Self
+pub fn InstrumentationScopeType::new_message(Self) -> &@reflect.Message
+pub fn InstrumentationScopeType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for InstrumentationScopeType
+
+pub struct KeyValue {
+  mut key : String?
+  mut value : AnyValue?
+  mut key_strindex : Int32?
+  mut unknown_fields : Bytes
+}
+pub fn KeyValue::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn KeyValue::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn KeyValue::fresh(Self) -> Self
+pub fn KeyValue::from_json(String) -> Self raise @json.Refused
+pub fn KeyValue::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValue::get_unknown(Self) -> @reflect.RawFields
+pub fn KeyValue::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn KeyValue::is_valid(Self) -> Bool
+pub fn KeyValue::key(Self) -> String
+pub fn KeyValue::key_strindex(Self) -> Int32
+pub fn KeyValue::message_type(Self) -> &@reflect.MessageType
+pub fn KeyValue::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValue::new() -> Self
+pub fn KeyValue::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValue::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn KeyValue::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn KeyValue::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn KeyValue::set_key(Self, String) -> Unit
+pub fn KeyValue::set_key_strindex(Self, Int32) -> Unit
+pub fn KeyValue::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn KeyValue::set_value(Self, @reflect.Value) -> Unit
+pub fn KeyValue::to_json(Self) -> String raise @json.Refused
+pub fn KeyValue::value(Self) -> @reflect.Value
+pub fn KeyValue::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for KeyValue
+pub impl @reflect.Message for KeyValue
+
+pub struct KeyValueList {
+  values : Array[KeyValue]
+  mut unknown_fields : Bytes
+}
+pub fn KeyValueList::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn KeyValueList::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn KeyValueList::fresh(Self) -> Self
+pub fn KeyValueList::from_json(String) -> Self raise @json.Refused
+pub fn KeyValueList::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValueList::get_unknown(Self) -> @reflect.RawFields
+pub fn KeyValueList::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn KeyValueList::is_valid(Self) -> Bool
+pub fn KeyValueList::message_type(Self) -> &@reflect.MessageType
+pub fn KeyValueList::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValueList::new() -> Self
+pub fn KeyValueList::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn KeyValueList::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn KeyValueList::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn KeyValueList::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn KeyValueList::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn KeyValueList::to_json(Self) -> String raise @json.Refused
+pub fn KeyValueList::values(Self) -> &@reflect.ListField
+pub fn KeyValueList::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for KeyValueList
+pub impl @reflect.Message for KeyValueList
+
+pub struct KeyValueListType {
+  marker : Unit
+}
+pub fn KeyValueListType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn KeyValueListType::new() -> Self
+pub fn KeyValueListType::new_message(Self) -> &@reflect.Message
+pub fn KeyValueListType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for KeyValueListType
+
+pub struct KeyValueType {
+  marker : Unit
+}
+pub fn KeyValueType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn KeyValueType::new() -> Self
+pub fn KeyValueType::new_message(Self) -> &@reflect.Message
+pub fn KeyValueType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for KeyValueType
+
+pub struct LogRecord {
+  mut time_unix_nano : UInt64?
+  mut observed_time_unix_nano : UInt64?
+  mut severity_number : SeverityNumber?
+  mut severity_text : String?
+  mut body : AnyValue?
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  mut flags : UInt32?
+  mut trace_id : Bytes?
+  mut span_id : Bytes?
+  mut event_name : String?
+  mut unknown_fields : Bytes
+}
+pub fn LogRecord::attributes(Self) -> &@reflect.ListField
+pub fn LogRecord::body(Self) -> @reflect.Value
+pub fn LogRecord::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn LogRecord::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn LogRecord::dropped_attributes_count(Self) -> UInt32
+pub fn LogRecord::event_name(Self) -> String
+pub fn LogRecord::flags(Self) -> UInt32
+pub fn LogRecord::fresh(Self) -> Self
+pub fn LogRecord::from_json(String) -> Self raise @json.Refused
+pub fn LogRecord::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogRecord::get_unknown(Self) -> @reflect.RawFields
+pub fn LogRecord::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn LogRecord::is_valid(Self) -> Bool
+pub fn LogRecord::message_type(Self) -> &@reflect.MessageType
+pub fn LogRecord::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogRecord::new() -> Self
+pub fn LogRecord::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogRecord::observed_time_unix_nano(Self) -> UInt64
+pub fn LogRecord::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn LogRecord::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn LogRecord::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn LogRecord::set_body(Self, @reflect.Value) -> Unit
+pub fn LogRecord::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn LogRecord::set_event_name(Self, String) -> Unit
+pub fn LogRecord::set_flags(Self, UInt32) -> Unit
+pub fn LogRecord::set_observed_time_unix_nano(Self, UInt64) -> Unit
+pub fn LogRecord::set_severity_number(Self, Int32) -> Unit
+pub fn LogRecord::set_severity_text(Self, String) -> Unit
+pub fn LogRecord::set_span_id(Self, Bytes) -> Unit
+pub fn LogRecord::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn LogRecord::set_trace_id(Self, Bytes) -> Unit
+pub fn LogRecord::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn LogRecord::severity_number(Self) -> Int32
+pub fn LogRecord::severity_text(Self) -> String
+pub fn LogRecord::span_id(Self) -> Bytes
+pub fn LogRecord::time_unix_nano(Self) -> UInt64
+pub fn LogRecord::to_json(Self) -> String raise @json.Refused
+pub fn LogRecord::trace_id(Self) -> Bytes
+pub fn LogRecord::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for LogRecord
+pub impl @reflect.Message for LogRecord
+
+pub(all) enum LogRecordFlags {
+  LOG_RECORD_FLAGS_DO_NOT_USE
+  LOG_RECORD_FLAGS_TRACE_FLAGS_MASK
+  Unknown(Int32)
+}
+pub fn LogRecordFlags::code(Self) -> Int32
+pub fn LogRecordFlags::of(Int32) -> Self
+
+pub struct LogRecordType {
+  marker : Unit
+}
+pub fn LogRecordType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn LogRecordType::new() -> Self
+pub fn LogRecordType::new_message(Self) -> &@reflect.Message
+pub fn LogRecordType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for LogRecordType
+
+pub struct LogsData {
+  resource_logs : Array[ResourceLogs]
+  mut unknown_fields : Bytes
+}
+pub fn LogsData::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn LogsData::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn LogsData::fresh(Self) -> Self
+pub fn LogsData::from_json(String) -> Self raise @json.Refused
+pub fn LogsData::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogsData::get_unknown(Self) -> @reflect.RawFields
+pub fn LogsData::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn LogsData::is_valid(Self) -> Bool
+pub fn LogsData::message_type(Self) -> &@reflect.MessageType
+pub fn LogsData::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogsData::new() -> Self
+pub fn LogsData::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn LogsData::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn LogsData::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn LogsData::resource_logs(Self) -> &@reflect.ListField
+pub fn LogsData::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn LogsData::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn LogsData::to_json(Self) -> String raise @json.Refused
+pub fn LogsData::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for LogsData
+pub impl @reflect.Message for LogsData
+
+pub struct LogsDataType {
+  marker : Unit
+}
+pub fn LogsDataType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn LogsDataType::new() -> Self
+pub fn LogsDataType::new_message(Self) -> &@reflect.Message
+pub fn LogsDataType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for LogsDataType
+
+pub struct Metric {
+  mut name : String?
+  mut description : String?
+  mut unit : String?
+  metadata : Array[KeyValue]
+  mut data : Metric_Data
+  mut unknown_fields : Bytes
+}
+pub fn Metric::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Metric::data(Self) -> Metric_Data
+pub fn Metric::description(Self) -> String
+pub fn Metric::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Metric::exponential_histogram(Self) -> @reflect.Value
+pub fn Metric::fresh(Self) -> Self
+pub fn Metric::from_json(String) -> Self raise @json.Refused
+pub fn Metric::gauge(Self) -> @reflect.Value
+pub fn Metric::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Metric::get_unknown(Self) -> @reflect.RawFields
+pub fn Metric::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Metric::histogram(Self) -> @reflect.Value
+pub fn Metric::is_valid(Self) -> Bool
+pub fn Metric::message_type(Self) -> &@reflect.MessageType
+pub fn Metric::metadata(Self) -> &@reflect.ListField
+pub fn Metric::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Metric::name(Self) -> String
+pub fn Metric::new() -> Self
+pub fn Metric::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Metric::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Metric::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Metric::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Metric::set_data(Self, Metric_Data) -> Unit
+pub fn Metric::set_description(Self, String) -> Unit
+pub fn Metric::set_exponential_histogram(Self, @reflect.Value) -> Unit
+pub fn Metric::set_gauge(Self, @reflect.Value) -> Unit
+pub fn Metric::set_histogram(Self, @reflect.Value) -> Unit
+pub fn Metric::set_name(Self, String) -> Unit
+pub fn Metric::set_sum(Self, @reflect.Value) -> Unit
+pub fn Metric::set_summary(Self, @reflect.Value) -> Unit
+pub fn Metric::set_unit(Self, String) -> Unit
+pub fn Metric::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Metric::sum(Self) -> @reflect.Value
+pub fn Metric::summary(Self) -> @reflect.Value
+pub fn Metric::to_json(Self) -> String raise @json.Refused
+pub fn Metric::unit(Self) -> String
+pub fn Metric::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Metric
+pub impl @reflect.Message for Metric
+
+pub struct MetricType {
+  marker : Unit
+}
+pub fn MetricType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn MetricType::new() -> Self
+pub fn MetricType::new_message(Self) -> &@reflect.Message
+pub fn MetricType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for MetricType
+
+pub(all) enum Metric_Data {
+  Gauge(Gauge)
+  Sum(Sum)
+  Histogram(Histogram)
+  Exponential_histogram(ExponentialHistogram)
+  Summary(Summary)
+  NoData
+}
+
+pub struct MetricsData {
+  resource_metrics : Array[ResourceMetrics]
+  mut unknown_fields : Bytes
+}
+pub fn MetricsData::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn MetricsData::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn MetricsData::fresh(Self) -> Self
+pub fn MetricsData::from_json(String) -> Self raise @json.Refused
+pub fn MetricsData::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn MetricsData::get_unknown(Self) -> @reflect.RawFields
+pub fn MetricsData::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn MetricsData::is_valid(Self) -> Bool
+pub fn MetricsData::message_type(Self) -> &@reflect.MessageType
+pub fn MetricsData::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn MetricsData::new() -> Self
+pub fn MetricsData::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn MetricsData::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn MetricsData::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn MetricsData::resource_metrics(Self) -> &@reflect.ListField
+pub fn MetricsData::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn MetricsData::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn MetricsData::to_json(Self) -> String raise @json.Refused
+pub fn MetricsData::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for MetricsData
+pub impl @reflect.Message for MetricsData
+
+pub struct MetricsDataType {
+  marker : Unit
+}
+pub fn MetricsDataType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn MetricsDataType::new() -> Self
+pub fn MetricsDataType::new_message(Self) -> &@reflect.Message
+pub fn MetricsDataType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for MetricsDataType
+
+pub struct NumberDataPoint {
+  attributes : Array[KeyValue]
+  mut start_time_unix_nano : UInt64?
+  mut time_unix_nano : UInt64?
+  exemplars : Array[Exemplar]
+  mut flags : UInt32?
+  mut value : NumberDataPoint_Value
+  mut unknown_fields : Bytes
+}
+pub fn NumberDataPoint::as_double(Self) -> Double
+pub fn NumberDataPoint::as_int(Self) -> Int64
+pub fn NumberDataPoint::attributes(Self) -> &@reflect.ListField
+pub fn NumberDataPoint::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn NumberDataPoint::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn NumberDataPoint::exemplars(Self) -> &@reflect.ListField
+pub fn NumberDataPoint::flags(Self) -> UInt32
+pub fn NumberDataPoint::fresh(Self) -> Self
+pub fn NumberDataPoint::from_json(String) -> Self raise @json.Refused
+pub fn NumberDataPoint::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn NumberDataPoint::get_unknown(Self) -> @reflect.RawFields
+pub fn NumberDataPoint::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn NumberDataPoint::is_valid(Self) -> Bool
+pub fn NumberDataPoint::message_type(Self) -> &@reflect.MessageType
+pub fn NumberDataPoint::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn NumberDataPoint::new() -> Self
+pub fn NumberDataPoint::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn NumberDataPoint::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn NumberDataPoint::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn NumberDataPoint::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn NumberDataPoint::set_as_double(Self, Double) -> Unit
+pub fn NumberDataPoint::set_as_int(Self, Int64) -> Unit
+pub fn NumberDataPoint::set_flags(Self, UInt32) -> Unit
+pub fn NumberDataPoint::set_start_time_unix_nano(Self, UInt64) -> Unit
+pub fn NumberDataPoint::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn NumberDataPoint::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn NumberDataPoint::set_value(Self, NumberDataPoint_Value) -> Unit
+pub fn NumberDataPoint::start_time_unix_nano(Self) -> UInt64
+pub fn NumberDataPoint::time_unix_nano(Self) -> UInt64
+pub fn NumberDataPoint::to_json(Self) -> String raise @json.Refused
+pub fn NumberDataPoint::value(Self) -> NumberDataPoint_Value
+pub fn NumberDataPoint::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for NumberDataPoint
+pub impl @reflect.Message for NumberDataPoint
+
+pub struct NumberDataPointType {
+  marker : Unit
+}
+pub fn NumberDataPointType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn NumberDataPointType::new() -> Self
+pub fn NumberDataPointType::new_message(Self) -> &@reflect.Message
+pub fn NumberDataPointType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for NumberDataPointType
+
+pub(all) enum NumberDataPoint_Value {
+  As_double(Double)
+  As_int(Int64)
+  NoValue
+}
+
+pub struct Protobuf {
+}
+
+pub struct Resource {
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  entity_refs : Array[EntityRef]
+  mut unknown_fields : Bytes
+}
+pub fn Resource::attributes(Self) -> &@reflect.ListField
+pub fn Resource::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Resource::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Resource::dropped_attributes_count(Self) -> UInt32
+pub fn Resource::entity_refs(Self) -> &@reflect.ListField
+pub fn Resource::fresh(Self) -> Self
+pub fn Resource::from_json(String) -> Self raise @json.Refused
+pub fn Resource::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Resource::get_unknown(Self) -> @reflect.RawFields
+pub fn Resource::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Resource::is_valid(Self) -> Bool
+pub fn Resource::message_type(Self) -> &@reflect.MessageType
+pub fn Resource::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Resource::new() -> Self
+pub fn Resource::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Resource::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Resource::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Resource::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Resource::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn Resource::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Resource::to_json(Self) -> String raise @json.Refused
+pub fn Resource::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Resource
+pub impl @reflect.Message for Resource
+
+pub struct ResourceLogs {
+  mut resource : Resource?
+  scope_logs : Array[ScopeLogs]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ResourceLogs::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ResourceLogs::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceLogs::fresh(Self) -> Self
+pub fn ResourceLogs::from_json(String) -> Self raise @json.Refused
+pub fn ResourceLogs::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceLogs::get_unknown(Self) -> @reflect.RawFields
+pub fn ResourceLogs::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ResourceLogs::is_valid(Self) -> Bool
+pub fn ResourceLogs::message_type(Self) -> &@reflect.MessageType
+pub fn ResourceLogs::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceLogs::new() -> Self
+pub fn ResourceLogs::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceLogs::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceLogs::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceLogs::resource(Self) -> @reflect.Value
+pub fn ResourceLogs::schema_url(Self) -> String
+pub fn ResourceLogs::scope_logs(Self) -> &@reflect.ListField
+pub fn ResourceLogs::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ResourceLogs::set_resource(Self, @reflect.Value) -> Unit
+pub fn ResourceLogs::set_schema_url(Self, String) -> Unit
+pub fn ResourceLogs::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ResourceLogs::to_json(Self) -> String raise @json.Refused
+pub fn ResourceLogs::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ResourceLogs
+pub impl @reflect.Message for ResourceLogs
+
+pub struct ResourceLogsType {
+  marker : Unit
+}
+pub fn ResourceLogsType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceLogsType::new() -> Self
+pub fn ResourceLogsType::new_message(Self) -> &@reflect.Message
+pub fn ResourceLogsType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ResourceLogsType
+
+pub struct ResourceMetrics {
+  mut resource : Resource?
+  scope_metrics : Array[ScopeMetrics]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ResourceMetrics::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ResourceMetrics::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceMetrics::fresh(Self) -> Self
+pub fn ResourceMetrics::from_json(String) -> Self raise @json.Refused
+pub fn ResourceMetrics::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceMetrics::get_unknown(Self) -> @reflect.RawFields
+pub fn ResourceMetrics::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ResourceMetrics::is_valid(Self) -> Bool
+pub fn ResourceMetrics::message_type(Self) -> &@reflect.MessageType
+pub fn ResourceMetrics::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceMetrics::new() -> Self
+pub fn ResourceMetrics::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceMetrics::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceMetrics::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceMetrics::resource(Self) -> @reflect.Value
+pub fn ResourceMetrics::schema_url(Self) -> String
+pub fn ResourceMetrics::scope_metrics(Self) -> &@reflect.ListField
+pub fn ResourceMetrics::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ResourceMetrics::set_resource(Self, @reflect.Value) -> Unit
+pub fn ResourceMetrics::set_schema_url(Self, String) -> Unit
+pub fn ResourceMetrics::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ResourceMetrics::to_json(Self) -> String raise @json.Refused
+pub fn ResourceMetrics::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ResourceMetrics
+pub impl @reflect.Message for ResourceMetrics
+
+pub struct ResourceMetricsType {
+  marker : Unit
+}
+pub fn ResourceMetricsType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceMetricsType::new() -> Self
+pub fn ResourceMetricsType::new_message(Self) -> &@reflect.Message
+pub fn ResourceMetricsType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ResourceMetricsType
+
+pub struct ResourceSpans {
+  mut resource : Resource?
+  scope_spans : Array[ScopeSpans]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ResourceSpans::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ResourceSpans::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceSpans::fresh(Self) -> Self
+pub fn ResourceSpans::from_json(String) -> Self raise @json.Refused
+pub fn ResourceSpans::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceSpans::get_unknown(Self) -> @reflect.RawFields
+pub fn ResourceSpans::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ResourceSpans::is_valid(Self) -> Bool
+pub fn ResourceSpans::message_type(Self) -> &@reflect.MessageType
+pub fn ResourceSpans::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceSpans::new() -> Self
+pub fn ResourceSpans::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ResourceSpans::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceSpans::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ResourceSpans::resource(Self) -> @reflect.Value
+pub fn ResourceSpans::schema_url(Self) -> String
+pub fn ResourceSpans::scope_spans(Self) -> &@reflect.ListField
+pub fn ResourceSpans::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ResourceSpans::set_resource(Self, @reflect.Value) -> Unit
+pub fn ResourceSpans::set_schema_url(Self, String) -> Unit
+pub fn ResourceSpans::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ResourceSpans::to_json(Self) -> String raise @json.Refused
+pub fn ResourceSpans::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ResourceSpans
+pub impl @reflect.Message for ResourceSpans
+
+pub struct ResourceSpansType {
+  marker : Unit
+}
+pub fn ResourceSpansType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceSpansType::new() -> Self
+pub fn ResourceSpansType::new_message(Self) -> &@reflect.Message
+pub fn ResourceSpansType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ResourceSpansType
+
+pub struct ResourceType {
+  marker : Unit
+}
+pub fn ResourceType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ResourceType::new() -> Self
+pub fn ResourceType::new_message(Self) -> &@reflect.Message
+pub fn ResourceType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ResourceType
+
+pub struct ScopeLogs {
+  mut scope : InstrumentationScope?
+  log_records : Array[LogRecord]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ScopeLogs::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ScopeLogs::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeLogs::fresh(Self) -> Self
+pub fn ScopeLogs::from_json(String) -> Self raise @json.Refused
+pub fn ScopeLogs::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeLogs::get_unknown(Self) -> @reflect.RawFields
+pub fn ScopeLogs::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ScopeLogs::is_valid(Self) -> Bool
+pub fn ScopeLogs::log_records(Self) -> &@reflect.ListField
+pub fn ScopeLogs::message_type(Self) -> &@reflect.MessageType
+pub fn ScopeLogs::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeLogs::new() -> Self
+pub fn ScopeLogs::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeLogs::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeLogs::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeLogs::schema_url(Self) -> String
+pub fn ScopeLogs::scope(Self) -> @reflect.Value
+pub fn ScopeLogs::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ScopeLogs::set_schema_url(Self, String) -> Unit
+pub fn ScopeLogs::set_scope(Self, @reflect.Value) -> Unit
+pub fn ScopeLogs::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ScopeLogs::to_json(Self) -> String raise @json.Refused
+pub fn ScopeLogs::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ScopeLogs
+pub impl @reflect.Message for ScopeLogs
+
+pub struct ScopeLogsType {
+  marker : Unit
+}
+pub fn ScopeLogsType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeLogsType::new() -> Self
+pub fn ScopeLogsType::new_message(Self) -> &@reflect.Message
+pub fn ScopeLogsType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ScopeLogsType
+
+pub struct ScopeMetrics {
+  mut scope : InstrumentationScope?
+  metrics : Array[Metric]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ScopeMetrics::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ScopeMetrics::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeMetrics::fresh(Self) -> Self
+pub fn ScopeMetrics::from_json(String) -> Self raise @json.Refused
+pub fn ScopeMetrics::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeMetrics::get_unknown(Self) -> @reflect.RawFields
+pub fn ScopeMetrics::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ScopeMetrics::is_valid(Self) -> Bool
+pub fn ScopeMetrics::message_type(Self) -> &@reflect.MessageType
+pub fn ScopeMetrics::metrics(Self) -> &@reflect.ListField
+pub fn ScopeMetrics::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeMetrics::new() -> Self
+pub fn ScopeMetrics::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeMetrics::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeMetrics::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeMetrics::schema_url(Self) -> String
+pub fn ScopeMetrics::scope(Self) -> @reflect.Value
+pub fn ScopeMetrics::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ScopeMetrics::set_schema_url(Self, String) -> Unit
+pub fn ScopeMetrics::set_scope(Self, @reflect.Value) -> Unit
+pub fn ScopeMetrics::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ScopeMetrics::to_json(Self) -> String raise @json.Refused
+pub fn ScopeMetrics::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ScopeMetrics
+pub impl @reflect.Message for ScopeMetrics
+
+pub struct ScopeMetricsType {
+  marker : Unit
+}
+pub fn ScopeMetricsType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeMetricsType::new() -> Self
+pub fn ScopeMetricsType::new_message(Self) -> &@reflect.Message
+pub fn ScopeMetricsType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ScopeMetricsType
+
+pub struct ScopeSpans {
+  mut scope : InstrumentationScope?
+  spans : Array[Span]
+  mut schema_url : String?
+  mut unknown_fields : Bytes
+}
+pub fn ScopeSpans::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn ScopeSpans::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeSpans::fresh(Self) -> Self
+pub fn ScopeSpans::from_json(String) -> Self raise @json.Refused
+pub fn ScopeSpans::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeSpans::get_unknown(Self) -> @reflect.RawFields
+pub fn ScopeSpans::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn ScopeSpans::is_valid(Self) -> Bool
+pub fn ScopeSpans::message_type(Self) -> &@reflect.MessageType
+pub fn ScopeSpans::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeSpans::new() -> Self
+pub fn ScopeSpans::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn ScopeSpans::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeSpans::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn ScopeSpans::schema_url(Self) -> String
+pub fn ScopeSpans::scope(Self) -> @reflect.Value
+pub fn ScopeSpans::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn ScopeSpans::set_schema_url(Self, String) -> Unit
+pub fn ScopeSpans::set_scope(Self, @reflect.Value) -> Unit
+pub fn ScopeSpans::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn ScopeSpans::spans(Self) -> &@reflect.ListField
+pub fn ScopeSpans::to_json(Self) -> String raise @json.Refused
+pub fn ScopeSpans::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for ScopeSpans
+pub impl @reflect.Message for ScopeSpans
+
+pub struct ScopeSpansType {
+  marker : Unit
+}
+pub fn ScopeSpansType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn ScopeSpansType::new() -> Self
+pub fn ScopeSpansType::new_message(Self) -> &@reflect.Message
+pub fn ScopeSpansType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for ScopeSpansType
+
+pub(all) enum SeverityNumber {
+  SEVERITY_NUMBER_UNSPECIFIED
+  SEVERITY_NUMBER_TRACE
+  SEVERITY_NUMBER_TRACE2
+  SEVERITY_NUMBER_TRACE3
+  SEVERITY_NUMBER_TRACE4
+  SEVERITY_NUMBER_DEBUG
+  SEVERITY_NUMBER_DEBUG2
+  SEVERITY_NUMBER_DEBUG3
+  SEVERITY_NUMBER_DEBUG4
+  SEVERITY_NUMBER_INFO
+  SEVERITY_NUMBER_INFO2
+  SEVERITY_NUMBER_INFO3
+  SEVERITY_NUMBER_INFO4
+  SEVERITY_NUMBER_WARN
+  SEVERITY_NUMBER_WARN2
+  SEVERITY_NUMBER_WARN3
+  SEVERITY_NUMBER_WARN4
+  SEVERITY_NUMBER_ERROR
+  SEVERITY_NUMBER_ERROR2
+  SEVERITY_NUMBER_ERROR3
+  SEVERITY_NUMBER_ERROR4
+  SEVERITY_NUMBER_FATAL
+  SEVERITY_NUMBER_FATAL2
+  SEVERITY_NUMBER_FATAL3
+  SEVERITY_NUMBER_FATAL4
+  Unknown(Int32)
+}
+pub fn SeverityNumber::code(Self) -> Int32
+pub fn SeverityNumber::of(Int32) -> Self
+
+pub struct Span {
+  mut trace_id : Bytes?
+  mut span_id : Bytes?
+  mut trace_state : String?
+  mut parent_span_id : Bytes?
+  mut flags : UInt32?
+  mut name : String?
+  mut kind : Span_SpanKind?
+  mut start_time_unix_nano : UInt64?
+  mut end_time_unix_nano : UInt64?
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  events : Array[Span_Event]
+  mut dropped_events_count : UInt32?
+  links : Array[Span_Link]
+  mut dropped_links_count : UInt32?
+  mut status : Status?
+  mut unknown_fields : Bytes
+}
+pub fn Span::attributes(Self) -> &@reflect.ListField
+pub fn Span::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Span::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Span::dropped_attributes_count(Self) -> UInt32
+pub fn Span::dropped_events_count(Self) -> UInt32
+pub fn Span::dropped_links_count(Self) -> UInt32
+pub fn Span::end_time_unix_nano(Self) -> UInt64
+pub fn Span::events(Self) -> &@reflect.ListField
+pub fn Span::flags(Self) -> UInt32
+pub fn Span::fresh(Self) -> Self
+pub fn Span::from_json(String) -> Self raise @json.Refused
+pub fn Span::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span::get_unknown(Self) -> @reflect.RawFields
+pub fn Span::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Span::is_valid(Self) -> Bool
+pub fn Span::kind(Self) -> Int32
+pub fn Span::links(Self) -> &@reflect.ListField
+pub fn Span::message_type(Self) -> &@reflect.MessageType
+pub fn Span::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span::name(Self) -> String
+pub fn Span::new() -> Self
+pub fn Span::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span::parent_span_id(Self) -> Bytes
+pub fn Span::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Span::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn Span::set_dropped_events_count(Self, UInt32) -> Unit
+pub fn Span::set_dropped_links_count(Self, UInt32) -> Unit
+pub fn Span::set_end_time_unix_nano(Self, UInt64) -> Unit
+pub fn Span::set_flags(Self, UInt32) -> Unit
+pub fn Span::set_kind(Self, Int32) -> Unit
+pub fn Span::set_name(Self, String) -> Unit
+pub fn Span::set_parent_span_id(Self, Bytes) -> Unit
+pub fn Span::set_span_id(Self, Bytes) -> Unit
+pub fn Span::set_start_time_unix_nano(Self, UInt64) -> Unit
+pub fn Span::set_status(Self, @reflect.Value) -> Unit
+pub fn Span::set_trace_id(Self, Bytes) -> Unit
+pub fn Span::set_trace_state(Self, String) -> Unit
+pub fn Span::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Span::span_id(Self) -> Bytes
+pub fn Span::start_time_unix_nano(Self) -> UInt64
+pub fn Span::status(Self) -> @reflect.Value
+pub fn Span::to_json(Self) -> String raise @json.Refused
+pub fn Span::trace_id(Self) -> Bytes
+pub fn Span::trace_state(Self) -> String
+pub fn Span::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Span
+pub impl @reflect.Message for Span
+
+pub(all) enum SpanFlags {
+  SPAN_FLAGS_DO_NOT_USE
+  SPAN_FLAGS_TRACE_FLAGS_MASK
+  SPAN_FLAGS_CONTEXT_HAS_IS_REMOTE_MASK
+  SPAN_FLAGS_CONTEXT_IS_REMOTE_MASK
+  Unknown(Int32)
+}
+pub fn SpanFlags::code(Self) -> Int32
+pub fn SpanFlags::of(Int32) -> Self
+
+pub struct SpanType {
+  marker : Unit
+}
+pub fn SpanType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SpanType::new() -> Self
+pub fn SpanType::new_message(Self) -> &@reflect.Message
+pub fn SpanType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for SpanType
+
+pub struct Span_Event {
+  mut time_unix_nano : UInt64?
+  mut name : String?
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  mut unknown_fields : Bytes
+}
+pub fn Span_Event::attributes(Self) -> &@reflect.ListField
+pub fn Span_Event::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Span_Event::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Span_Event::dropped_attributes_count(Self) -> UInt32
+pub fn Span_Event::fresh(Self) -> Self
+pub fn Span_Event::from_json(String) -> Self raise @json.Refused
+pub fn Span_Event::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Event::get_unknown(Self) -> @reflect.RawFields
+pub fn Span_Event::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Span_Event::is_valid(Self) -> Bool
+pub fn Span_Event::message_type(Self) -> &@reflect.MessageType
+pub fn Span_Event::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Event::name(Self) -> String
+pub fn Span_Event::new() -> Self
+pub fn Span_Event::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Event::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span_Event::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span_Event::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Span_Event::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn Span_Event::set_name(Self, String) -> Unit
+pub fn Span_Event::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn Span_Event::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Span_Event::time_unix_nano(Self) -> UInt64
+pub fn Span_Event::to_json(Self) -> String raise @json.Refused
+pub fn Span_Event::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Span_Event
+pub impl @reflect.Message for Span_Event
+
+pub struct Span_EventType {
+  marker : Unit
+}
+pub fn Span_EventType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Span_EventType::new() -> Self
+pub fn Span_EventType::new_message(Self) -> &@reflect.Message
+pub fn Span_EventType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for Span_EventType
+
+pub struct Span_Link {
+  mut trace_id : Bytes?
+  mut span_id : Bytes?
+  mut trace_state : String?
+  attributes : Array[KeyValue]
+  mut dropped_attributes_count : UInt32?
+  mut flags : UInt32?
+  mut unknown_fields : Bytes
+}
+pub fn Span_Link::attributes(Self) -> &@reflect.ListField
+pub fn Span_Link::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Span_Link::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Span_Link::dropped_attributes_count(Self) -> UInt32
+pub fn Span_Link::flags(Self) -> UInt32
+pub fn Span_Link::fresh(Self) -> Self
+pub fn Span_Link::from_json(String) -> Self raise @json.Refused
+pub fn Span_Link::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Link::get_unknown(Self) -> @reflect.RawFields
+pub fn Span_Link::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Span_Link::is_valid(Self) -> Bool
+pub fn Span_Link::message_type(Self) -> &@reflect.MessageType
+pub fn Span_Link::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Link::new() -> Self
+pub fn Span_Link::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Span_Link::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span_Link::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Span_Link::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Span_Link::set_dropped_attributes_count(Self, UInt32) -> Unit
+pub fn Span_Link::set_flags(Self, UInt32) -> Unit
+pub fn Span_Link::set_span_id(Self, Bytes) -> Unit
+pub fn Span_Link::set_trace_id(Self, Bytes) -> Unit
+pub fn Span_Link::set_trace_state(Self, String) -> Unit
+pub fn Span_Link::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Span_Link::span_id(Self) -> Bytes
+pub fn Span_Link::to_json(Self) -> String raise @json.Refused
+pub fn Span_Link::trace_id(Self) -> Bytes
+pub fn Span_Link::trace_state(Self) -> String
+pub fn Span_Link::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Span_Link
+pub impl @reflect.Message for Span_Link
+
+pub struct Span_LinkType {
+  marker : Unit
+}
+pub fn Span_LinkType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Span_LinkType::new() -> Self
+pub fn Span_LinkType::new_message(Self) -> &@reflect.Message
+pub fn Span_LinkType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for Span_LinkType
+
+pub(all) enum Span_SpanKind {
+  SPAN_KIND_UNSPECIFIED
+  SPAN_KIND_INTERNAL
+  SPAN_KIND_SERVER
+  SPAN_KIND_CLIENT
+  SPAN_KIND_PRODUCER
+  SPAN_KIND_CONSUMER
+  Unknown(Int32)
+}
+pub fn Span_SpanKind::code(Self) -> Int32
+pub fn Span_SpanKind::of(Int32) -> Self
+
+pub struct Status {
+  mut message_field : String?
+  mut code : Status_StatusCode?
+  mut unknown_fields : Bytes
+}
+pub fn Status::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Status::code(Self) -> Int32
+pub fn Status::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Status::fresh(Self) -> Self
+pub fn Status::from_json(String) -> Self raise @json.Refused
+pub fn Status::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Status::get_unknown(Self) -> @reflect.RawFields
+pub fn Status::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Status::is_valid(Self) -> Bool
+pub fn Status::message_field(Self) -> String
+pub fn Status::message_type(Self) -> &@reflect.MessageType
+pub fn Status::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Status::new() -> Self
+pub fn Status::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Status::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Status::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Status::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Status::set_code(Self, Int32) -> Unit
+pub fn Status::set_message_field(Self, String) -> Unit
+pub fn Status::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Status::to_json(Self) -> String raise @json.Refused
+pub fn Status::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Status
+pub impl @reflect.Message for Status
+
+pub struct StatusType {
+  marker : Unit
+}
+pub fn StatusType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn StatusType::new() -> Self
+pub fn StatusType::new_message(Self) -> &@reflect.Message
+pub fn StatusType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for StatusType
+
+pub(all) enum Status_StatusCode {
+  STATUS_CODE_UNSET
+  STATUS_CODE_OK
+  STATUS_CODE_ERROR
+  Unknown(Int32)
+}
+pub fn Status_StatusCode::code(Self) -> Int32
+pub fn Status_StatusCode::of(Int32) -> Self
+
+pub struct Sum {
+  data_points : Array[NumberDataPoint]
+  mut aggregation_temporality : AggregationTemporality?
+  mut is_monotonic : Bool?
+  mut unknown_fields : Bytes
+}
+pub fn Sum::aggregation_temporality(Self) -> Int32
+pub fn Sum::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Sum::data_points(Self) -> &@reflect.ListField
+pub fn Sum::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Sum::fresh(Self) -> Self
+pub fn Sum::from_json(String) -> Self raise @json.Refused
+pub fn Sum::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Sum::get_unknown(Self) -> @reflect.RawFields
+pub fn Sum::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Sum::is_monotonic(Self) -> Bool
+pub fn Sum::is_valid(Self) -> Bool
+pub fn Sum::message_type(Self) -> &@reflect.MessageType
+pub fn Sum::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Sum::new() -> Self
+pub fn Sum::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Sum::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Sum::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Sum::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Sum::set_aggregation_temporality(Self, Int32) -> Unit
+pub fn Sum::set_is_monotonic(Self, Bool) -> Unit
+pub fn Sum::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Sum::to_json(Self) -> String raise @json.Refused
+pub fn Sum::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Sum
+pub impl @reflect.Message for Sum
+
+pub struct SumType {
+  marker : Unit
+}
+pub fn SumType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SumType::new() -> Self
+pub fn SumType::new_message(Self) -> &@reflect.Message
+pub fn SumType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for SumType
+
+pub struct Summary {
+  data_points : Array[SummaryDataPoint]
+  mut unknown_fields : Bytes
+}
+pub fn Summary::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn Summary::data_points(Self) -> &@reflect.ListField
+pub fn Summary::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn Summary::fresh(Self) -> Self
+pub fn Summary::from_json(String) -> Self raise @json.Refused
+pub fn Summary::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Summary::get_unknown(Self) -> @reflect.RawFields
+pub fn Summary::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn Summary::is_valid(Self) -> Bool
+pub fn Summary::message_type(Self) -> &@reflect.MessageType
+pub fn Summary::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Summary::new() -> Self
+pub fn Summary::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn Summary::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Summary::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn Summary::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn Summary::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn Summary::to_json(Self) -> String raise @json.Refused
+pub fn Summary::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for Summary
+pub impl @reflect.Message for Summary
+
+pub struct SummaryDataPoint {
+  attributes : Array[KeyValue]
+  mut start_time_unix_nano : UInt64?
+  mut time_unix_nano : UInt64?
+  mut count : UInt64?
+  mut sum : Double?
+  quantile_values : Array[SummaryDataPoint_ValueAtQuantile]
+  mut flags : UInt32?
+  mut unknown_fields : Bytes
+}
+pub fn SummaryDataPoint::attributes(Self) -> &@reflect.ListField
+pub fn SummaryDataPoint::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn SummaryDataPoint::count(Self) -> UInt64
+pub fn SummaryDataPoint::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SummaryDataPoint::flags(Self) -> UInt32
+pub fn SummaryDataPoint::fresh(Self) -> Self
+pub fn SummaryDataPoint::from_json(String) -> Self raise @json.Refused
+pub fn SummaryDataPoint::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint::get_unknown(Self) -> @reflect.RawFields
+pub fn SummaryDataPoint::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn SummaryDataPoint::is_valid(Self) -> Bool
+pub fn SummaryDataPoint::message_type(Self) -> &@reflect.MessageType
+pub fn SummaryDataPoint::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint::new() -> Self
+pub fn SummaryDataPoint::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint::quantile_values(Self) -> &@reflect.ListField
+pub fn SummaryDataPoint::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn SummaryDataPoint::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn SummaryDataPoint::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn SummaryDataPoint::set_count(Self, UInt64) -> Unit
+pub fn SummaryDataPoint::set_flags(Self, UInt32) -> Unit
+pub fn SummaryDataPoint::set_start_time_unix_nano(Self, UInt64) -> Unit
+pub fn SummaryDataPoint::set_sum(Self, Double) -> Unit
+pub fn SummaryDataPoint::set_time_unix_nano(Self, UInt64) -> Unit
+pub fn SummaryDataPoint::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn SummaryDataPoint::start_time_unix_nano(Self) -> UInt64
+pub fn SummaryDataPoint::sum(Self) -> Double
+pub fn SummaryDataPoint::time_unix_nano(Self) -> UInt64
+pub fn SummaryDataPoint::to_json(Self) -> String raise @json.Refused
+pub fn SummaryDataPoint::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for SummaryDataPoint
+pub impl @reflect.Message for SummaryDataPoint
+
+pub struct SummaryDataPointType {
+  marker : Unit
+}
+pub fn SummaryDataPointType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SummaryDataPointType::new() -> Self
+pub fn SummaryDataPointType::new_message(Self) -> &@reflect.Message
+pub fn SummaryDataPointType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for SummaryDataPointType
+
+pub struct SummaryDataPoint_ValueAtQuantile {
+  mut quantile : Double?
+  mut value : Double?
+  mut unknown_fields : Bytes
+}
+pub fn SummaryDataPoint_ValueAtQuantile::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SummaryDataPoint_ValueAtQuantile::fresh(Self) -> Self
+pub fn SummaryDataPoint_ValueAtQuantile::from_json(String) -> Self raise @json.Refused
+pub fn SummaryDataPoint_ValueAtQuantile::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint_ValueAtQuantile::get_unknown(Self) -> @reflect.RawFields
+pub fn SummaryDataPoint_ValueAtQuantile::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn SummaryDataPoint_ValueAtQuantile::is_valid(Self) -> Bool
+pub fn SummaryDataPoint_ValueAtQuantile::message_type(Self) -> &@reflect.MessageType
+pub fn SummaryDataPoint_ValueAtQuantile::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint_ValueAtQuantile::new() -> Self
+pub fn SummaryDataPoint_ValueAtQuantile::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn SummaryDataPoint_ValueAtQuantile::quantile(Self) -> Double
+pub fn SummaryDataPoint_ValueAtQuantile::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::set_quantile(Self, Double) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::set_value(Self, Double) -> Unit
+pub fn SummaryDataPoint_ValueAtQuantile::to_json(Self) -> String raise @json.Refused
+pub fn SummaryDataPoint_ValueAtQuantile::value(Self) -> Double
+pub fn SummaryDataPoint_ValueAtQuantile::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for SummaryDataPoint_ValueAtQuantile
+pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile
+
+pub struct SummaryDataPoint_ValueAtQuantileType {
+  marker : Unit
+}
+pub fn SummaryDataPoint_ValueAtQuantileType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SummaryDataPoint_ValueAtQuantileType::new() -> Self
+pub fn SummaryDataPoint_ValueAtQuantileType::new_message(Self) -> &@reflect.Message
+pub fn SummaryDataPoint_ValueAtQuantileType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for SummaryDataPoint_ValueAtQuantileType
+
+pub struct SummaryType {
+  marker : Unit
+}
+pub fn SummaryType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn SummaryType::new() -> Self
+pub fn SummaryType::new_message(Self) -> &@reflect.Message
+pub fn SummaryType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for SummaryType
+
+pub struct TracesData {
+  resource_spans : Array[ResourceSpans]
+  mut unknown_fields : Bytes
+}
+pub fn TracesData::clear(Self, @reflect.FieldDescriptor) -> Unit
+pub fn TracesData::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn TracesData::fresh(Self) -> Self
+pub fn TracesData::from_json(String) -> Self raise @json.Refused
+pub fn TracesData::get(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn TracesData::get_unknown(Self) -> @reflect.RawFields
+pub fn TracesData::has(Self, @reflect.FieldDescriptor) -> Bool
+pub fn TracesData::is_valid(Self) -> Bool
+pub fn TracesData::message_type(Self) -> &@reflect.MessageType
+pub fn TracesData::mutable(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn TracesData::new() -> Self
+pub fn TracesData::new_field(Self, @reflect.FieldDescriptor) -> @reflect.Value
+pub fn TracesData::range(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn TracesData::range_extensions(Self, (@reflect.FieldDescriptor, @reflect.Value) -> Bool) -> Unit
+pub fn TracesData::resource_spans(Self) -> &@reflect.ListField
+pub fn TracesData::set(Self, @reflect.FieldDescriptor, @reflect.Value) -> Unit
+pub fn TracesData::set_unknown(Self, @reflect.RawFields) -> Unit
+pub fn TracesData::to_json(Self) -> String raise @json.Refused
+pub fn TracesData::which_oneof(Self, @reflect.OneofDescriptor) -> Int32?
+pub impl @reflect.Fresh for TracesData
+pub impl @reflect.Message for TracesData
+
+pub struct TracesDataType {
+  marker : Unit
+}
+pub fn TracesDataType::descriptor(Self) -> @reflect.MessageDescriptor
+pub fn TracesDataType::new() -> Self
+pub fn TracesDataType::new_message(Self) -> &@reflect.Message
+pub fn TracesDataType::zero(Self) -> &@reflect.Message
+pub impl @reflect.MessageType for TracesDataType
+
+// Type aliases
+
+// Traits

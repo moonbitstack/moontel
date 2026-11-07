@@ -40,6 +40,7 @@ PACKAGES = (
     ("semconv", "semconv"),
     ("otlp", "otlp"),
     ("otlp-http", "otlp/http"),
+    ("otlp-binary", "otlp/binary"),
     ("otlp-p8s", "otlp/p8s"),
     ("log-moonlog", "log/moonlog_bridge"),
 )

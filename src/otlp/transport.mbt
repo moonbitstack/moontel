@@ -80,7 +80,16 @@ pub fn Reply::retry_after(self : Reply, now~ : Int64) -> Int64? {
 /// data was turned away. A body that is not JSON, or carries no count, answers
 /// `None` rather than zero, because "said nothing" and "refused none" differ.
 pub fn Reply::rejected(self : Reply) -> Int32? {
-  let parsed = @json.parse(self.text()[:], preserve_number_repr=true) catch {
+  rejected_in_json(self.text())
+}
+
+///|
+/// The same count, read out of a reply body this side already holds as text.
+///
+/// The JSON encoding and `Reply::rejected` are the same reader; keeping it here
+/// means a `partialSuccess` the protocol spells one way is not read two ways.
+fn rejected_in_json(text : String) -> Int32? {
+  let parsed = @json.parse(text[:], preserve_number_repr=true) catch {
     _ => return None
   }
   let success = match parsed {
