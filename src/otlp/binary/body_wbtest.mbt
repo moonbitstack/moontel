@@ -357,3 +357,112 @@ test "a reply with no count answers nothing" {
   }
   assert_eq(@otlp.json.rejected(accepted.body), None)
 }
+
+///|
+/// A histogram's buckets are two packed arrays, and a reader of the schema expects
+/// them in that form: the counts as varints, one more than there are bounds, and the
+/// bounds as doubles. A writer that emitted them as repeated messages would decode
+/// to the same numbers only by accident.
+test "a protobuf histogram keeps its counts, its bounds and its unit" {
+  let metric : @otlp.Metric = {
+    name: "order_latency",
+    description: "Order latency.",
+    unit: "s",
+    kind: Histogram(temporality=Cumulative),
+    points: [
+      {
+        attributes: [("region", @trace.Str("eu"))],
+        start: Some(1L),
+        time: 5L,
+        point: Buckets(
+          bounds=[0.005, 0.01],
+          counts=[1L, 2L, 3L],
+          sum=0.02,
+          count=6L,
+          min=Some(0.001),
+          max=Some(0.02),
+        ),
+        exemplars: [],
+        flags: 0,
+      },
+    ],
+  }
+  let body = encode_metrics([metric])
+  let request = decode_fields(body[:])
+  let resource_metrics = decode_fields(required(request, 1).bytes)
+  let scope_metrics = decode_fields(required(resource_metrics, 2).bytes)
+  let encoded = decode_fields(required(scope_metrics, 2).bytes)
+  assert_eq(required(encoded, 3).bytes.to_owned(), b"s")
+  let histogram = decode_fields(required(encoded, 9).bytes)
+  assert_eq(required(histogram, 2).varint, 2UL)
+  let point = decode_fields(required(histogram, 1).bytes)
+  assert_eq(required(point, 4).varint, 6UL)
+  assert_eq(required(point, 5).varint, (0.02 : Double).reinterpret_as_uint64())
+  // The packed counts: three 64-bit words in one length-delimited field, because
+  // the schema declares them `fixed64` rather than `uint64`.
+  let counts = required(point, 6).bytes
+  assert_eq(counts.length(), 24)
+  assert_eq(little_endian(counts, 0, 8), 1UL)
+  assert_eq(little_endian(counts, 8, 8), 2UL)
+  assert_eq(little_endian(counts, 16, 8), 3UL)
+  // The packed bounds: two doubles, little endian, in the order they were given.
+  let bounds = required(point, 7).bytes
+  assert_eq(bounds.length(), 16)
+  assert_eq(
+    little_endian(bounds, 0, 8),
+    (0.005 : Double).reinterpret_as_uint64(),
+  )
+  assert_eq(
+    little_endian(bounds, 8, 8),
+    (0.01 : Double).reinterpret_as_uint64(),
+  )
+  assert_eq(
+    required(point, 11).varint,
+    (0.001 : Double).reinterpret_as_uint64(),
+  )
+  assert_eq(required(point, 12).varint, (0.02 : Double).reinterpret_as_uint64())
+  let attribute = decode_fields(required(point, 7 + 2).bytes)
+  assert_eq(required(attribute, 1).bytes.to_owned(), b"region")
+}
+
+///|
+/// A summary carries its quantiles as a message each, and its count and sum beside
+/// them. The shape differs from a histogram's, and a writer that treated the two as
+/// one would put a bound where a quantile belongs.
+test "a protobuf summary keeps its quantiles" {
+  let metric : @otlp.Metric = {
+    name: "order_value",
+    description: "",
+    unit: "",
+    kind: Summary,
+    points: [
+      {
+        attributes: [],
+        start: None,
+        time: 7L,
+        point: Quantiles(
+          quantiles=[(0.5, 1.5), (0.99, 9.5)],
+          sum=11.0,
+          count=2L,
+        ),
+        exemplars: [],
+        flags: 0,
+      },
+    ],
+  }
+  let body = encode_metrics([metric])
+  let request = decode_fields(body[:])
+  let resource_metrics = decode_fields(required(request, 1).bytes)
+  let scope_metrics = decode_fields(required(resource_metrics, 2).bytes)
+  let encoded = decode_fields(required(scope_metrics, 2).bytes)
+  assert_eq(required(encoded, 1).bytes.to_owned(), b"order_value")
+  let summary = decode_fields(required(encoded, 11).bytes)
+  let point = decode_fields(required(summary, 1).bytes)
+  assert_eq(required(point, 4).varint, 2UL)
+  assert_eq(required(point, 5).varint, (11.0 : Double).reinterpret_as_uint64())
+  let quantiles = point.filter(field => field.number == 6)
+  assert_eq(quantiles.length(), 2)
+  let first = decode_fields(quantiles[0].bytes)
+  assert_eq(required(first, 1).varint, (0.5 : Double).reinterpret_as_uint64())
+  assert_eq(required(first, 2).varint, (1.5 : Double).reinterpret_as_uint64())
+}
