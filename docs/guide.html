@@ -708,13 +708,23 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
             <p>
               Langfuse documents HTTP with JSON and protobuf and does not take gRPC.
               LangSmith's path is <code>/otel</code> plus the signal, so
-              <code>https://api.smith.langchain.com/otel/v1/traces</code>; a request
-              without its key is answered <code>401</code> and one with a key that is not
-              yours <code>403</code>, both before the body is looked at, so the media
-              type is not what decides whether a trace arrives. Send it
-              <code>encoding=@binary.protobuf</code>: that is the encoding their
-              examples use, and the one the protocol requires every exporter to be able
-              to send.
+              <code>https://api.smith.langchain.com/otel/v1/traces</code>, and it takes
+              both encodings: a span sent from this library arrived in
+              <code>application/x-protobuf</code> with <code>200</code> and an empty
+              body, and the same span sent as <code>application/json</code> with
+              <code>200</code> and <code>{}</code>. Either works, so the choice is
+              about size: the binary body is roughly a third of the JSON one, which is
+              what <code>encoding=@binary.protobuf</code> is for.
+            </p>
+            <p>
+              Two things the service insists on, both of which a caller controls. The
+              key travels in <code>x-api-key</code>: without one the answer is
+              <code>401</code>, and with a key that is not yours <code>403</code>, before
+              the body is read at all. And a span's start time has to be within a day of
+              the request — a replay of last week's traffic is refused with
+              <code>422</code> and a sentence saying so. The times this library sends are
+              the ones it was handed, so that bound belongs to whoever calls
+              <code>start</code>.
             </p>
           </aside>
         </section>
