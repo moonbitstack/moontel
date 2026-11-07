@@ -359,10 +359,14 @@
             <div class="index-row"><span class="name">Report, Stats</span><span class="leader"></span><span class="sig">delivered, rejected, dropped, attempts · the same since the exporter was made</span></div>
             <div class="index-row"><span class="name">BatchPolicy, Backoff</span><span class="leader"></span><span class="sig">2048 / 512 / 5s / 30s · 5s × 1.5, capped at 30s, jittered</span></div>
             <div class="index-row"><span class="name">BodyLimits</span><span class="leader"></span><span class="sig">64 MiB out, 4 MiB back — the protocol's recommended bounds</span></div>
-            <div class="index-row"><span class="name">BodyFormat</span><span class="leader"></span><span class="sig">Json · Protobuf — the content type and the encoder in one</span></div>
+            <div class="index-row"><span class="name">Encoding</span><span class="leader"></span><span class="sig">format · traces · logs · metrics · rejected — how a body is written</span></div>
+            <div class="index-row"><span class="name">otlp.json</span><span class="leader"></span><span class="sig">the JSON body, and what an exporter writes unless told otherwise</span></div>
+            <div class="index-row"><span class="name">BodyFormat</span><span class="leader"></span><span class="sig">Json · Protobuf — what an encoding reports, and the media type that follows</span></div>
             <div class="index-row"><span class="name">Transport, Request, Reply, Failed</span><span class="leader"></span><span class="sig">send(Request) → Reply raise · the seam a socket plugs into</span></div>
             <div class="index-row"><span class="name">Resource, Scope</span><span class="leader"></span><span class="sig">service.name and the rest · the instrumentation scope</span></div>
             <div class="index-row"><span class="name">Metric, DataPoint, Point</span><span class="leader"></span><span class="sig">a family · one series · asDouble / asInt / buckets / quantiles</span></div>
+            <div class="index-row"><span class="name">otlp/binary.protobuf</span><span class="leader"></span><span class="sig">the binary body: the protocol's messages, generated from its schema</span></div>
+            <div class="index-row"><span class="name">otlp/binary.encode_traces, encode_logs, encode_metrics</span><span class="leader"></span><span class="sig">(records, resource~, scope~) → Bytes — a body without an exporter</span></div>
             <div class="index-row"><span class="name">otlp/grpc.GrpcTransport</span><span class="leader"></span><span class="sig">connect(host, port?, encoding?) — one unary call per request on a channel</span></div>
             <div class="index-row"><span class="name">otlp/http.HttpTransport, Compression</span><span class="leader"></span><span class="sig">(timeout?, compression?) — one POST per request on a connection pool, plain or gzipped</span></div>
             <div class="index-row"><span class="name">otlp/p8s.bridge</span><span class="leader"></span><span class="sig">(Array[MetricFamily], at~, start?) → Array[Metric]</span></div>

@@ -54,6 +54,7 @@ moon add moonbitstack/moontel
 
 Trace a function by saying so on it. The function stays as it is, and a generator adds one beside it:
 
+<!-- nocheck -->
 ```moonbit
 #tel.span("orders.place", kind=server, attr="item")
 fn place(item : String) -> Int raise Sold {
@@ -242,7 +243,7 @@ A sink decides where spans go, and one that speaks OTLP over HTTP is part of the
 library. It queues what the tracer finishes and posts it, so accepting a span never
 waits for a collector:
 
-```moonbit
+```moonbit native
 fn traced(now : () -> Int64, rand : (Int32) -> Bytes) -> @trace.Tracer {
   let transport = @http.HttpTransport::new()
   let exporter = @otlp.TraceExporter::new(
@@ -278,28 +279,56 @@ gzipping every request and setting `Content-Encoding: gzip` with it. The body an
 header that describes it are decided in one place, so one cannot arrive without the
 other.
 
-A body has two encodings, and both are here. `format=@otlp.BodyFormat::Protobuf` sends
-the binary protobuf under `Content-Type: application/x-protobuf` — the same fields with
-no field names, about a third of the bytes — which is the encoding the protocol says
-every exporter must be able to send.
+A body has two encodings, and an exporter is handed the one it should write. The
+default is the JSON mapping; `encoding=@binary.protobuf` sends the binary one under
+`Content-Type: application/x-protobuf` — the same fields with no field names, about a
+third of the bytes — which is the encoding the protocol says every exporter must be
+able to send:
+
+```moonbit native
+fn traced_binary(now : () -> Int64, rand : (Int32) -> Bytes) -> @trace.Tracer {
+  let transport = @http.HttpTransport::new()
+  let exporter = @otlp.TraceExporter::new(
+    transport~,
+    endpoint="http://localhost:4318",
+    encoding=@binary.protobuf,
+    now~,
+    rand~,
+  )
+  @trace.Tracer::new(rand~, sink=exporter, sampler=@trace.parent_based(root=@trace.always))
+}
+```
+
+The encoder, the `Content-Type` it is sent under and the way a reply's count of refused
+records is read all come from that one value, so a request cannot leave announcing one
+encoding and carrying the other. `otlp` ships the JSON one and nothing else: a program
+that sends JSON compiles neither a schema runtime nor a protobuf message.
+
+That is what `otlp/binary` is — the protocol's messages, generated from its own schema
+(`scripts/otlp-schema` is the pinned copy, `src/cmd/gen-otlp-proto` the generator), and
+the encoder that fills them in. Every field number in a body comes from the `.proto`
+file rather than from a writer that remembered it.
 
 gRPC is a transport of its own, `otlp/grpc`, carrying that binary encoding over one
 long-lived channel and one unary call per request:
 
-```moonbit
-let channel = @grpc.GrpcTransport::connect(host="localhost")
-let traces = @otlp.TraceExporter::new(
-  transport=channel,
-  endpoint="http://localhost:4317",
-  format=@otlp.BodyFormat::Protobuf,
-  now=millis,
-  rand=random_bytes,
-)
+```moonbit native
+async fn over_grpc(now : () -> Int64, rand : (Int32) -> Bytes) -> @otlp.TraceExporter {
+  let channel = @grpc.GrpcTransport::connect(host="localhost")
+  @otlp.TraceExporter::new(
+    transport=channel,
+    endpoint="http://localhost:4317",
+    encoding=@binary.protobuf,
+    now~,
+    rand~,
+  )
+}
 ```
 
-gRPC has no JSON encoding, so an exporter over it is always built with `Protobuf`; the
-queue, the batch, the retry rules and the size bounds are the same code, and a gRPC
-status is translated into the HTTP status those rules are written against.
+gRPC has no JSON encoding, so an exporter over it is always built with
+`@binary.protobuf`; the queue, the batch, the retry rules and the size bounds are the
+same code, and a gRPC status is translated into the HTTP status those rules are
+written against.
 
 ## Logs
 
@@ -332,7 +361,11 @@ There is no meter here. A program that already counts keeps counting, and the br
 turns the snapshot it takes into OTLP metrics:
 
 ```moonbit
-fn export(metrics : @otlp.MetricsExporter, now : () -> Int64) -> Unit raise {
+fn export(
+  metrics : @otlp.MetricsExporter,
+  now : () -> Int64,
+  elapsed : Double,
+) -> Unit raise {
   let registry = @metric.Registry::new()
   let latency = registry.histogram("order_latency", "Latency.", unit="seconds")
   latency.observe(elapsed)
@@ -363,7 +396,7 @@ matches, and this package is where the spelling lives.
 
 ## The interface
 
-Six packages, three of them subpackages, plus a facade that re-exports four of them.
+Eleven packages, five of them subpackages, plus a facade that re-exports four of them.
 Import the package that owns the type you construct — an enum constructor is reached
 through the package that defines it, not through the facade.
 
@@ -441,7 +474,9 @@ through the package that defines it, not through the facade.
 | `Report`, `Stats` | `delivered, rejected, dropped, attempts` per flush, and since the exporter was made |
 | `BatchPolicy` | `queue_limit 2048, batch 512, delay 5000, timeout 30000` |
 | `BodyLimits` | `request 64 MiB, response 4 MiB` — the protocol's recommended sizes |
-| `BodyFormat` | `Json`, `Protobuf` — `Content-Type` and encoder in one |
+| `Encoding` | `format`, `traces`, `logs`, `metrics`, `rejected` — how a body is written |
+| `json` | the JSON encoding, which is what an exporter writes unless told otherwise |
+| `BodyFormat` | `Json`, `Protobuf` — what an encoding reports, and the media type that follows |
 | `Backoff` | `initial 5000, multiplier 1.5, maximum 30000, jitter 0.2` |
 | `Transport` | `async fn send(Self, Request) -> Reply raise Failed` |
 | `Resource`, `Scope` | what produced the telemetry, and which library in it did |
@@ -453,6 +488,8 @@ through the package that defines it, not through the facade.
 |:--|:--|
 | `HttpTransport::new` | `(timeout? : Int32, compression? : Compression) -> HttpTransport` |
 | `otlp/grpc.GrpcTransport::connect` | `(host~ : String, port? : Int32, encoding?) -> GrpcTransport` — one unary call per request |
+| `otlp/binary.protobuf` | `&Encoding` — the binary body, and the messages it is made of |
+| `otlp/binary.encode_traces`, `encode_logs`, `encode_metrics` | `(records, resource~, scope~) -> Bytes` — a body without an exporter |
 | `Compression` | `Plain`, `Gzip` — the second sets `Content-Encoding` on the request |
 | `bridge`, `bridge_with_report` | `(families : Array[MetricFamily], at~ : Int64, start? : Int64) -> Array[Metric]` — and the same with what was dropped |
 | `gen_ai_request_model`, `gen_ai_client_inference_duration`, … | 85 attribute keys, 21 metric names, 13 span types and 11 event names |
@@ -476,7 +513,6 @@ runs past 256 characters still drops the header.
 
 ## What this is not
 
-- **No protobuf and no gRPC.** OTLP over HTTP carries JSON here.
 - **No meter.** Metrics are read out of a snapshot a program already keeps and
   translated to OTLP; nothing is counted twice.
 - **No storage, no query, no page.** A collector or a hosted backend reads what this
@@ -490,7 +526,9 @@ runs past 256 characters still drops the header.
 moon run src/examples/00-hello        # a root span, a child, attributes and an event
 moon run src/examples/01-propagate    # reading a request's context, writing the next one's
 moon run src/examples/02-asgi         # the middleware over an application
+moon run src/examples/03-annotated    # the annotation, and the wrapper it generates
 moon run src/examples/04-otlp         # three signals, to a collector
+moon run src/examples/05-grpc         # one span, over gRPC
 ```
 
 ## Licence

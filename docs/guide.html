@@ -622,12 +622,35 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               and the same transport carries all three signals either way.
             </p>
             <p>
-              The body has two encodings. <code>format=@otlp.BodyFormat::Protobuf</code>
-              sends the binary one, under <code>Content-Type:
+              The body has two encodings, and an exporter is handed the one it writes.
+              JSON is the default; <code>encoding=@binary.protobuf</code> sends the
+              binary one instead, under <code>Content-Type:
               application/x-protobuf</code>: the same fields, no field names, and roughly
               a third of the bytes. The protocol requires an exporter to be able to send
-              it and only permits JSON, which is why JSON is the default and protobuf is
-              one argument away.
+              it and only permits JSON, which is why JSON is the default and this is one
+              argument away.
+            </p>
+<pre><code><span class="k">let</span> transport = <span class="a">@http.HttpTransport</span>::new()
+<span class="k">let</span> binary = <span class="a">@otlp.TraceExporter</span>::new(
+  transport~,
+  endpoint=<span class="s">"http://localhost:4318"</span>,
+  encoding=<span class="a">@binary.protobuf</span>,
+  now=millis,
+  rand=random_bytes,
+)</code></pre>
+            <p>
+              The encoder, the media type it is sent under and the way a reply's count of
+              refused records is read all come from that value, so a request cannot leave
+              announcing one encoding and carrying the other. <code>otlp</code> ships
+              the JSON one and nothing else, which is why a program that never sends
+              protobuf compiles neither a schema runtime nor a protobuf message.
+            </p>
+            <p>
+              The binary body is <code>otlp/binary</code>: the protocol's messages,
+              generated from its own schema — the pinned copy is in
+              <code>scripts/otlp-schema</code>, the generator in
+              <code>src/cmd/gen-otlp-proto</code> — and the encoder that fills them in.
+              Every field number on the wire comes from the <code>.proto</code> file.
             </p>
             <p>
               gRPC carries the binary encoding over one long-lived connection, one unary
@@ -640,7 +663,7 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
   transport=channel,
   endpoint=<span class="s">"http://localhost:4317"</span>,
   <span class="c">// gRPC has no JSON encoding, and an exporter built for it would be refused</span>
-  format=<span class="a">@otlp.BodyFormat</span>::Protobuf,
+  encoding=<span class="a">@binary.protobuf</span>,
   now=millis,
   rand=random_bytes,
 )</code></pre>
@@ -650,6 +673,13 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               Everything else — the queue, the batch, the retry rules, the two size
               bounds — is the same code, and a gRPC status is translated into the HTTP
               status those rules are written against.
+            </p>
+            <p>
+              A run of this library against the OpenTelemetry Collector posts the same
+              three signals over HTTP as JSON, gzipped and protobuf, and a span over
+              gRPC, and the collector reads the same span, event, log record and
+              histogram out of every one of them — bucket bounds, bucket counts and unit
+              included. That is what the generated messages are for.
             </p>
             <p>
               It is not on the reference page, and that is the toolchain's line rather
@@ -677,9 +707,14 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
             </p>
             <p>
               Langfuse documents HTTP with JSON and protobuf and does not take gRPC.
-              LangSmith's examples are all protobuf and say nothing about JSON, so treat
-              a trace arriving there as something to confirm against the service before
-              relying on it.
+              LangSmith's path is <code>/otel</code> plus the signal, so
+              <code>https://api.smith.langchain.com/otel/v1/traces</code>; a request
+              without its key is answered <code>401</code> and one with a key that is not
+              yours <code>403</code>, both before the body is looked at, so the media
+              type is not what decides whether a trace arrives. Send it
+              <code>encoding=@binary.protobuf</code>: that is the encoding their
+              examples use, and the one the protocol requires every exporter to be able
+              to send.
             </p>
           </aside>
         </section>
@@ -809,11 +844,6 @@ latency.observe(elapsed)
               purpose:
             </p>
             <ul>
-              <li>
-                <b>No protobuf and no gRPC.</b> OTLP over HTTP carries JSON here. The
-                binary encoding needs a Protobuf wire format, which is a library of its
-                own; when one exists, a second transport is a file, not a rewrite.
-              </li>
               <li>
                 <b>No meter.</b> Metrics are read out of a snapshot a program already
                 keeps and translated to OTLP. Counting them here would mean two answers

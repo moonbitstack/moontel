@@ -545,10 +545,12 @@ async fn main {
   } else {
     @http.Compression::Plain
   }
-  let format = if protobuf {
-    @otlp.BodyFormat::Protobuf
+  // The body has two encodings, and the transport is handed the one this run
+  // asked for: the JSON mapping, or the binary one the protocol calls default.
+  let encoding = if protobuf {
+    @binary.protobuf
   } else {
-    @otlp.BodyFormat::Json
+    @otlp.json
   }
   let transport = @http.HttpTransport::new(compression~)
   let started = 1_700_000_000_000_000_000L
@@ -562,7 +564,7 @@ async fn main {
       &quot;deployment.environment.name&quot;,
       @trace.Str(&quot;test&quot;),
     ),
-    format~,
+    encoding~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -571,7 +573,7 @@ async fn main {
     transport~,
     endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
-    format~,
+    encoding~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -580,7 +582,7 @@ async fn main {
     transport~,
     endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
-    format~,
+    encoding~,
     now=millis,
     rand=random_bytes,
     attempts~,
@@ -742,7 +744,7 @@ async fn main {
     transport~,
     endpoint=&quot;http://\{address}&quot;,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
-    format=@otlp.BodyFormat::Protobuf,
+    encoding=@binary.protobuf,
     now=millis,
     rand=random_bytes,
     attempts=if required { 5 } else { 1 },
