@@ -289,3 +289,11 @@ pub extend ResourceType with @reflect.MessageType::{new_message, zero, descripto
 ///|
 pub let resource_type : &@reflect.MessageType = (ResourceType::new() as &@reflect.MessageType)
 
+
+///|
+/// Register this file's messages by name.
+fn register_resource_types() -> Unit {
+  @reflect.global_types.register_message(resource_type) catch {
+    _ => ()
+  }
+}

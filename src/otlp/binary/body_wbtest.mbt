@@ -466,3 +466,45 @@ test "a protobuf summary keeps its quantiles" {
   assert_eq(required(first, 1).varint, (0.5 : Double).reinterpret_as_uint64())
   assert_eq(required(first, 2).varint, (1.5 : Double).reinterpret_as_uint64())
 }
+
+///|
+/// The body read back by the schema's own decoder: the check a writer cannot make
+/// about itself, since both halves then come from the same schema.
+test "the schema decodes the span it was handed" {
+  let body = encode_traces(
+    [proto_span()],
+    resource=@otlp.Resource::new(attributes=[
+      ("service.name", @trace.Str("orders")),
+    ]),
+    scope=@otlp.Scope::{ name: "orders", version: None, attributes: [], },
+  )
+  let request = ExportTraceServiceRequest::new()
+  @proto.decode(body, request) catch {
+    refused => fail("the schema refused its own output: \{refused}")
+  }
+  assert_eq(request.resource_spans.length(), 1)
+  let resource_spans = request.resource_spans[0]
+  let resource = resource_spans.resource.unwrap()
+  assert_eq(resource.attributes.length(), 1)
+  assert_eq(resource.attributes[0].key(), "service.name")
+  assert_eq(resource_spans.scope_spans.length(), 1)
+  let scope_spans = resource_spans.scope_spans[0]
+  assert_eq(scope_spans.scope.unwrap().name(), "orders")
+  assert_eq(scope_spans.spans.length(), 1)
+  let span = scope_spans.spans[0]
+  // The ids are the bytes they are, not the hex of them.
+  assert_eq(
+    span.trace_id(),
+    b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10",
+  )
+  assert_eq(span.name(), "GET /orders")
+  assert_eq(span.kind(), 2)
+  assert_eq(span.start_time_unix_nano(), 10UL)
+  assert_eq(span.end_time_unix_nano(), 20UL)
+  assert_eq(span.attributes.length(), 2)
+  assert_eq(span.attributes[1].key(), "retry")
+  assert_eq(span.status.unwrap().code(), 2)
+  assert_eq(span.status.unwrap().message_field(), "upstream said no")
+  assert_eq(span.events.length(), 1)
+  assert_eq(span.events[0].name(), "cache.miss")
+}

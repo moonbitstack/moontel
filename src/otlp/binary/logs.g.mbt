@@ -1390,3 +1390,20 @@ pub extend LogRecordType with @reflect.MessageType::{new_message, zero, descript
 ///|
 pub let logRecord_type : &@reflect.MessageType = (LogRecordType::new() as &@reflect.MessageType)
 
+
+///|
+/// Register this file's messages by name.
+fn register_logs_types() -> Unit {
+  @reflect.global_types.register_message(logsData_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(resourceLogs_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(scopeLogs_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(logRecord_type) catch {
+    _ => ()
+  }
+}

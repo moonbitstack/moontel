@@ -736,3 +736,17 @@ pub extend ExportLogsPartialSuccessType with @reflect.MessageType::{new_message,
 ///|
 pub let exportLogsPartialSuccess_type : &@reflect.MessageType = (ExportLogsPartialSuccessType::new() as &@reflect.MessageType)
 
+
+///|
+/// Register this file's messages by name.
+fn register_logs_service_types() -> Unit {
+  @reflect.global_types.register_message(exportLogsServiceRequest_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exportLogsServiceResponse_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exportLogsPartialSuccess_type) catch {
+    _ => ()
+  }
+}

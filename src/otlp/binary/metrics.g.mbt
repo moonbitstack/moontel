@@ -4872,3 +4872,56 @@ pub extend ExemplarType with @reflect.MessageType::{new_message, zero, descripto
 ///|
 pub let exemplar_type : &@reflect.MessageType = (ExemplarType::new() as &@reflect.MessageType)
 
+
+///|
+/// Register this file's messages by name.
+fn register_metrics_types() -> Unit {
+  @reflect.global_types.register_message(metricsData_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(resourceMetrics_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(scopeMetrics_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(metric_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(gauge_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(sum_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(histogram_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exponentialHistogram_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(summary_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(numberDataPoint_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(histogramDataPoint_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exponentialHistogramDataPoint_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exponentialHistogramDataPoint_Buckets_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(summaryDataPoint_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(summaryDataPoint_ValueAtQuantile_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(exemplar_type) catch {
+    _ => ()
+  }
+}

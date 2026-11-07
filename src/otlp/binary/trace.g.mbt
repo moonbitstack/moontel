@@ -2256,3 +2256,29 @@ pub fn Status_StatusCode::of(n : Int32) -> Status_StatusCode {
   }
 }
 
+
+///|
+/// Register this file's messages by name.
+fn register_trace_types() -> Unit {
+  @reflect.global_types.register_message(tracesData_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(resourceSpans_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(scopeSpans_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(span_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(span_Event_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(span_Link_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(status_type) catch {
+    _ => ()
+  }
+}

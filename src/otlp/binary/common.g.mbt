@@ -1732,3 +1732,26 @@ pub extend EntityRefType with @reflect.MessageType::{new_message, zero, descript
 ///|
 pub let entityRef_type : &@reflect.MessageType = (EntityRefType::new() as &@reflect.MessageType)
 
+
+///|
+/// Register this file's messages by name.
+fn register_common_types() -> Unit {
+  @reflect.global_types.register_message(anyValue_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(arrayValue_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(keyValueList_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(keyValue_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(instrumentationScope_type) catch {
+    _ => ()
+  }
+  @reflect.global_types.register_message(entityRef_type) catch {
+    _ => ()
+  }
+}

@@ -93,6 +93,44 @@ fn strip_generated_banner(text : String) -> String {
 }
 
 ///|
+/// A file's messages, registered by name at module load.
+///
+/// A field that names a message in another file is resolved through the registry
+/// when a body is read back, and a type nobody registered is a field that cannot be
+/// read at all. The compiler makes the value for each message; this is what puts it
+/// where the codecs look.
+fn register_function(source : Source, body : String) -> String {
+  let names : Array[String] = []
+  for line in body.split("\n") {
+    let decl = line.to_owned()
+    if decl.has_prefix("pub let ") && decl.contains(" : &@reflect.MessageType") {
+      let rest = decl[8:].to_owned()
+      match rest.find(" ") {
+        Some(at) => names.push(rest[0:at].to_owned())
+        None => ()
+      }
+    }
+  }
+  if names.is_empty() {
+    return ""
+  }
+  let tag = source.output[0:source.output.length() - 6].to_owned()
+  let out = StringBuilder()
+  out.write_string("\n///|\n")
+  out.write_string("/// Register this file's messages by name.\n")
+  out.write_string("fn register_" + tag + "_types() -> Unit {\n")
+  for name in names {
+    out.write_string(
+      "  @reflect.global_types.register_message(" +
+      name +
+      ") catch {\n    _ => ()\n  }\n",
+    )
+  }
+  out.write_string("}\n")
+  out.to_string()
+}
+
+///|
 /// Generate every file, or — with `--check` — compare what would be written with
 /// what is committed, and fail if they differ.
 async fn main {
@@ -119,7 +157,8 @@ async fn main {
       error =>
         fail("cannot generate " + source.schema + ": " + error.to_string())
     }
-    let text = header(source) + strip_generated_banner(body)
+    let generated = strip_generated_banner(body)
+    let text = header(source) + generated + register_function(source, generated)
     let path = output_root + "/" + source.output
     if check {
       let committed : String? = Some(@fs.read_file(path).text()) catch {

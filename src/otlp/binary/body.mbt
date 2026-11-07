@@ -635,3 +635,25 @@ fn rejected_in_reply(body : Bytes) -> Int32? {
     None => None
   }
 }
+
+///|
+/// The schema's messages, registered by name when the module loads.
+///
+/// A codec resolves a field that names a message in another file through the
+/// registry, and the messages this package writes are the protocol's: every one of
+/// them goes in, so a body written here can be read back here.
+fn register_types() -> Unit {
+  register_common_types()
+  register_resource_types()
+  register_trace_types()
+  register_logs_types()
+  register_metrics_types()
+  register_trace_service_types()
+  register_logs_service_types()
+  register_metrics_service_types()
+}
+
+///|
+fn init {
+  register_types()
+}
