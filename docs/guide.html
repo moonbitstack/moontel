@@ -656,7 +656,8 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               gRPC carries the binary encoding over one long-lived connection, one unary
               call per request, on the port the protocol puts at 4317. It is a transport
               of its own — <code>otlp/grpc</code> — because the HTTP path should carry
-              neither an HTTP/2 stack nor a second socket:
+              neither an HTTP/2 stack nor a second socket. All three exporters take it;
+              the one below is the trace exporter:
             </p>
 <pre><code><span class="k">let</span> channel = <span class="a">@grpc.GrpcTransport</span>::connect(host=<span class="s">"localhost"</span>)
 <span class="k">let</span> traces = <span class="a">@otlp.TraceExporter</span>::new(
@@ -676,10 +677,11 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
             </p>
             <p>
               A run of this library against the OpenTelemetry Collector posts the same
-              three signals over HTTP as JSON, gzipped and protobuf, and a span over
-              gRPC, and the collector reads the same span, event, log record and
-              histogram out of every one of them — bucket bounds, bucket counts and unit
-              included. That is what the generated messages are for.
+              three signals four times — JSON, gzipped and protobuf over HTTP, and once
+              over gRPC — and the collector reads the same span, event, log record and
+              histogram out of every one of them, bucket bounds, bucket counts and unit
+              included. The two transports are compared item by item that way rather
+              than assumed to agree.
             </p>
             <p>
               It is not on the reference page, and that is the toolchain's line rather

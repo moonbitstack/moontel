@@ -23,7 +23,7 @@ what to keep, and reads and writes the headers the agreement is written in —
 Baggage.
 
 The [documentation site](https://moonbitstack.github.io/moontel/) has a guide, the
-complete reference, a showcase you can play with, and four runnable examples.
+complete reference, a showcase you can play with, and six runnable examples.
 
 ```moonbit
 fn traced_request(rand : (Int32) -> Bytes, at : Int64) -> @trace.Span raise {
@@ -328,7 +328,9 @@ async fn over_grpc(now : () -> Int64, rand : (Int32) -> Bytes) -> @otlp.TraceExp
 gRPC has no JSON encoding, so an exporter over it is always built with
 `@binary.protobuf`; the queue, the batch, the retry rules and the size bounds are the
 same code, and a gRPC status is translated into the HTTP status those rules are
-written against.
+written against. The transport is the only thing that changes: the span exporter, the
+log exporter and the metric exporter all take it, so a collector receives the same
+three signals over either transport.
 
 ## Logs
 
@@ -528,7 +530,7 @@ moon run src/examples/01-propagate    # reading a request's context, writing the
 moon run src/examples/02-asgi         # the middleware over an application
 moon run src/examples/03-annotated    # the annotation, and the wrapper it generates
 moon run src/examples/04-otlp         # three signals, to a collector
-moon run src/examples/05-grpc         # one span, over gRPC
+moon run src/examples/05-grpc         # the same three signals, over gRPC
 ```
 
 ## Licence

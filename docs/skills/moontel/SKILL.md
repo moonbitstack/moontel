@@ -107,7 +107,8 @@ fn binary_exporter(endpoint : String, now : () -> Int64, rand : (Int32) -> Bytes
 }
 ```
 
-`otlp/grpc` is a transport of the same exporter, and takes the binary encoding only:
+`otlp/grpc` is a transport of the same exporters — spans, log records and metrics all
+travel over it — and takes the binary encoding only:
 
 ```moonbit native
 async fn grpc_exporter(now : () -> Int64, rand : (Int32) -> Bytes) -> @otlp.TraceExporter {

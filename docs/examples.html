@@ -77,7 +77,7 @@
             <div><dt>02</dt><dd>a traced ASGI request</dd></div>
             <div><dt>03</dt><dd>one function, traced by an annotation</dd></div>
             <div><dt>04</dt><dd>three signals, out of the process</dd></div>
-            <div><dt>05</dt><dd>one span, over gRPC</dd></div>
+            <div><dt>05</dt><dd>the three signals, over gRPC</dd></div>
           </dl>
         </section>
 
@@ -716,16 +716,22 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// One span, over OTLP/gRPC: the same payload the HTTP example sends, carried by a
-/// unary call on a channel that stays open.
+/// The three signals over OTLP/gRPC: the span, the two log records and the two
+/// metrics the HTTP example sends, carried by one unary call each on a channel that
+/// stays open between them.
 ///
 ///     moon run src/examples/05-grpc --target native
 ///     moon run src/examples/05-grpc --target native -- localhost:4317
 ///
+/// The payload is the HTTP example&#x27;s on purpose: a collector that takes both runs
+/// holds the same span, the same two lines and the same two metrics twice, once per
+/// transport, which is how the conformance job compares the two.
+///
 /// The argument is `host:port`, because that is what a channel connects to; the
 /// protocol puts the gRPC port at 4317. With one on the command line the program
-/// requires the collector to be there and exits non-zero when the span could not be
-/// delivered, which is what the conformance job in CI runs.
+/// requires the collector to be there and exits non-zero when it cannot be reached
+/// or when a signal could not be delivered, which is what the conformance job in CI
+/// runs.
 #coverage.skip
 async fn main {
   let arguments = @env.args()
@@ -736,44 +742,146 @@ async fn main {
   }
   let required = arguments.length() &gt; 1
   let (host, port) = host_and_port(address)
-  let transport = @grpc.GrpcTransport::connect(host~, port~)
-  // gRPC carries the binary encoding only, so the exporter is built for it. The
+  // A channel connects before anything is queued, so a collector that is not there
+  // is known now rather than after a batch was built and lost. The HTTP example
+  // learns the same thing at its first request; the report reads the same either
+  // way.
+  let transport = match channel_to(host, port) {
+    Some(transport) =&gt; transport
+    None =&gt; {
+      if required {
+        abort(&quot;a collector was named at \{address} and could not be reached&quot;)
+      }
+      println(
+        &quot;nothing answered at \{address}; start a collector on its gRPC port&quot;,
+      )
+      return
+    }
+  }
+  // gRPC carries the binary encoding only, so the exporters are built for it. The
   // endpoint is still a URL: it names the signal, and the transport turns
-  // `/v1/traces` into the method the collector serves.
+  // `/v1/traces`, `/v1/logs` and `/v1/metrics` into the methods a collector serves.
+  let endpoint = &quot;http://\{address}&quot;
+  // With no collector named there is nothing to retry against, so one attempt says
+  // whether something is listening without spending half a minute finding out.
+  let attempts = if required { 5 } else { 1 }
+  let started = 1_700_000_000_000_000_000L
   let traces = @otlp.TraceExporter::new(
     transport~,
-    endpoint=&quot;http://\{address}&quot;,
+    endpoint~,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;).with_attribute(
+      &quot;deployment.environment.name&quot;,
+      @trace.Str(&quot;test&quot;),
+    ),
+    encoding=@binary.protobuf,
+    now=millis,
+    rand=random_bytes,
+    attempts~,
+  )
+  let logs = @otlp.LogsExporter::new(
+    transport~,
+    endpoint~,
     resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
     encoding=@binary.protobuf,
     now=millis,
     rand=random_bytes,
-    attempts=if required { 5 } else { 1 },
+    attempts~,
   )
+  let metrics = @otlp.MetricsExporter::new(
+    transport~,
+    endpoint~,
+    resource=@otlp.Resource::of_service(&quot;moontel-example&quot;),
+    encoding=@binary.protobuf,
+    now=millis,
+    rand=random_bytes,
+    attempts~,
+  )
+
+  // The span the HTTP example sends, with the same event and the same attributes.
   let tracer = @trace.Tracer::new(
     sink=traces,
     rand=random_bytes,
-    sampler=@trace.always,
+    sampler=@trace.parent_based(root=@trace.always),
   )
-  let started = millis()
-  let span = tracer.start(
-    &quot;PUT /orders/42/ship&quot;,
-    kind=@trace.Server,
-    at=started,
-    attributes=[(&quot;http.request.method&quot;, @trace.Str(&quot;PUT&quot;))],
-  ) catch {
+  let span = tracer.start(&quot;GET /orders/42&quot;, kind=@trace.Server, at=started, attributes=[
+    (&quot;http.request.method&quot;, @trace.Str(&quot;GET&quot;)),
+  ]) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
-  span.set_attribute(&quot;http.response.status_code&quot;, @trace.Int(204L))
+  span.add_event(&quot;cache.miss&quot;, at=started + 1_000_000L)
+  span.set_attribute(&quot;http.response.status_code&quot;, @trace.Int(200L))
   span.set_status(@trace.Ok)
-  span.finish(at=started + 2_000_000L)
-  let report = traces.flush()
-  transport.close()
-  println(
-    &quot;gRPC: delivered \{report.delivered}, rejected \{report.rejected}, dropped \{report.dropped}, requests \{report.attempts}&quot;,
+
+  // The same span is what makes the two lines joinable to the trace on this
+  // transport too: the ids travel in the record, not in the connection.
+  let logger = @log.Logger::new(
+    sink=logs,
+    now=millis,
+    scope=&quot;moontel-example/orders&quot;,
+  ).inside(span)
+  logger.info(
+    &quot;order placed&quot;,
+    attributes=[(&quot;order.id&quot;, @trace.Int(42L))],
+    at=started + 2_000_000L,
   )
-  if required &amp;&amp; report.delivered != 1 {
-    println(&quot;a collector was named at \{address} and did not take the span&quot;)
-    abort(&quot;the span was not delivered&quot;)
+  logger.warn(&quot;payment retried once&quot;, at=started + 3_000_000L)
+  span.finish(at=started + 4_000_000L)
+
+  // A program that already keeps metrics does not keep a second set: the snapshot
+  // is read and the bridge turns it into OTLP, here as everywhere else.
+  let registry = @metric.Registry::new()
+  let placed = registry.counter(&quot;orders_placed&quot;, &quot;Orders placed.&quot;)
+  placed.inc(by=1.0)
+  let latency = registry.histogram(
+    &quot;order_latency&quot;,
+    &quot;Order latency.&quot;,
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1],
+    unit=&quot;seconds&quot;,
+  )
+  latency.observe(0.012)
+  for metric in @p8s.bridge(registry.collect(at=0.0), at=started) {
+    metrics.record(metric)
+  }
+
+  let spans = traces.flush()
+  let records = logs.flush()
+  let points = metrics.flush()
+  transport.close()
+  report(&quot;traces&quot;, spans)
+  report(&quot;logs&quot;, records)
+  report(&quot;metrics&quot;, points)
+
+  let failed = !delivered(spans) || !delivered(records) || !delivered(points)
+  if failed &amp;&amp; required {
+    abort(&quot;a collector was named at \{address} and did not take every signal&quot;)
+  }
+  if failed {
+    println(
+      &quot;nothing answered at \{address}; start a collector on its gRPC port&quot;,
+    )
+  }
+}
+
+///|
+/// Whether one flush got its whole batch to the collector.
+fn delivered(report : @otlp.Report) -&gt; Bool {
+  report.dropped == 0 &amp;&amp; report.rejected == 0 &amp;&amp; report.attempts &gt; 0
+}
+
+///|
+fn report(signal : String, outcome : @otlp.Report) -&gt; Unit {
+  println(
+    &quot;\{signal}: delivered \{outcome.delivered}, rejected \{outcome.rejected}, &quot; +
+    &quot;dropped \{outcome.dropped}, requests \{outcome.attempts}&quot;,
+  )
+}
+
+///|
+/// The channel to the collector, or `None` when nothing is listening there: a
+/// refused connection is the answer to &quot;is a collector running&quot;, not a crash.
+async fn channel_to(host : String, port : Int32) -&gt; @grpc.GrpcTransport? {
+  Some(@grpc.GrpcTransport::connect(host~, port~)) catch {
+    _ =&gt; None
   }
 }
 
@@ -781,9 +889,7 @@ async fn main {
 /// `host:port`, or `host` alone with the protocol&#x27;s default port.
 fn host_and_port(address : String) -&gt; (String, Int32) {
   match address.rev_find(&quot;:&quot;) {
-    Some(at) =&gt; {
-      (address[:at].to_owned(), port_of(address[at + 1:]))
-    }
+    Some(at) =&gt; (address[:at].to_owned(), port_of(address[at + 1:]))
     None =&gt; (address, 4317)
   }
 }
@@ -799,12 +905,17 @@ fn port_of(text : StringView) -&gt; Int32 {
     }
     port = port * 10 + (digit.to_int() - &#x27;0&#x27;.to_int())
   }
-  if port == 0 { 4317 } else { port }
+  if port == 0 {
+    4317
+  } else {
+    port
+  }
 }
 
 ///|
-/// The clock the exporter uses for batching and for the retry budget. The runtime&#x27;s
-/// is monotonic, which is what those two need.
+/// The clock the exporters use for batching and for the retry budget. The runtime&#x27;s
+/// is monotonic, which is what those two need; the times the signals carry are the
+/// fixed ones above, in nanoseconds.
 fn millis() -&gt; Int64 {
   @async.now()
 }
@@ -815,24 +926,34 @@ fn random_bytes(width : Int32) -&gt; Bytes {
   @moonseed.bytes(width, @system.source) catch {
     _ =&gt; abort(&quot;the platform has no entropy source&quot;)
   }
-}
-</code></pre></div>
+}</code></pre></div>
             <div class="notes">
               <p>
-                The same span the HTTP example sends, over the other transport the
-                protocol defines. gRPC carries the binary protobuf, so the exporter is
-                built for it; everything else — the queue, the batch, the retry rules and
-                the two size bounds — is the code the HTTP path runs.
+                The three signals the HTTP example sends, over the other transport the
+                protocol defines: one span with an event, two log records written inside
+                it, and a counter and a histogram out of a registry's snapshot. gRPC
+                carries the binary protobuf, so each exporter is built for it; everything
+                else — the queue, the batch, the retry rules and the two size bounds — is
+                the code the HTTP path runs.
+              </p>
+              <p>
+                The payload is deliberately the HTTP example's: a collector that takes
+                both runs holds the same span, the same two lines and the same two
+                metrics twice, once per transport. That is what the conformance job in CI
+                counts, which is how “the same item on every protocol” is checked rather
+                than asserted.
               </p>
               <p>
                 The argument is <code>host:port</code>, because that is what a channel
                 connects to, and the protocol puts the gRPC port at 4317. The endpoint
                 handed to the exporter is still a URL: it names the signal, and the
-                transport turns <code>/v1/traces</code> into the method a collector
-                serves.
+                transport turns <code>/v1/traces</code>, <code>/v1/logs</code> and
+                <code>/v1/metrics</code> into the methods a collector serves.
               </p>
               <p class="output-label">One run, against a collector on its default gRPC port</p>
-              <pre class="output">gRPC: delivered 1, rejected 0, dropped 0, requests 1</pre>
+              <pre class="output">traces: delivered 1, rejected 0, dropped 0, requests 1
+logs: delivered 2, rejected 0, dropped 0, requests 1
+metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
             </div>
           </div>
         </section>
