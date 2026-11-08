@@ -508,3 +508,155 @@ test "the schema decodes the span it was handed" {
   assert_eq(span.events.length(), 1)
   assert_eq(span.events[0].name(), "cache.miss")
 }
+
+///|
+/// The same agreement for a log record: a body read as JSON and a body read as
+/// fields have to say the same thing about the severity, the text, the ids and the
+/// two times. One signal agreeing would leave the other two to a reader's memory.
+test "the two encodings agree about one log record" {
+  let context = @trace.TraceContext::new(
+    trace_id=b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10",
+    span_id=b"\x11\x12\x13\x14\x15\x16\x17\x18",
+    flags=@trace.sampled_flag,
+  )
+  let record = @log.LogRecord::new(
+      severity=@log.Severity::Warn,
+      body=@trace.Str("payment retried"),
+      at=30L,
+      observed=31L,
+      scope="orders",
+    )
+    .with_context(context)
+    .with_attribute("order.id", @trace.Int(42L))
+  let resource = @otlp.Resource::new(attributes=[
+    ("service.name", @trace.Str("orders")),
+  ])
+  let scope : @otlp.Scope = { name: "orders", version: None, attributes: [], }
+  let text = @utf8.decode_lossy(@otlp.json.logs([record], resource, scope))
+  let binary = encode_logs([record], resource~, scope~)
+  let decoded = @corejson.parse(text[:]) catch {
+    refused => fail("the JSON body is not JSON: \{refused.to_string()}")
+  }
+  let resources = elements(field_of(decoded, "resourceLogs"))
+  let scopes = elements(field_of(resources[0], "scopeLogs"))
+  let json_record = elements(field_of(scopes[0], "logRecords"))[0]
+  let request = decode_fields(binary[:])
+  let resource_logs = decode_fields(required(request, 1).bytes)
+  let scope_logs = decode_fields(required(resource_logs, 2).bytes)
+  let log_record = decode_fields(required(scope_logs, 2).bytes)
+  // SEVERITY_NUMBER_WARN is 13, and the text beside it is the producer's spelling.
+  assert_eq(number_of(field_of(json_record, "severityNumber")), 13.0)
+  assert_eq(required(log_record, 2).varint, 13UL)
+  assert_eq(text_of(field_of(json_record, "severityText")), "WARN")
+  assert_eq(required(log_record, 3).bytes.to_owned(), b"WARN")
+  let body = field_of(json_record, "body")
+  assert_eq(text_of(field_of(body, "stringValue")), "payment retried")
+  let binary_body = decode_fields(required(log_record, 5).bytes)
+  assert_eq(required(binary_body, 1).bytes.to_owned(), b"payment retried")
+  // A 64-bit field is a decimal string in JSON, and the same number on the wire.
+  assert_eq(text_of(field_of(json_record, "timeUnixNano")), "30")
+  assert_eq(required(log_record, 1).varint, 30UL)
+  assert_eq(text_of(field_of(json_record, "observedTimeUnixNano")), "31")
+  assert_eq(required(log_record, 11).varint, 31UL)
+  // The ids are hex in one body and the sixteen and eight bytes in the other.
+  assert_eq(
+    text_of(field_of(json_record, "traceId")),
+    "0102030405060708090a0b0c0d0e0f10",
+  )
+  assert_eq(
+    required(log_record, 9).bytes.to_owned(),
+    b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10",
+  )
+  assert_eq(text_of(field_of(json_record, "spanId")), "1112131415161718")
+  assert_eq(
+    required(log_record, 10).bytes.to_owned(),
+    b"\x11\x12\x13\x14\x15\x16\x17\x18",
+  )
+  let attribute = elements(field_of(json_record, "attributes"))[0]
+  assert_eq(text_of(field_of(attribute, "key")), "order.id")
+  let value = field_of(attribute, "value")
+  assert_eq(text_of(field_of(value, "intValue")), "42")
+  let binary_attribute = decode_fields(required(log_record, 6).bytes)
+  assert_eq(required(binary_attribute, 1).bytes.to_owned(), b"order.id")
+}
+
+///|
+/// And for a histogram, where the two encodings are furthest apart: the counts and
+/// the bounds are packed arrays on the wire and arrays of numbers in JSON, and a
+/// reader of either has to arrive at the same six observations.
+test "the two encodings agree about one histogram" {
+  let metric : @otlp.Metric = {
+    name: "order_latency",
+    description: "Order latency.",
+    unit: "s",
+    kind: Histogram(temporality=Cumulative),
+    points: [
+      {
+        attributes: [("region", @trace.Str("eu"))],
+        start: Some(1L),
+        time: 5L,
+        point: Buckets(
+          bounds=[0.005, 0.01],
+          counts=[1L, 2L, 3L],
+          sum=0.02,
+          count=6L,
+          min=Some(0.001),
+          max=Some(0.02),
+        ),
+        exemplars: [],
+        flags: 0,
+      },
+    ],
+  }
+  let resource = @otlp.Resource::new(attributes=[
+    ("service.name", @trace.Str("orders")),
+  ])
+  let scope : @otlp.Scope = { name: "orders", version: None, attributes: [], }
+  let text = @utf8.decode_lossy(@otlp.json.metrics([metric], resource, scope))
+  let binary = encode_metrics([metric], resource~, scope~)
+  let decoded = @corejson.parse(text[:]) catch {
+    refused => fail("the JSON body is not JSON: \{refused.to_string()}")
+  }
+  let resources = elements(field_of(decoded, "resourceMetrics"))
+  let scopes = elements(field_of(resources[0], "scopeMetrics"))
+  let json_metric = elements(field_of(scopes[0], "metrics"))[0]
+  let histogram = field_of(json_metric, "histogram")
+  let json_point = elements(field_of(histogram, "dataPoints"))[0]
+  let request = decode_fields(binary[:])
+  let resource_metrics = decode_fields(required(request, 1).bytes)
+  let scope_metrics = decode_fields(required(resource_metrics, 2).bytes)
+  let encoded = decode_fields(required(scope_metrics, 2).bytes)
+  let binary_histogram = decode_fields(required(encoded, 9).bytes)
+  let point = decode_fields(required(binary_histogram, 1).bytes)
+  // The unit travels in its own field in both, and the name does not carry it.
+  assert_eq(text_of(field_of(json_metric, "unit")), "s")
+  assert_eq(required(encoded, 3).bytes.to_owned(), b"s")
+  assert_eq(number_of(field_of(histogram, "aggregationTemporality")), 2.0)
+  assert_eq(required(binary_histogram, 2).varint, 2UL)
+  assert_eq(text_of(field_of(json_point, "count")), "6")
+  assert_eq(required(point, 4).varint, 6UL)
+  assert_eq(number_of(field_of(json_point, "sum")), 0.02)
+  assert_eq(required(point, 5).varint, (0.02 : Double).reinterpret_as_uint64())
+  // One more bucket than there are bounds, packed on the wire as `fixed64`.
+  let buckets = elements(field_of(json_point, "bucketCounts"))
+  assert_eq(buckets.length(), 3)
+  assert_eq(text_of(buckets[2]), "3")
+  let packed_counts = required(point, 6).bytes
+  assert_eq(packed_counts.length(), 24)
+  assert_eq(little_endian(packed_counts, 0, 8), 1UL)
+  assert_eq(little_endian(packed_counts, 8, 8), 2UL)
+  assert_eq(little_endian(packed_counts, 16, 8), 3UL)
+  let bounds = elements(field_of(json_point, "explicitBounds"))
+  assert_eq(bounds.length(), 2)
+  assert_eq(number_of(bounds[0]), 0.005)
+  let packed = required(point, 7).bytes
+  assert_eq(packed.length(), 16)
+  assert_eq(
+    little_endian(packed, 0, 8),
+    (0.005 : Double).reinterpret_as_uint64(),
+  )
+  assert_eq(
+    little_endian(packed, 8, 8),
+    (0.01 : Double).reinterpret_as_uint64(),
+  )
+}

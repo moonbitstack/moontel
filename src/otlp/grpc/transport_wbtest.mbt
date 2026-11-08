@@ -74,3 +74,49 @@ test "headers become metadata, except the content type gRPC decides for itself" 
   assert_eq(metadata[0].ascii(), ("x-api-key", "secret"))
   assert_eq(metadata[1].ascii(), ("Authorization", "Bearer token"))
 }
+
+///|
+/// A hosted backend puts the OTLP endpoints under a prefix of its own, and only the
+/// last segment decides which signal this is: the method is what the service serves,
+/// not what the base URL happens to look like.
+test "a base path in front of the signal does not change the method" {
+  assert_eq(
+    service_path("https://api.smith.langchain.com/otel/v1/traces"),
+    "/opentelemetry.proto.collector.trace.v1.TraceService/Export",
+  )
+  assert_eq(
+    service_path("https://api.smith.langchain.com/otel/v1/logs"),
+    "/opentelemetry.proto.collector.logs.v1.LogsService/Export",
+  )
+  assert_eq(
+    service_path("https://collector.example/otlp/v1/metrics"),
+    "/opentelemetry.proto.collector.metrics.v1.MetricsService/Export",
+  )
+}
+
+///|
+/// The translation exists for the retry rules, so what has to hold is the verdict
+/// rather than the number: the three situations the protocol calls retryable are
+/// retried, and every other status ends the attempts instead of repeating them.
+test "a gRPC status keeps the verdict the HTTP statuses already have" {
+  assert_eq(@otlp.verdict(status_of(0)), @otlp.Accepted)
+  assert_eq(@otlp.verdict(status_of(8)), @otlp.Retry)
+  assert_eq(@otlp.verdict(status_of(14)), @otlp.Retry)
+  assert_eq(@otlp.verdict(status_of(4)), @otlp.Retry)
+  // The codes the protocol does not name: a retry would repeat the same answer.
+  for code in [1, 2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 15, 16] {
+    assert_eq(@otlp.verdict(status_of(code)), @otlp.Rejected)
+  }
+}
+
+///|
+/// A call with no headers at all is still a call. The content type is the one
+/// header the transport never passes on, whatever case it arrives in, because gRPC
+/// announces its own.
+test "no headers is no metadata" {
+  assert_eq(metadata_of([]).length(), 0)
+  assert_eq(
+    metadata_of([("CONTENT-TYPE", "application/x-protobuf")]).length(),
+    0,
+  )
+}
