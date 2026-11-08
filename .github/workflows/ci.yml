@@ -175,8 +175,9 @@ jobs:
         run: moon run src/examples/04-otlp --target native -- http://localhost:4318 protobuf
 
       # A different transport entirely: one unary call on a channel, on the port the
-      # protocol puts gRPC at.
-      - name: send a span over gRPC
+      # protocol puts gRPC at. It sends the same three signals, so the log holds the
+      # same items once more rather than a span on its own.
+      - name: send the three signals over gRPC
         run: moon run src/examples/05-grpc --target native -- 127.0.0.1:4317
 
       - name: the collector parsed every signal
@@ -198,31 +199,42 @@ jobs:
               "SeverityNumber: Info(9)",
               "Name: orders_placed",
               "Name: order_latency",
-              "Name           : PUT /orders/42/ship",
               # The histogram's unit travelled in its own field, which is where it
               # belongs once the name no longer carries it.
               "Unit: s",
           ]
           missing = [want for want in required if want not in text]
+          if missing:
+              print("the collector did not report:", missing)
+              sys.exit(1)
           # The bridge takes off the unit suffix the exposition appends, so the name
           # on the wire is the one the program registered.
           if "order_latency_seconds" in text:
               print("the exposition's unit suffix survived the bridge")
               sys.exit(1)
-          # Three runs — plain, gzipped, protobuf — so the span is in the log three
-          # times only if every encoding was decoded.
-          spans = text.count("Name           : GET /orders/42")
-          if spans != 3:
-              print(f"expected the span from every run, saw {spans}")
-              sys.exit(1)
+          # Four runs — plain, gzipped, protobuf and gRPC — of the same payload, so
+          # an item is in the log four times only if every transport was decoded.
+          # This is what "the same item on every protocol" means, and a count is how
+          # it is compared: a signal that arrived on three of the four fails here.
+          runs = 4
+          for item in [
+              "Name           : GET /orders/42",
+              "Name: cache.miss",
+              "Body: Str(order placed)",
+              "Name: orders_placed",
+              "Name: order_latency",
+              "Unit: s",
+          ]:
+              seen = text.count(item)
+              if seen != runs:
+                  print(f"{item!r} arrived {seen} times, expected {runs}")
+                  sys.exit(1)
+          # One span and both records name a trace on every run.
           traces = text.count("Trace ID")
-          if missing:
-              print("the collector did not report:", missing)
-              sys.exit(1)
-          if traces < 9:
+          if traces < runs * 3:
               print(f"expected the trace id on the span and both records per run, saw {traces}")
               sys.exit(1)
-          print(f"the collector parsed all three signals; {traces} records name a trace")
+          print(f"the collector parsed all three signals on every transport; {traces} records name a trace")
           EOF
 
   # The official W3C Trace Context suite drives a hop built on this library. A
