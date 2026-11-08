@@ -1,4 +1,4 @@
-// One span to a collector over OTLP/gRPC:
+// All three signals to a collector over OTLP/gRPC:
 // `moon run src/examples/05-grpc --target native`.
 pkgtype(kind: "executable")
 
@@ -9,9 +9,12 @@ supported_targets = "+native"
 
 import {
   "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/log",
   "moonbitstack/moontel/otlp",
   "moonbitstack/moontel/otlp/binary",
   "moonbitstack/moontel/otlp/grpc",
+  "moonbitstack/moontel/otlp/p8s",
+  "moonbitstack/moonp8s/metric",
   "moonbitstack/moonseed",
   "moonbitstack/moonseed/system",
   "moonbitlang/async",
