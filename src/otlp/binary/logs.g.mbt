@@ -34,9 +34,9 @@ pub fn file_descriptor_logs_proto() -> @reflect.FileDescriptor raise @desc.Refus
     @desc.DescriptorProto::{
       name: "ResourceLogs",
       field: [
-        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "scope_logs", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.logs.v1.ScopeLogs"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -56,9 +56,9 @@ pub fn file_descriptor_logs_proto() -> @reflect.FileDescriptor raise @desc.Refus
     @desc.DescriptorProto::{
       name: "ScopeLogs",
       field: [
-        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "log_records", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.logs.v1.LogRecord"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -78,17 +78,17 @@ pub fn file_descriptor_logs_proto() -> @reflect.FileDescriptor raise @desc.Refus
     @desc.DescriptorProto::{
       name: "LogRecord",
       field: [
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 1, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "observed_time_unix_nano", number: 11, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "severity_number", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.logs.v1.SeverityNumber"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "severity_text", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "body", number: 5, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.AnyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 1, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "observed_time_unix_nano", number: 11, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "severity_number", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.logs.v1.SeverityNumber"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "severity_text", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "body", number: 5, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.AnyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "attributes", number: 6, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 7, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "trace_id", number: 9, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "span_id", number: 10, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "event_name", number: 12, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 7, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "trace_id", number: 9, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "span_id", number: 10, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "event_name", number: 12, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -495,7 +495,7 @@ pub let logsData_type : &@reflect.MessageType = (LogsDataType::new() as &@reflec
 pub struct ResourceLogs {
   mut resource : Resource?
   scope_logs : Array[ScopeLogs]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -504,7 +504,7 @@ pub fn ResourceLogs::new() -> ResourceLogs {
   {
     resource: None,
     scope_logs: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -534,12 +534,12 @@ pub fn ResourceLogs::scope_logs(self : ResourceLogs) -> &@reflect.ListField {
 
 ///|
 pub fn ResourceLogs::schema_url(self : ResourceLogs) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ResourceLogs::set_schema_url(self : ResourceLogs, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -563,10 +563,7 @@ fn ResourceLogs::read_field(self : ResourceLogs, field : @reflect.FieldDescripto
       None => @reflect.Message((Resource::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.scope_logs, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeLogs::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -615,7 +612,7 @@ pub impl @reflect.Message for ResourceLogs with fn has(self, field : @reflect.Fi
   match field.number {
     1 => @reflect.is_set(self.resource)
     2 => self.scope_logs.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -626,7 +623,7 @@ pub impl @reflect.Message for ResourceLogs with fn clear(self, field : @reflect.
   match field.number {
     1 => self.resource = None
     2 => self.scope_logs.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -649,7 +646,7 @@ pub impl @reflect.Message for ResourceLogs with fn set(self, field : @reflect.Fi
   }
 
     2 => @reflect.assign_list(self.scope_logs, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeLogs::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -743,7 +740,7 @@ pub let resourceLogs_type : &@reflect.MessageType = (ResourceLogsType::new() as 
 pub struct ScopeLogs {
   mut scope : InstrumentationScope?
   log_records : Array[LogRecord]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -752,7 +749,7 @@ pub fn ScopeLogs::new() -> ScopeLogs {
   {
     scope: None,
     log_records: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -782,12 +779,12 @@ pub fn ScopeLogs::log_records(self : ScopeLogs) -> &@reflect.ListField {
 
 ///|
 pub fn ScopeLogs::schema_url(self : ScopeLogs) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ScopeLogs::set_schema_url(self : ScopeLogs, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -811,10 +808,7 @@ fn ScopeLogs::read_field(self : ScopeLogs, field : @reflect.FieldDescriptor) -> 
       None => @reflect.Message((InstrumentationScope::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.log_records, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => LogRecord::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -863,7 +857,7 @@ pub impl @reflect.Message for ScopeLogs with fn has(self, field : @reflect.Field
   match field.number {
     1 => @reflect.is_set(self.scope)
     2 => self.log_records.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -874,7 +868,7 @@ pub impl @reflect.Message for ScopeLogs with fn clear(self, field : @reflect.Fie
   match field.number {
     1 => self.scope = None
     2 => self.log_records.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -897,7 +891,7 @@ pub impl @reflect.Message for ScopeLogs with fn set(self, field : @reflect.Field
   }
 
     2 => @reflect.assign_list(self.log_records, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => LogRecord::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -989,79 +983,76 @@ pub let scopeLogs_type : &@reflect.MessageType = (ScopeLogsType::new() as &@refl
 
 ///|
 pub struct LogRecord {
-  mut time_unix_nano : UInt64?
-  mut observed_time_unix_nano : UInt64?
-  mut severity_number : SeverityNumber?
-  mut severity_text : String?
+  mut time_unix_nano : UInt64
+  mut observed_time_unix_nano : UInt64
+  mut severity_number : SeverityNumber
+  mut severity_text : String
   mut body : AnyValue?
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
-  mut flags : UInt32?
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut event_name : String?
+  mut dropped_attributes_count : UInt32
+  mut flags : UInt32
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut event_name : String
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn LogRecord::new() -> LogRecord {
   {
-    time_unix_nano: None,
-    observed_time_unix_nano: None,
-    severity_number: None,
-    severity_text: None,
+    time_unix_nano: 0UL,
+    observed_time_unix_nano: 0UL,
+    severity_number: SeverityNumber::of(0),
+    severity_text: "",
     body: None,
     attributes: [],
-    dropped_attributes_count: None,
-    flags: None,
-    trace_id: None,
-    span_id: None,
-    event_name: None,
+    dropped_attributes_count: 0U,
+    flags: 0U,
+    trace_id: b"",
+    span_id: b"",
+    event_name: "",
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn LogRecord::time_unix_nano(self : LogRecord) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn LogRecord::set_time_unix_nano(self : LogRecord, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
 pub fn LogRecord::observed_time_unix_nano(self : LogRecord) -> UInt64 {
-  self.observed_time_unix_nano.unwrap_or(0UL)
+  self.observed_time_unix_nano
 }
 
 ///|
 pub fn LogRecord::set_observed_time_unix_nano(self : LogRecord, value : UInt64) -> Unit {
-  self.observed_time_unix_nano = Some(value)
+  self.observed_time_unix_nano = value
 }
 
 ///|
 pub fn LogRecord::severity_number(self : LogRecord) -> Int32 {
-  match self.severity_number {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.severity_number.code()
 }
 
 ///|
 pub fn LogRecord::set_severity_number(self : LogRecord, value : Int32) -> Unit {
-  self.severity_number = Some(SeverityNumber::of(value))
+  self.severity_number = SeverityNumber::of(value)
 }
 
 ///|
 pub fn LogRecord::severity_text(self : LogRecord) -> String {
-  self.severity_text.unwrap_or("")
+  self.severity_text
 }
 
 ///|
 pub fn LogRecord::set_severity_text(self : LogRecord, value : String) -> Unit {
-  self.severity_text = Some(value)
+  self.severity_text = value
 }
 
 ///|
@@ -1089,52 +1080,52 @@ pub fn LogRecord::attributes(self : LogRecord) -> &@reflect.ListField {
 
 ///|
 pub fn LogRecord::dropped_attributes_count(self : LogRecord) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn LogRecord::set_dropped_attributes_count(self : LogRecord, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
 pub fn LogRecord::flags(self : LogRecord) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn LogRecord::set_flags(self : LogRecord, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
 pub fn LogRecord::trace_id(self : LogRecord) -> Bytes {
-  self.trace_id.unwrap_or(b"")
+  self.trace_id
 }
 
 ///|
 pub fn LogRecord::set_trace_id(self : LogRecord, value : Bytes) -> Unit {
-  self.trace_id = Some(value)
+  self.trace_id = value
 }
 
 ///|
 pub fn LogRecord::span_id(self : LogRecord) -> Bytes {
-  self.span_id.unwrap_or(b"")
+  self.span_id
 }
 
 ///|
 pub fn LogRecord::set_span_id(self : LogRecord, value : Bytes) -> Unit {
-  self.span_id = Some(value)
+  self.span_id = value
 }
 
 ///|
 pub fn LogRecord::event_name(self : LogRecord) -> String {
-  self.event_name.unwrap_or("")
+  self.event_name
 }
 
 ///|
 pub fn LogRecord::set_event_name(self : LogRecord, value : String) -> Unit {
-  self.event_name = Some(value)
+  self.event_name = value
 }
 
 ///|
@@ -1153,47 +1144,20 @@ pub fn LogRecord::from_json(text : String) -> LogRecord raise @json.Refused {
 fn LogRecord::read_field(self : LogRecord, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    11 => match self.observed_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.severity_number {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
-    3 => match self.severity_text {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Uint64(self.time_unix_nano)
+    11 => @reflect.Uint64(self.observed_time_unix_nano)
+    2 => @reflect.Enum(self.severity_number.code())
+    3 => @reflect.String(self.severity_text)
     5 => match self.body {
       Some(v) => @reflect.Message(v as &@reflect.Message)
       None => @reflect.Message((AnyValue::new() as &@reflect.Message))
     }
     6 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    7 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
-    8 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
-    9 => match self.trace_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    10 => match self.span_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    12 => match self.event_name {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    7 => @reflect.Uint32(self.dropped_attributes_count)
+    8 => @reflect.Uint32(self.flags)
+    9 => @reflect.Bytes(self.trace_id)
+    10 => @reflect.Bytes(self.span_id)
+    12 => @reflect.String(self.event_name)
     _ => @reflect.default_for(field)
   }
 }
@@ -1240,17 +1204,17 @@ pub impl @reflect.Message for LogRecord with fn range_extensions(self, f : (@ref
 pub impl @reflect.Message for LogRecord with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.time_unix_nano)
-    11 => @reflect.is_set(self.observed_time_unix_nano)
-    2 => @reflect.is_set(self.severity_number)
-    3 => @reflect.is_set(self.severity_text)
+    1 => self.time_unix_nano != 0UL
+    11 => self.observed_time_unix_nano != 0UL
+    2 => self.severity_number.code() != 0
+    3 => self.severity_text.length() > 0
     5 => @reflect.is_set(self.body)
     6 => self.attributes.length() > 0
-    7 => @reflect.is_set(self.dropped_attributes_count)
-    8 => @reflect.is_set(self.flags)
-    9 => @reflect.is_set(self.trace_id)
-    10 => @reflect.is_set(self.span_id)
-    12 => @reflect.is_set(self.event_name)
+    7 => self.dropped_attributes_count != 0U
+    8 => self.flags != 0U
+    9 => self.trace_id.length() > 0
+    10 => self.span_id.length() > 0
+    12 => self.event_name.length() > 0
     _ => false
   }
 }
@@ -1259,17 +1223,17 @@ pub impl @reflect.Message for LogRecord with fn has(self, field : @reflect.Field
 pub impl @reflect.Message for LogRecord with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.time_unix_nano = None
-    11 => self.observed_time_unix_nano = None
-    2 => self.severity_number = None
-    3 => self.severity_text = None
+    1 => self.time_unix_nano = 0UL
+    11 => self.observed_time_unix_nano = 0UL
+    2 => self.severity_number = SeverityNumber::of(0)
+    3 => self.severity_text = ""
     5 => self.body = None
     6 => self.attributes.clear()
-    7 => self.dropped_attributes_count = None
-    8 => self.flags = None
-    9 => self.trace_id = None
-    10 => self.span_id = None
-    12 => self.event_name = None
+    7 => self.dropped_attributes_count = 0U
+    8 => self.flags = 0U
+    9 => self.trace_id = b""
+    10 => self.span_id = b""
+    12 => self.event_name = ""
     _ => ()
   }
 }
@@ -1284,10 +1248,10 @@ pub impl @reflect.Message for LogRecord with fn set(self, field : @reflect.Field
   let _ = self
   let _ = value
   match field.number {
-    1 => self.time_unix_nano = Some(value.uint())
-    11 => self.observed_time_unix_nano = Some(value.uint())
-    2 => self.severity_number = Some(SeverityNumber::of(value.enum_number()))
-    3 => self.severity_text = Some(value.string())
+    1 => self.time_unix_nano = value.uint()
+    11 => self.observed_time_unix_nano = value.uint()
+    2 => self.severity_number = SeverityNumber::of(value.enum_number())
+    3 => self.severity_text = value.string()
     5 => {
   let source = value.message()
   let target = AnyValue::new()
@@ -1296,11 +1260,11 @@ pub impl @reflect.Message for LogRecord with fn set(self, field : @reflect.Field
   }
 
     6 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    7 => self.dropped_attributes_count = Some(value.uint().to_uint())
-    8 => self.flags = Some(value.uint().to_uint())
-    9 => self.trace_id = Some(value.bytes())
-    10 => self.span_id = Some(value.bytes())
-    12 => self.event_name = Some(value.string())
+    7 => self.dropped_attributes_count = value.uint().to_uint()
+    8 => self.flags = value.uint().to_uint()
+    9 => self.trace_id = value.bytes()
+    10 => self.span_id = value.bytes()
+    12 => self.event_name = value.string()
     _ => ()
   }
 }

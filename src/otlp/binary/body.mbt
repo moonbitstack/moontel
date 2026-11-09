@@ -614,24 +614,22 @@ fn exemplars(values : Array[@otlp.Exemplar]) -> Array[Exemplar] {
 ///
 /// The three success responses are the same shape — a `partial_success` field, and
 /// inside it the count for that signal at number 1 — so one reader serves all three.
-/// A body that is not protobuf, or carries no count, answers `None`: "said nothing"
-/// and "refused none" are different things, and only the second is good news.
+/// A body that is not protobuf, or carries no `partial_success`, answers `None`:
+/// "said nothing" and "refused none" are different things, and only the second is
+/// good news.
 fn rejected_in_reply(body : Bytes) -> Int32? {
   let reply = ExportTraceServiceResponse::new()
   @proto.decode(body, reply) catch {
     _ => return None
   }
   match reply.partial_success {
-    // The count is a 64-bit field, and a count past what an `Int32` holds is not a
-    // count this side can report: it is clamped rather than wrapped.
-    Some(success) =>
-      success.rejected_spans.map(count => {
-        if count > 2147483647L {
-          2147483647
-        } else {
-          count.to_int()
-        }
-      })
+    // The count has no presence of its own, so inside a `partial_success` a count
+    // left out is zero. It is a 64-bit field, and a count past what an `Int32`
+    // holds is not one this side can report: it is clamped rather than wrapped.
+    Some(success) => {
+      let count = success.rejected_spans
+      Some(if count > 2147483647L { 2147483647 } else { count.to_int() })
+    }
     None => None
   }
 }

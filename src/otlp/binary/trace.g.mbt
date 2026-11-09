@@ -34,9 +34,9 @@ pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refu
     @desc.DescriptorProto::{
       name: "ResourceSpans",
       field: [
-        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "scope_spans", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.ScopeSpans"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -56,9 +56,9 @@ pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refu
     @desc.DescriptorProto::{
       name: "ScopeSpans",
       field: [
-        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "spans", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.Span"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -78,31 +78,31 @@ pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refu
     @desc.DescriptorProto::{
       name: "Span",
       field: [
-        @desc.FieldDescriptorProto::{ name: "trace_id", number: 1, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "span_id", number: 2, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "trace_state", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "parent_span_id", number: 4, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 16, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "name", number: 5, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "kind", number: 6, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.trace.v1.Span.SpanKind"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 7, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "end_time_unix_nano", number: 8, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "trace_id", number: 1, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "span_id", number: 2, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "trace_state", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "parent_span_id", number: 4, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 16, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "name", number: 5, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "kind", number: 6, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.trace.v1.Span.SpanKind"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 7, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "end_time_unix_nano", number: 8, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "attributes", number: 9, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "events", number: 11, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.Span.Event"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_events_count", number: 12, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_events_count", number: 12, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "links", number: 13, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.Span.Link"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_links_count", number: 14, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "status", number: 15, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.Status"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_links_count", number: 14, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "status", number: 15, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.trace.v1.Status"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
         @desc.DescriptorProto::{
           name: "Event",
           field: [
-            @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 1, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "name", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 1, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "name", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
             @desc.FieldDescriptorProto::{ name: "attributes", number: 3, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 4, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 4, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
           ],
           nested_type: [
           ],
@@ -122,12 +122,12 @@ pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refu
         @desc.DescriptorProto::{
           name: "Link",
           field: [
-            @desc.FieldDescriptorProto::{ name: "trace_id", number: 1, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "span_id", number: 2, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "trace_state", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "trace_id", number: 1, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "span_id", number: 2, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "trace_state", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
             @desc.FieldDescriptorProto::{ name: "attributes", number: 4, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 5, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "flags", number: 6, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 5, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "flags", number: 6, label: 1, type_code: 7, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
           ],
           nested_type: [
           ],
@@ -174,8 +174,8 @@ pub fn file_descriptor_trace_proto() -> @reflect.FileDescriptor raise @desc.Refu
     @desc.DescriptorProto::{
       name: "Status",
       field: [
-        @desc.FieldDescriptorProto::{ name: "message", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "code", number: 3, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.trace.v1.Status.StatusCode"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "message", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "code", number: 3, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.trace.v1.Status.StatusCode"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -474,7 +474,7 @@ pub let tracesData_type : &@reflect.MessageType = (TracesDataType::new() as &@re
 pub struct ResourceSpans {
   mut resource : Resource?
   scope_spans : Array[ScopeSpans]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -483,7 +483,7 @@ pub fn ResourceSpans::new() -> ResourceSpans {
   {
     resource: None,
     scope_spans: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -513,12 +513,12 @@ pub fn ResourceSpans::scope_spans(self : ResourceSpans) -> &@reflect.ListField {
 
 ///|
 pub fn ResourceSpans::schema_url(self : ResourceSpans) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ResourceSpans::set_schema_url(self : ResourceSpans, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -542,10 +542,7 @@ fn ResourceSpans::read_field(self : ResourceSpans, field : @reflect.FieldDescrip
       None => @reflect.Message((Resource::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.scope_spans, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeSpans::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -594,7 +591,7 @@ pub impl @reflect.Message for ResourceSpans with fn has(self, field : @reflect.F
   match field.number {
     1 => @reflect.is_set(self.resource)
     2 => self.scope_spans.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -605,7 +602,7 @@ pub impl @reflect.Message for ResourceSpans with fn clear(self, field : @reflect
   match field.number {
     1 => self.resource = None
     2 => self.scope_spans.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -628,7 +625,7 @@ pub impl @reflect.Message for ResourceSpans with fn set(self, field : @reflect.F
   }
 
     2 => @reflect.assign_list(self.scope_spans, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeSpans::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -722,7 +719,7 @@ pub let resourceSpans_type : &@reflect.MessageType = (ResourceSpansType::new() a
 pub struct ScopeSpans {
   mut scope : InstrumentationScope?
   spans : Array[Span]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -731,7 +728,7 @@ pub fn ScopeSpans::new() -> ScopeSpans {
   {
     scope: None,
     spans: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -761,12 +758,12 @@ pub fn ScopeSpans::spans(self : ScopeSpans) -> &@reflect.ListField {
 
 ///|
 pub fn ScopeSpans::schema_url(self : ScopeSpans) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ScopeSpans::set_schema_url(self : ScopeSpans, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -790,10 +787,7 @@ fn ScopeSpans::read_field(self : ScopeSpans, field : @reflect.FieldDescriptor) -
       None => @reflect.Message((InstrumentationScope::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.spans, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -842,7 +836,7 @@ pub impl @reflect.Message for ScopeSpans with fn has(self, field : @reflect.Fiel
   match field.number {
     1 => @reflect.is_set(self.scope)
     2 => self.spans.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -853,7 +847,7 @@ pub impl @reflect.Message for ScopeSpans with fn clear(self, field : @reflect.Fi
   match field.number {
     1 => self.scope = None
     2 => self.spans.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -876,7 +870,7 @@ pub impl @reflect.Message for ScopeSpans with fn set(self, field : @reflect.Fiel
   }
 
     2 => @reflect.assign_list(self.spans, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -968,21 +962,21 @@ pub let scopeSpans_type : &@reflect.MessageType = (ScopeSpansType::new() as &@re
 
 ///|
 pub struct Span {
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut trace_state : String?
-  mut parent_span_id : Bytes?
-  mut flags : UInt32?
-  mut name : String?
-  mut kind : Span_SpanKind?
-  mut start_time_unix_nano : UInt64?
-  mut end_time_unix_nano : UInt64?
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut trace_state : String
+  mut parent_span_id : Bytes
+  mut flags : UInt32
+  mut name : String
+  mut kind : Span_SpanKind
+  mut start_time_unix_nano : UInt64
+  mut end_time_unix_nano : UInt64
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   events : Array[Span_Event]
-  mut dropped_events_count : UInt32?
+  mut dropped_events_count : UInt32
   links : Array[Span_Link]
-  mut dropped_links_count : UInt32?
+  mut dropped_links_count : UInt32
   mut status : Status?
   mut unknown_fields : Bytes
 }
@@ -990,21 +984,21 @@ pub struct Span {
 ///|
 pub fn Span::new() -> Span {
   {
-    trace_id: None,
-    span_id: None,
-    trace_state: None,
-    parent_span_id: None,
-    flags: None,
-    name: None,
-    kind: None,
-    start_time_unix_nano: None,
-    end_time_unix_nano: None,
+    trace_id: b"",
+    span_id: b"",
+    trace_state: "",
+    parent_span_id: b"",
+    flags: 0U,
+    name: "",
+    kind: Span_SpanKind::of(0),
+    start_time_unix_nano: 0UL,
+    end_time_unix_nano: 0UL,
     attributes: [],
-    dropped_attributes_count: None,
+    dropped_attributes_count: 0U,
     events: [],
-    dropped_events_count: None,
+    dropped_events_count: 0U,
     links: [],
-    dropped_links_count: None,
+    dropped_links_count: 0U,
     status: None,
     unknown_fields: b"",
   }
@@ -1012,95 +1006,92 @@ pub fn Span::new() -> Span {
 
 ///|
 pub fn Span::trace_id(self : Span) -> Bytes {
-  self.trace_id.unwrap_or(b"")
+  self.trace_id
 }
 
 ///|
 pub fn Span::set_trace_id(self : Span, value : Bytes) -> Unit {
-  self.trace_id = Some(value)
+  self.trace_id = value
 }
 
 ///|
 pub fn Span::span_id(self : Span) -> Bytes {
-  self.span_id.unwrap_or(b"")
+  self.span_id
 }
 
 ///|
 pub fn Span::set_span_id(self : Span, value : Bytes) -> Unit {
-  self.span_id = Some(value)
+  self.span_id = value
 }
 
 ///|
 pub fn Span::trace_state(self : Span) -> String {
-  self.trace_state.unwrap_or("")
+  self.trace_state
 }
 
 ///|
 pub fn Span::set_trace_state(self : Span, value : String) -> Unit {
-  self.trace_state = Some(value)
+  self.trace_state = value
 }
 
 ///|
 pub fn Span::parent_span_id(self : Span) -> Bytes {
-  self.parent_span_id.unwrap_or(b"")
+  self.parent_span_id
 }
 
 ///|
 pub fn Span::set_parent_span_id(self : Span, value : Bytes) -> Unit {
-  self.parent_span_id = Some(value)
+  self.parent_span_id = value
 }
 
 ///|
 pub fn Span::flags(self : Span) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn Span::set_flags(self : Span, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
 pub fn Span::name(self : Span) -> String {
-  self.name.unwrap_or("")
+  self.name
 }
 
 ///|
 pub fn Span::set_name(self : Span, value : String) -> Unit {
-  self.name = Some(value)
+  self.name = value
 }
 
 ///|
 pub fn Span::kind(self : Span) -> Int32 {
-  match self.kind {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.kind.code()
 }
 
 ///|
 pub fn Span::set_kind(self : Span, value : Int32) -> Unit {
-  self.kind = Some(Span_SpanKind::of(value))
+  self.kind = Span_SpanKind::of(value)
 }
 
 ///|
 pub fn Span::start_time_unix_nano(self : Span) -> UInt64 {
-  self.start_time_unix_nano.unwrap_or(0UL)
+  self.start_time_unix_nano
 }
 
 ///|
 pub fn Span::set_start_time_unix_nano(self : Span, value : UInt64) -> Unit {
-  self.start_time_unix_nano = Some(value)
+  self.start_time_unix_nano = value
 }
 
 ///|
 pub fn Span::end_time_unix_nano(self : Span) -> UInt64 {
-  self.end_time_unix_nano.unwrap_or(0UL)
+  self.end_time_unix_nano
 }
 
 ///|
 pub fn Span::set_end_time_unix_nano(self : Span, value : UInt64) -> Unit {
-  self.end_time_unix_nano = Some(value)
+  self.end_time_unix_nano = value
 }
 
 ///|
@@ -1110,12 +1101,12 @@ pub fn Span::attributes(self : Span) -> &@reflect.ListField {
 
 ///|
 pub fn Span::dropped_attributes_count(self : Span) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn Span::set_dropped_attributes_count(self : Span, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
@@ -1125,12 +1116,12 @@ pub fn Span::events(self : Span) -> &@reflect.ListField {
 
 ///|
 pub fn Span::dropped_events_count(self : Span) -> UInt32 {
-  self.dropped_events_count.unwrap_or(0U)
+  self.dropped_events_count
 }
 
 ///|
 pub fn Span::set_dropped_events_count(self : Span, value : UInt32) -> Unit {
-  self.dropped_events_count = Some(value)
+  self.dropped_events_count = value
 }
 
 ///|
@@ -1140,12 +1131,12 @@ pub fn Span::links(self : Span) -> &@reflect.ListField {
 
 ///|
 pub fn Span::dropped_links_count(self : Span) -> UInt32 {
-  self.dropped_links_count.unwrap_or(0U)
+  self.dropped_links_count
 }
 
 ///|
 pub fn Span::set_dropped_links_count(self : Span, value : UInt32) -> Unit {
-  self.dropped_links_count = Some(value)
+  self.dropped_links_count = value
 }
 
 ///|
@@ -1182,57 +1173,21 @@ pub fn Span::from_json(text : String) -> Span raise @json.Refused {
 fn Span::read_field(self : Span, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.trace_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.span_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.trace_state {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    4 => match self.parent_span_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    16 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
-    5 => match self.name {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    6 => match self.kind {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
-    7 => match self.start_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    8 => match self.end_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Bytes(self.trace_id)
+    2 => @reflect.Bytes(self.span_id)
+    3 => @reflect.String(self.trace_state)
+    4 => @reflect.Bytes(self.parent_span_id)
+    16 => @reflect.Uint32(self.flags)
+    5 => @reflect.String(self.name)
+    6 => @reflect.Enum(self.kind.code())
+    7 => @reflect.Uint64(self.start_time_unix_nano)
+    8 => @reflect.Uint64(self.end_time_unix_nano)
     9 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    10 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    10 => @reflect.Uint32(self.dropped_attributes_count)
     11 => @reflect.ListView(@reflect.list_view(self.events, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span_Event::new(), (v, m) => @proto.merge(v, m))))
-    12 => match self.dropped_events_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    12 => @reflect.Uint32(self.dropped_events_count)
     13 => @reflect.ListView(@reflect.list_view(self.links, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span_Link::new(), (v, m) => @proto.merge(v, m))))
-    14 => match self.dropped_links_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    14 => @reflect.Uint32(self.dropped_links_count)
     15 => match self.status {
       Some(v) => @reflect.Message(v as &@reflect.Message)
       None => @reflect.Message((Status::new() as &@reflect.Message))
@@ -1283,21 +1238,21 @@ pub impl @reflect.Message for Span with fn range_extensions(self, f : (@reflect.
 pub impl @reflect.Message for Span with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.trace_id)
-    2 => @reflect.is_set(self.span_id)
-    3 => @reflect.is_set(self.trace_state)
-    4 => @reflect.is_set(self.parent_span_id)
-    16 => @reflect.is_set(self.flags)
-    5 => @reflect.is_set(self.name)
-    6 => @reflect.is_set(self.kind)
-    7 => @reflect.is_set(self.start_time_unix_nano)
-    8 => @reflect.is_set(self.end_time_unix_nano)
+    1 => self.trace_id.length() > 0
+    2 => self.span_id.length() > 0
+    3 => self.trace_state.length() > 0
+    4 => self.parent_span_id.length() > 0
+    16 => self.flags != 0U
+    5 => self.name.length() > 0
+    6 => self.kind.code() != 0
+    7 => self.start_time_unix_nano != 0UL
+    8 => self.end_time_unix_nano != 0UL
     9 => self.attributes.length() > 0
-    10 => @reflect.is_set(self.dropped_attributes_count)
+    10 => self.dropped_attributes_count != 0U
     11 => self.events.length() > 0
-    12 => @reflect.is_set(self.dropped_events_count)
+    12 => self.dropped_events_count != 0U
     13 => self.links.length() > 0
-    14 => @reflect.is_set(self.dropped_links_count)
+    14 => self.dropped_links_count != 0U
     15 => @reflect.is_set(self.status)
     _ => false
   }
@@ -1307,21 +1262,21 @@ pub impl @reflect.Message for Span with fn has(self, field : @reflect.FieldDescr
 pub impl @reflect.Message for Span with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.trace_id = None
-    2 => self.span_id = None
-    3 => self.trace_state = None
-    4 => self.parent_span_id = None
-    16 => self.flags = None
-    5 => self.name = None
-    6 => self.kind = None
-    7 => self.start_time_unix_nano = None
-    8 => self.end_time_unix_nano = None
+    1 => self.trace_id = b""
+    2 => self.span_id = b""
+    3 => self.trace_state = ""
+    4 => self.parent_span_id = b""
+    16 => self.flags = 0U
+    5 => self.name = ""
+    6 => self.kind = Span_SpanKind::of(0)
+    7 => self.start_time_unix_nano = 0UL
+    8 => self.end_time_unix_nano = 0UL
     9 => self.attributes.clear()
-    10 => self.dropped_attributes_count = None
+    10 => self.dropped_attributes_count = 0U
     11 => self.events.clear()
-    12 => self.dropped_events_count = None
+    12 => self.dropped_events_count = 0U
     13 => self.links.clear()
-    14 => self.dropped_links_count = None
+    14 => self.dropped_links_count = 0U
     15 => self.status = None
     _ => ()
   }
@@ -1337,21 +1292,21 @@ pub impl @reflect.Message for Span with fn set(self, field : @reflect.FieldDescr
   let _ = self
   let _ = value
   match field.number {
-    1 => self.trace_id = Some(value.bytes())
-    2 => self.span_id = Some(value.bytes())
-    3 => self.trace_state = Some(value.string())
-    4 => self.parent_span_id = Some(value.bytes())
-    16 => self.flags = Some(value.uint().to_uint())
-    5 => self.name = Some(value.string())
-    6 => self.kind = Some(Span_SpanKind::of(value.enum_number()))
-    7 => self.start_time_unix_nano = Some(value.uint())
-    8 => self.end_time_unix_nano = Some(value.uint())
+    1 => self.trace_id = value.bytes()
+    2 => self.span_id = value.bytes()
+    3 => self.trace_state = value.string()
+    4 => self.parent_span_id = value.bytes()
+    16 => self.flags = value.uint().to_uint()
+    5 => self.name = value.string()
+    6 => self.kind = Span_SpanKind::of(value.enum_number())
+    7 => self.start_time_unix_nano = value.uint()
+    8 => self.end_time_unix_nano = value.uint()
     9 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    10 => self.dropped_attributes_count = Some(value.uint().to_uint())
+    10 => self.dropped_attributes_count = value.uint().to_uint()
     11 => @reflect.assign_list(self.events, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span_Event::new(), (v, m) => @proto.merge(v, m)))
-    12 => self.dropped_events_count = Some(value.uint().to_uint())
+    12 => self.dropped_events_count = value.uint().to_uint()
     13 => @reflect.assign_list(self.links, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Span_Link::new(), (v, m) => @proto.merge(v, m)))
-    14 => self.dropped_links_count = Some(value.uint().to_uint())
+    14 => self.dropped_links_count = value.uint().to_uint()
     15 => {
   let source = value.message()
   let target = Status::new()
@@ -1487,42 +1442,42 @@ pub fn Span_SpanKind::of(n : Int32) -> Span_SpanKind {
 
 ///|
 pub struct Span_Event {
-  mut time_unix_nano : UInt64?
-  mut name : String?
+  mut time_unix_nano : UInt64
+  mut name : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn Span_Event::new() -> Span_Event {
   {
-    time_unix_nano: None,
-    name: None,
+    time_unix_nano: 0UL,
+    name: "",
     attributes: [],
-    dropped_attributes_count: None,
+    dropped_attributes_count: 0U,
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn Span_Event::time_unix_nano(self : Span_Event) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn Span_Event::set_time_unix_nano(self : Span_Event, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
 pub fn Span_Event::name(self : Span_Event) -> String {
-  self.name.unwrap_or("")
+  self.name
 }
 
 ///|
 pub fn Span_Event::set_name(self : Span_Event, value : String) -> Unit {
-  self.name = Some(value)
+  self.name = value
 }
 
 ///|
@@ -1532,12 +1487,12 @@ pub fn Span_Event::attributes(self : Span_Event) -> &@reflect.ListField {
 
 ///|
 pub fn Span_Event::dropped_attributes_count(self : Span_Event) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn Span_Event::set_dropped_attributes_count(self : Span_Event, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
@@ -1556,19 +1511,10 @@ pub fn Span_Event::from_json(text : String) -> Span_Event raise @json.Refused {
 fn Span_Event::read_field(self : Span_Event, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.name {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Uint64(self.time_unix_nano)
+    2 => @reflect.String(self.name)
     3 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    4 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    4 => @reflect.Uint32(self.dropped_attributes_count)
     _ => @reflect.default_for(field)
   }
 }
@@ -1615,10 +1561,10 @@ pub impl @reflect.Message for Span_Event with fn range_extensions(self, f : (@re
 pub impl @reflect.Message for Span_Event with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.time_unix_nano)
-    2 => @reflect.is_set(self.name)
+    1 => self.time_unix_nano != 0UL
+    2 => self.name.length() > 0
     3 => self.attributes.length() > 0
-    4 => @reflect.is_set(self.dropped_attributes_count)
+    4 => self.dropped_attributes_count != 0U
     _ => false
   }
 }
@@ -1627,10 +1573,10 @@ pub impl @reflect.Message for Span_Event with fn has(self, field : @reflect.Fiel
 pub impl @reflect.Message for Span_Event with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.time_unix_nano = None
-    2 => self.name = None
+    1 => self.time_unix_nano = 0UL
+    2 => self.name = ""
     3 => self.attributes.clear()
-    4 => self.dropped_attributes_count = None
+    4 => self.dropped_attributes_count = 0U
     _ => ()
   }
 }
@@ -1645,10 +1591,10 @@ pub impl @reflect.Message for Span_Event with fn set(self, field : @reflect.Fiel
   let _ = self
   let _ = value
   match field.number {
-    1 => self.time_unix_nano = Some(value.uint())
-    2 => self.name = Some(value.string())
+    1 => self.time_unix_nano = value.uint()
+    2 => self.name = value.string()
     3 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    4 => self.dropped_attributes_count = Some(value.uint().to_uint())
+    4 => self.dropped_attributes_count = value.uint().to_uint()
     _ => ()
   }
 }
@@ -1731,56 +1677,56 @@ pub let span_Event_type : &@reflect.MessageType = (Span_EventType::new() as &@re
 
 ///|
 pub struct Span_Link {
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut trace_state : String?
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut trace_state : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
-  mut flags : UInt32?
+  mut dropped_attributes_count : UInt32
+  mut flags : UInt32
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn Span_Link::new() -> Span_Link {
   {
-    trace_id: None,
-    span_id: None,
-    trace_state: None,
+    trace_id: b"",
+    span_id: b"",
+    trace_state: "",
     attributes: [],
-    dropped_attributes_count: None,
-    flags: None,
+    dropped_attributes_count: 0U,
+    flags: 0U,
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn Span_Link::trace_id(self : Span_Link) -> Bytes {
-  self.trace_id.unwrap_or(b"")
+  self.trace_id
 }
 
 ///|
 pub fn Span_Link::set_trace_id(self : Span_Link, value : Bytes) -> Unit {
-  self.trace_id = Some(value)
+  self.trace_id = value
 }
 
 ///|
 pub fn Span_Link::span_id(self : Span_Link) -> Bytes {
-  self.span_id.unwrap_or(b"")
+  self.span_id
 }
 
 ///|
 pub fn Span_Link::set_span_id(self : Span_Link, value : Bytes) -> Unit {
-  self.span_id = Some(value)
+  self.span_id = value
 }
 
 ///|
 pub fn Span_Link::trace_state(self : Span_Link) -> String {
-  self.trace_state.unwrap_or("")
+  self.trace_state
 }
 
 ///|
 pub fn Span_Link::set_trace_state(self : Span_Link, value : String) -> Unit {
-  self.trace_state = Some(value)
+  self.trace_state = value
 }
 
 ///|
@@ -1790,22 +1736,22 @@ pub fn Span_Link::attributes(self : Span_Link) -> &@reflect.ListField {
 
 ///|
 pub fn Span_Link::dropped_attributes_count(self : Span_Link) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn Span_Link::set_dropped_attributes_count(self : Span_Link, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
 pub fn Span_Link::flags(self : Span_Link) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn Span_Link::set_flags(self : Span_Link, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
@@ -1824,27 +1770,12 @@ pub fn Span_Link::from_json(text : String) -> Span_Link raise @json.Refused {
 fn Span_Link::read_field(self : Span_Link, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.trace_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.span_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.trace_state {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Bytes(self.trace_id)
+    2 => @reflect.Bytes(self.span_id)
+    3 => @reflect.String(self.trace_state)
     4 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    5 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
-    6 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    5 => @reflect.Uint32(self.dropped_attributes_count)
+    6 => @reflect.Uint32(self.flags)
     _ => @reflect.default_for(field)
   }
 }
@@ -1891,12 +1822,12 @@ pub impl @reflect.Message for Span_Link with fn range_extensions(self, f : (@ref
 pub impl @reflect.Message for Span_Link with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.trace_id)
-    2 => @reflect.is_set(self.span_id)
-    3 => @reflect.is_set(self.trace_state)
+    1 => self.trace_id.length() > 0
+    2 => self.span_id.length() > 0
+    3 => self.trace_state.length() > 0
     4 => self.attributes.length() > 0
-    5 => @reflect.is_set(self.dropped_attributes_count)
-    6 => @reflect.is_set(self.flags)
+    5 => self.dropped_attributes_count != 0U
+    6 => self.flags != 0U
     _ => false
   }
 }
@@ -1905,12 +1836,12 @@ pub impl @reflect.Message for Span_Link with fn has(self, field : @reflect.Field
 pub impl @reflect.Message for Span_Link with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.trace_id = None
-    2 => self.span_id = None
-    3 => self.trace_state = None
+    1 => self.trace_id = b""
+    2 => self.span_id = b""
+    3 => self.trace_state = ""
     4 => self.attributes.clear()
-    5 => self.dropped_attributes_count = None
-    6 => self.flags = None
+    5 => self.dropped_attributes_count = 0U
+    6 => self.flags = 0U
     _ => ()
   }
 }
@@ -1925,12 +1856,12 @@ pub impl @reflect.Message for Span_Link with fn set(self, field : @reflect.Field
   let _ = self
   let _ = value
   match field.number {
-    1 => self.trace_id = Some(value.bytes())
-    2 => self.span_id = Some(value.bytes())
-    3 => self.trace_state = Some(value.string())
+    1 => self.trace_id = value.bytes()
+    2 => self.span_id = value.bytes()
+    3 => self.trace_state = value.string()
     4 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    5 => self.dropped_attributes_count = Some(value.uint().to_uint())
-    6 => self.flags = Some(value.uint().to_uint())
+    5 => self.dropped_attributes_count = value.uint().to_uint()
+    6 => self.flags = value.uint().to_uint()
     _ => ()
   }
 }
@@ -2013,41 +1944,38 @@ pub let span_Link_type : &@reflect.MessageType = (Span_LinkType::new() as &@refl
 
 ///|
 pub struct Status {
-  mut message_field : String?
-  mut code : Status_StatusCode?
+  mut message_field : String
+  mut code : Status_StatusCode
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn Status::new() -> Status {
   {
-    message_field: None,
-    code: None,
+    message_field: "",
+    code: Status_StatusCode::of(0),
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn Status::message_field(self : Status) -> String {
-  self.message_field.unwrap_or("")
+  self.message_field
 }
 
 ///|
 pub fn Status::set_message_field(self : Status, value : String) -> Unit {
-  self.message_field = Some(value)
+  self.message_field = value
 }
 
 ///|
 pub fn Status::code(self : Status) -> Int32 {
-  match self.code {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.code.code()
 }
 
 ///|
 pub fn Status::set_code(self : Status, value : Int32) -> Unit {
-  self.code = Some(Status_StatusCode::of(value))
+  self.code = Status_StatusCode::of(value)
 }
 
 ///|
@@ -2066,14 +1994,8 @@ pub fn Status::from_json(text : String) -> Status raise @json.Refused {
 fn Status::read_field(self : Status, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    2 => match self.message_field {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.code {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.String(self.message_field)
+    3 => @reflect.Enum(self.code.code())
     _ => @reflect.default_for(field)
   }
 }
@@ -2120,8 +2042,8 @@ pub impl @reflect.Message for Status with fn range_extensions(self, f : (@reflec
 pub impl @reflect.Message for Status with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    2 => @reflect.is_set(self.message_field)
-    3 => @reflect.is_set(self.code)
+    2 => self.message_field.length() > 0
+    3 => self.code.code() != 0
     _ => false
   }
 }
@@ -2130,8 +2052,8 @@ pub impl @reflect.Message for Status with fn has(self, field : @reflect.FieldDes
 pub impl @reflect.Message for Status with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    2 => self.message_field = None
-    3 => self.code = None
+    2 => self.message_field = ""
+    3 => self.code = Status_StatusCode::of(0)
     _ => ()
   }
 }
@@ -2146,8 +2068,8 @@ pub impl @reflect.Message for Status with fn set(self, field : @reflect.FieldDes
   let _ = self
   let _ = value
   match field.number {
-    2 => self.message_field = Some(value.string())
-    3 => self.code = Some(Status_StatusCode::of(value.enum_number()))
+    2 => self.message_field = value.string()
+    3 => self.code = Status_StatusCode::of(value.enum_number())
     _ => ()
   }
 }

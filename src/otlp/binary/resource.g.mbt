@@ -15,7 +15,7 @@ pub fn file_descriptor_resource_proto() -> @reflect.FileDescriptor raise @desc.R
       name: "Resource",
       field: [
         @desc.FieldDescriptorProto::{ name: "attributes", number: 1, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 2, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 2, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "entity_refs", number: 3, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.EntityRef"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
@@ -75,7 +75,7 @@ fn find_message_resource_proto(name : String) -> @reflect.MessageDescriptor {
 ///|
 pub struct Resource {
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   entity_refs : Array[EntityRef]
   mut unknown_fields : Bytes
 }
@@ -84,7 +84,7 @@ pub struct Resource {
 pub fn Resource::new() -> Resource {
   {
     attributes: [],
-    dropped_attributes_count: None,
+    dropped_attributes_count: 0U,
     entity_refs: [],
     unknown_fields: b"",
   }
@@ -97,12 +97,12 @@ pub fn Resource::attributes(self : Resource) -> &@reflect.ListField {
 
 ///|
 pub fn Resource::dropped_attributes_count(self : Resource) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn Resource::set_dropped_attributes_count(self : Resource, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
@@ -127,10 +127,7 @@ fn Resource::read_field(self : Resource, field : @reflect.FieldDescriptor) -> @r
   let _ = self
   match field.number {
     1 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint32(self.dropped_attributes_count)
     3 => @reflect.ListView(@reflect.list_view(self.entity_refs, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => EntityRef::new(), (v, m) => @proto.merge(v, m))))
     _ => @reflect.default_for(field)
   }
@@ -179,7 +176,7 @@ pub impl @reflect.Message for Resource with fn has(self, field : @reflect.FieldD
   let _ = self
   match field.number {
     1 => self.attributes.length() > 0
-    2 => @reflect.is_set(self.dropped_attributes_count)
+    2 => self.dropped_attributes_count != 0U
     3 => self.entity_refs.length() > 0
     _ => false
   }
@@ -190,7 +187,7 @@ pub impl @reflect.Message for Resource with fn clear(self, field : @reflect.Fiel
   let _ = self
   match field.number {
     1 => self.attributes.clear()
-    2 => self.dropped_attributes_count = None
+    2 => self.dropped_attributes_count = 0U
     3 => self.entity_refs.clear()
     _ => ()
   }
@@ -207,7 +204,7 @@ pub impl @reflect.Message for Resource with fn set(self, field : @reflect.FieldD
   let _ = value
   match field.number {
     1 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.dropped_attributes_count = Some(value.uint().to_uint())
+    2 => self.dropped_attributes_count = value.uint().to_uint()
     3 => @reflect.assign_list(self.entity_refs, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => EntityRef::new(), (v, m) => @proto.merge(v, m)))
     _ => ()
   }

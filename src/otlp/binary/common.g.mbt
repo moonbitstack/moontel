@@ -82,9 +82,9 @@ pub fn file_descriptor_common_proto() -> @reflect.FileDescriptor raise @desc.Ref
     @desc.DescriptorProto::{
       name: "KeyValue",
       field: [
-        @desc.FieldDescriptorProto::{ name: "key", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "value", number: 2, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.AnyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "key_strindex", number: 3, label: 1, type_code: 5, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "key", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "value", number: 2, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.AnyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "key_strindex", number: 3, label: 1, type_code: 5, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -104,10 +104,10 @@ pub fn file_descriptor_common_proto() -> @reflect.FileDescriptor raise @desc.Ref
     @desc.DescriptorProto::{
       name: "InstrumentationScope",
       field: [
-        @desc.FieldDescriptorProto::{ name: "name", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "version", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "name", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "version", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "attributes", number: 3, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 4, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "dropped_attributes_count", number: 4, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -127,8 +127,8 @@ pub fn file_descriptor_common_proto() -> @reflect.FileDescriptor raise @desc.Ref
     @desc.DescriptorProto::{
       name: "EntityRef",
       field: [
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "type", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "type", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "id_keys", number: 3, label: 3, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "description_keys", number: 4, label: 3, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
@@ -998,30 +998,30 @@ pub let keyValueList_type : &@reflect.MessageType = (KeyValueListType::new() as 
 
 ///|
 pub struct KeyValue {
-  mut key : String?
+  mut key : String
   mut value : AnyValue?
-  mut key_strindex : Int32?
+  mut key_strindex : Int32
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn KeyValue::new() -> KeyValue {
   {
-    key: None,
+    key: "",
     value: None,
-    key_strindex: None,
+    key_strindex: 0,
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn KeyValue::key(self : KeyValue) -> String {
-  self.key.unwrap_or("")
+  self.key
 }
 
 ///|
 pub fn KeyValue::set_key(self : KeyValue, value : String) -> Unit {
-  self.key = Some(value)
+  self.key = value
 }
 
 ///|
@@ -1044,12 +1044,12 @@ pub fn KeyValue::set_value(self : KeyValue, value : @reflect.Value) -> Unit {
 
 ///|
 pub fn KeyValue::key_strindex(self : KeyValue) -> Int32 {
-  self.key_strindex.unwrap_or(0)
+  self.key_strindex
 }
 
 ///|
 pub fn KeyValue::set_key_strindex(self : KeyValue, value : Int32) -> Unit {
-  self.key_strindex = Some(value)
+  self.key_strindex = value
 }
 
 ///|
@@ -1068,18 +1068,12 @@ pub fn KeyValue::from_json(text : String) -> KeyValue raise @json.Refused {
 fn KeyValue::read_field(self : KeyValue, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.key {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.String(self.key)
     2 => match self.value {
       Some(v) => @reflect.Message(v as &@reflect.Message)
       None => @reflect.Message((AnyValue::new() as &@reflect.Message))
     }
-    3 => match self.key_strindex {
-      Some(v) => @reflect.Int32(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.Int32(self.key_strindex)
     _ => @reflect.default_for(field)
   }
 }
@@ -1126,9 +1120,9 @@ pub impl @reflect.Message for KeyValue with fn range_extensions(self, f : (@refl
 pub impl @reflect.Message for KeyValue with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.key)
+    1 => self.key.length() > 0
     2 => @reflect.is_set(self.value)
-    3 => @reflect.is_set(self.key_strindex)
+    3 => self.key_strindex != 0
     _ => false
   }
 }
@@ -1137,9 +1131,9 @@ pub impl @reflect.Message for KeyValue with fn has(self, field : @reflect.FieldD
 pub impl @reflect.Message for KeyValue with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.key = None
+    1 => self.key = ""
     2 => self.value = None
-    3 => self.key_strindex = None
+    3 => self.key_strindex = 0
     _ => ()
   }
 }
@@ -1154,7 +1148,7 @@ pub impl @reflect.Message for KeyValue with fn set(self, field : @reflect.FieldD
   let _ = self
   let _ = value
   match field.number {
-    1 => self.key = Some(value.string())
+    1 => self.key = value.string()
     2 => {
   let source = value.message()
   let target = AnyValue::new()
@@ -1162,7 +1156,7 @@ pub impl @reflect.Message for KeyValue with fn set(self, field : @reflect.FieldD
   self.value = Some(target)
   }
 
-    3 => self.key_strindex = Some(value.int().to_int())
+    3 => self.key_strindex = value.int().to_int()
     _ => ()
   }
 }
@@ -1254,42 +1248,42 @@ pub let keyValue_type : &@reflect.MessageType = (KeyValueType::new() as &@reflec
 
 ///|
 pub struct InstrumentationScope {
-  mut name : String?
-  mut version : String?
+  mut name : String
+  mut version : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn InstrumentationScope::new() -> InstrumentationScope {
   {
-    name: None,
-    version: None,
+    name: "",
+    version: "",
     attributes: [],
-    dropped_attributes_count: None,
+    dropped_attributes_count: 0U,
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn InstrumentationScope::name(self : InstrumentationScope) -> String {
-  self.name.unwrap_or("")
+  self.name
 }
 
 ///|
 pub fn InstrumentationScope::set_name(self : InstrumentationScope, value : String) -> Unit {
-  self.name = Some(value)
+  self.name = value
 }
 
 ///|
 pub fn InstrumentationScope::version(self : InstrumentationScope) -> String {
-  self.version.unwrap_or("")
+  self.version
 }
 
 ///|
 pub fn InstrumentationScope::set_version(self : InstrumentationScope, value : String) -> Unit {
-  self.version = Some(value)
+  self.version = value
 }
 
 ///|
@@ -1299,12 +1293,12 @@ pub fn InstrumentationScope::attributes(self : InstrumentationScope) -> &@reflec
 
 ///|
 pub fn InstrumentationScope::dropped_attributes_count(self : InstrumentationScope) -> UInt32 {
-  self.dropped_attributes_count.unwrap_or(0U)
+  self.dropped_attributes_count
 }
 
 ///|
 pub fn InstrumentationScope::set_dropped_attributes_count(self : InstrumentationScope, value : UInt32) -> Unit {
-  self.dropped_attributes_count = Some(value)
+  self.dropped_attributes_count = value
 }
 
 ///|
@@ -1323,19 +1317,10 @@ pub fn InstrumentationScope::from_json(text : String) -> InstrumentationScope ra
 fn InstrumentationScope::read_field(self : InstrumentationScope, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.name {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.version {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.String(self.name)
+    2 => @reflect.String(self.version)
     3 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    4 => match self.dropped_attributes_count {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    4 => @reflect.Uint32(self.dropped_attributes_count)
     _ => @reflect.default_for(field)
   }
 }
@@ -1382,10 +1367,10 @@ pub impl @reflect.Message for InstrumentationScope with fn range_extensions(self
 pub impl @reflect.Message for InstrumentationScope with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.name)
-    2 => @reflect.is_set(self.version)
+    1 => self.name.length() > 0
+    2 => self.version.length() > 0
     3 => self.attributes.length() > 0
-    4 => @reflect.is_set(self.dropped_attributes_count)
+    4 => self.dropped_attributes_count != 0U
     _ => false
   }
 }
@@ -1394,10 +1379,10 @@ pub impl @reflect.Message for InstrumentationScope with fn has(self, field : @re
 pub impl @reflect.Message for InstrumentationScope with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.name = None
-    2 => self.version = None
+    1 => self.name = ""
+    2 => self.version = ""
     3 => self.attributes.clear()
-    4 => self.dropped_attributes_count = None
+    4 => self.dropped_attributes_count = 0U
     _ => ()
   }
 }
@@ -1412,10 +1397,10 @@ pub impl @reflect.Message for InstrumentationScope with fn set(self, field : @re
   let _ = self
   let _ = value
   match field.number {
-    1 => self.name = Some(value.string())
-    2 => self.version = Some(value.string())
+    1 => self.name = value.string()
+    2 => self.version = value.string()
     3 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    4 => self.dropped_attributes_count = Some(value.uint().to_uint())
+    4 => self.dropped_attributes_count = value.uint().to_uint()
     _ => ()
   }
 }
@@ -1498,8 +1483,8 @@ pub let instrumentationScope_type : &@reflect.MessageType = (InstrumentationScop
 
 ///|
 pub struct EntityRef {
-  mut schema_url : String?
-  mut type_ : String?
+  mut schema_url : String
+  mut type_ : String
   id_keys : Array[String]
   description_keys : Array[String]
   mut unknown_fields : Bytes
@@ -1508,8 +1493,8 @@ pub struct EntityRef {
 ///|
 pub fn EntityRef::new() -> EntityRef {
   {
-    schema_url: None,
-    type_: None,
+    schema_url: "",
+    type_: "",
     id_keys: [],
     description_keys: [],
     unknown_fields: b"",
@@ -1518,22 +1503,22 @@ pub fn EntityRef::new() -> EntityRef {
 
 ///|
 pub fn EntityRef::schema_url(self : EntityRef) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn EntityRef::set_schema_url(self : EntityRef, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
 pub fn EntityRef::type_(self : EntityRef) -> String {
-  self.type_.unwrap_or("")
+  self.type_
 }
 
 ///|
 pub fn EntityRef::set_type_(self : EntityRef, value : String) -> Unit {
-  self.type_ = Some(value)
+  self.type_ = value
 }
 
 ///|
@@ -1562,14 +1547,8 @@ pub fn EntityRef::from_json(text : String) -> EntityRef raise @json.Refused {
 fn EntityRef::read_field(self : EntityRef, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.type_ {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.String(self.schema_url)
+    2 => @reflect.String(self.type_)
     3 => @reflect.ListView(@reflect.list_view(self.id_keys, @reflect.scalar_element(v => @reflect.String(v), v => v.string(), () => "")))
     4 => @reflect.ListView(@reflect.list_view(self.description_keys, @reflect.scalar_element(v => @reflect.String(v), v => v.string(), () => "")))
     _ => @reflect.default_for(field)
@@ -1618,8 +1597,8 @@ pub impl @reflect.Message for EntityRef with fn range_extensions(self, f : (@ref
 pub impl @reflect.Message for EntityRef with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.schema_url)
-    2 => @reflect.is_set(self.type_)
+    1 => self.schema_url.length() > 0
+    2 => self.type_.length() > 0
     3 => self.id_keys.length() > 0
     4 => self.description_keys.length() > 0
     _ => false
@@ -1630,8 +1609,8 @@ pub impl @reflect.Message for EntityRef with fn has(self, field : @reflect.Field
 pub impl @reflect.Message for EntityRef with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.schema_url = None
-    2 => self.type_ = None
+    1 => self.schema_url = ""
+    2 => self.type_ = ""
     3 => self.id_keys.clear()
     4 => self.description_keys.clear()
     _ => ()
@@ -1648,8 +1627,8 @@ pub impl @reflect.Message for EntityRef with fn set(self, field : @reflect.Field
   let _ = self
   let _ = value
   match field.number {
-    1 => self.schema_url = Some(value.string())
-    2 => self.type_ = Some(value.string())
+    1 => self.schema_url = value.string()
+    2 => self.type_ = value.string()
     3 => @reflect.assign_list(self.id_keys, value.list(), @reflect.scalar_element(v => @reflect.String(v), v => v.string(), () => ""))
     4 => @reflect.assign_list(self.description_keys, value.list(), @reflect.scalar_element(v => @reflect.String(v), v => v.string(), () => ""))
     _ => ()

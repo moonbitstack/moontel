@@ -241,8 +241,8 @@ pub fn DataPointFlags::code(Self) -> Int32
 pub fn DataPointFlags::of(Int32) -> Self
 
 pub struct EntityRef {
-  mut schema_url : String?
-  mut type_ : String?
+  mut schema_url : String
+  mut type_ : String
   id_keys : Array[String]
   description_keys : Array[String]
   mut unknown_fields : Bytes
@@ -285,9 +285,9 @@ pub impl @reflect.MessageType for EntityRefType
 
 pub struct Exemplar {
   filtered_attributes : Array[KeyValue]
-  mut time_unix_nano : UInt64?
-  mut span_id : Bytes?
-  mut trace_id : Bytes?
+  mut time_unix_nano : UInt64
+  mut span_id : Bytes
+  mut trace_id : Bytes
   mut value : Exemplar_Value
   mut unknown_fields : Bytes
 }
@@ -342,7 +342,7 @@ pub(all) enum Exemplar_Value {
 
 pub struct ExponentialHistogram {
   data_points : Array[ExponentialHistogramDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
+  mut aggregation_temporality : AggregationTemporality
   mut unknown_fields : Bytes
 }
 pub fn ExponentialHistogram::aggregation_temporality(Self) -> Int32
@@ -371,19 +371,19 @@ pub impl @reflect.Message for ExponentialHistogram
 
 pub struct ExponentialHistogramDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
   mut sum : Double?
-  mut scale : Int32?
-  mut zero_count : UInt64?
+  mut scale : Int32
+  mut zero_count : UInt64
   mut positive : ExponentialHistogramDataPoint_Buckets?
   mut negative : ExponentialHistogramDataPoint_Buckets?
-  mut flags : UInt32?
+  mut flags : UInt32
   exemplars : Array[Exemplar]
   mut min : Double?
   mut max : Double?
-  mut zero_threshold : Double?
+  mut zero_threshold : Double
   mut unknown_fields : Bytes
 }
 pub fn ExponentialHistogramDataPoint::attributes(Self) -> &@reflect.ListField
@@ -443,7 +443,7 @@ pub fn ExponentialHistogramDataPointType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for ExponentialHistogramDataPointType
 
 pub struct ExponentialHistogramDataPoint_Buckets {
-  mut offset : Int32?
+  mut offset : Int32
   bucket_counts : Array[UInt64]
   mut unknown_fields : Bytes
 }
@@ -490,8 +490,8 @@ pub fn ExponentialHistogramType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for ExponentialHistogramType
 
 pub struct ExportLogsPartialSuccess {
-  mut rejected_log_records : Int64?
-  mut error_message : String?
+  mut rejected_log_records : Int64
+  mut error_message : String
   mut unknown_fields : Bytes
 }
 pub fn ExportLogsPartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -600,8 +600,8 @@ pub fn ExportLogsServiceResponseType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for ExportLogsServiceResponseType
 
 pub struct ExportMetricsPartialSuccess {
-  mut rejected_data_points : Int64?
-  mut error_message : String?
+  mut rejected_data_points : Int64
+  mut error_message : String
   mut unknown_fields : Bytes
 }
 pub fn ExportMetricsPartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -710,8 +710,8 @@ pub fn ExportMetricsServiceResponseType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for ExportMetricsServiceResponseType
 
 pub struct ExportTracePartialSuccess {
-  mut rejected_spans : Int64?
-  mut error_message : String?
+  mut rejected_spans : Int64
+  mut error_message : String
   mut unknown_fields : Bytes
 }
 pub fn ExportTracePartialSuccess::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -856,7 +856,7 @@ pub impl @reflect.MessageType for GaugeType
 
 pub struct Histogram {
   data_points : Array[HistogramDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
+  mut aggregation_temporality : AggregationTemporality
   mut unknown_fields : Bytes
 }
 pub fn Histogram::aggregation_temporality(Self) -> Int32
@@ -885,14 +885,14 @@ pub impl @reflect.Message for Histogram
 
 pub struct HistogramDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
   mut sum : Double?
   bucket_counts : Array[UInt64]
   explicit_bounds : Array[Double]
   exemplars : Array[Exemplar]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut min : Double?
   mut max : Double?
   mut unknown_fields : Bytes
@@ -955,10 +955,10 @@ pub fn HistogramType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for HistogramType
 
 pub struct InstrumentationScope {
-  mut name : String?
-  mut version : String?
+  mut name : String
+  mut version : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   mut unknown_fields : Bytes
 }
 pub fn InstrumentationScope::attributes(Self) -> &@reflect.ListField
@@ -999,9 +999,9 @@ pub fn InstrumentationScopeType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for InstrumentationScopeType
 
 pub struct KeyValue {
-  mut key : String?
+  mut key : String
   mut value : AnyValue?
-  mut key_strindex : Int32?
+  mut key_strindex : Int32
   mut unknown_fields : Bytes
 }
 pub fn KeyValue::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1076,17 +1076,17 @@ pub fn KeyValueType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for KeyValueType
 
 pub struct LogRecord {
-  mut time_unix_nano : UInt64?
-  mut observed_time_unix_nano : UInt64?
-  mut severity_number : SeverityNumber?
-  mut severity_text : String?
+  mut time_unix_nano : UInt64
+  mut observed_time_unix_nano : UInt64
+  mut severity_number : SeverityNumber
+  mut severity_text : String
   mut body : AnyValue?
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
-  mut flags : UInt32?
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut event_name : String?
+  mut dropped_attributes_count : UInt32
+  mut flags : UInt32
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut event_name : String
   mut unknown_fields : Bytes
 }
 pub fn LogRecord::attributes(Self) -> &@reflect.ListField
@@ -1184,9 +1184,9 @@ pub fn LogsDataType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for LogsDataType
 
 pub struct Metric {
-  mut name : String?
-  mut description : String?
-  mut unit : String?
+  mut name : String
+  mut description : String
+  mut unit : String
   metadata : Array[KeyValue]
   mut data : Metric_Data
   mut unknown_fields : Bytes
@@ -1286,10 +1286,10 @@ pub impl @reflect.MessageType for MetricsDataType
 
 pub struct NumberDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
   exemplars : Array[Exemplar]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut value : NumberDataPoint_Value
   mut unknown_fields : Bytes
 }
@@ -1348,7 +1348,7 @@ pub struct Protobuf {
 
 pub struct Resource {
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   entity_refs : Array[EntityRef]
   mut unknown_fields : Bytes
 }
@@ -1380,7 +1380,7 @@ pub impl @reflect.Message for Resource
 pub struct ResourceLogs {
   mut resource : Resource?
   scope_logs : Array[ScopeLogs]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ResourceLogs::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1421,7 +1421,7 @@ pub impl @reflect.MessageType for ResourceLogsType
 pub struct ResourceMetrics {
   mut resource : Resource?
   scope_metrics : Array[ScopeMetrics]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ResourceMetrics::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1462,7 +1462,7 @@ pub impl @reflect.MessageType for ResourceMetricsType
 pub struct ResourceSpans {
   mut resource : Resource?
   scope_spans : Array[ScopeSpans]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ResourceSpans::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1512,7 +1512,7 @@ pub impl @reflect.MessageType for ResourceType
 pub struct ScopeLogs {
   mut scope : InstrumentationScope?
   log_records : Array[LogRecord]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ScopeLogs::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1553,7 +1553,7 @@ pub impl @reflect.MessageType for ScopeLogsType
 pub struct ScopeMetrics {
   mut scope : InstrumentationScope?
   metrics : Array[Metric]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ScopeMetrics::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1594,7 +1594,7 @@ pub impl @reflect.MessageType for ScopeMetricsType
 pub struct ScopeSpans {
   mut scope : InstrumentationScope?
   spans : Array[Span]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 pub fn ScopeSpans::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1664,21 +1664,21 @@ pub fn SeverityNumber::code(Self) -> Int32
 pub fn SeverityNumber::of(Int32) -> Self
 
 pub struct Span {
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut trace_state : String?
-  mut parent_span_id : Bytes?
-  mut flags : UInt32?
-  mut name : String?
-  mut kind : Span_SpanKind?
-  mut start_time_unix_nano : UInt64?
-  mut end_time_unix_nano : UInt64?
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut trace_state : String
+  mut parent_span_id : Bytes
+  mut flags : UInt32
+  mut name : String
+  mut kind : Span_SpanKind
+  mut start_time_unix_nano : UInt64
+  mut end_time_unix_nano : UInt64
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   events : Array[Span_Event]
-  mut dropped_events_count : UInt32?
+  mut dropped_events_count : UInt32
   links : Array[Span_Link]
-  mut dropped_links_count : UInt32?
+  mut dropped_links_count : UInt32
   mut status : Status?
   mut unknown_fields : Bytes
 }
@@ -1752,10 +1752,10 @@ pub fn SpanType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for SpanType
 
 pub struct Span_Event {
-  mut time_unix_nano : UInt64?
-  mut name : String?
+  mut time_unix_nano : UInt64
+  mut name : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
+  mut dropped_attributes_count : UInt32
   mut unknown_fields : Bytes
 }
 pub fn Span_Event::attributes(Self) -> &@reflect.ListField
@@ -1796,12 +1796,12 @@ pub fn Span_EventType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for Span_EventType
 
 pub struct Span_Link {
-  mut trace_id : Bytes?
-  mut span_id : Bytes?
-  mut trace_state : String?
+  mut trace_id : Bytes
+  mut span_id : Bytes
+  mut trace_state : String
   attributes : Array[KeyValue]
-  mut dropped_attributes_count : UInt32?
-  mut flags : UInt32?
+  mut dropped_attributes_count : UInt32
+  mut flags : UInt32
   mut unknown_fields : Bytes
 }
 pub fn Span_Link::attributes(Self) -> &@reflect.ListField
@@ -1858,8 +1858,8 @@ pub fn Span_SpanKind::code(Self) -> Int32
 pub fn Span_SpanKind::of(Int32) -> Self
 
 pub struct Status {
-  mut message_field : String?
-  mut code : Status_StatusCode?
+  mut message_field : String
+  mut code : Status_StatusCode
   mut unknown_fields : Bytes
 }
 pub fn Status::clear(Self, @reflect.FieldDescriptor) -> Unit
@@ -1907,8 +1907,8 @@ pub fn Status_StatusCode::of(Int32) -> Self
 
 pub struct Sum {
   data_points : Array[NumberDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
-  mut is_monotonic : Bool?
+  mut aggregation_temporality : AggregationTemporality
+  mut is_monotonic : Bool
   mut unknown_fields : Bytes
 }
 pub fn Sum::aggregation_temporality(Self) -> Int32
@@ -1974,12 +1974,12 @@ pub impl @reflect.Message for Summary
 
 pub struct SummaryDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
-  mut sum : Double?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
+  mut sum : Double
   quantile_values : Array[SummaryDataPoint_ValueAtQuantile]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut unknown_fields : Bytes
 }
 pub fn SummaryDataPoint::attributes(Self) -> &@reflect.ListField
@@ -2025,8 +2025,8 @@ pub fn SummaryDataPointType::zero(Self) -> &@reflect.Message
 pub impl @reflect.MessageType for SummaryDataPointType
 
 pub struct SummaryDataPoint_ValueAtQuantile {
-  mut quantile : Double?
-  mut value : Double?
+  mut quantile : Double
+  mut value : Double
   mut unknown_fields : Bytes
 }
 pub fn SummaryDataPoint_ValueAtQuantile::clear(Self, @reflect.FieldDescriptor) -> Unit

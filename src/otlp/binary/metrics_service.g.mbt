@@ -34,7 +34,7 @@ pub fn file_descriptor_metrics_service_proto() -> @reflect.FileDescriptor raise 
     @desc.DescriptorProto::{
       name: "ExportMetricsServiceResponse",
       field: [
-        @desc.FieldDescriptorProto::{ name: "partial_success", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "partial_success", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.collector.metrics.v1.ExportMetricsPartialSuccess"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -54,8 +54,8 @@ pub fn file_descriptor_metrics_service_proto() -> @reflect.FileDescriptor raise 
     @desc.DescriptorProto::{
       name: "ExportMetricsPartialSuccess",
       field: [
-        @desc.FieldDescriptorProto::{ name: "rejected_data_points", number: 1, label: 1, type_code: 3, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "error_message", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "rejected_data_points", number: 1, label: 1, type_code: 3, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "error_message", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -524,38 +524,38 @@ pub let exportMetricsServiceResponse_type : &@reflect.MessageType = (ExportMetri
 
 ///|
 pub struct ExportMetricsPartialSuccess {
-  mut rejected_data_points : Int64?
-  mut error_message : String?
+  mut rejected_data_points : Int64
+  mut error_message : String
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn ExportMetricsPartialSuccess::new() -> ExportMetricsPartialSuccess {
   {
-    rejected_data_points: None,
-    error_message: None,
+    rejected_data_points: 0L,
+    error_message: "",
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn ExportMetricsPartialSuccess::rejected_data_points(self : ExportMetricsPartialSuccess) -> Int64 {
-  self.rejected_data_points.unwrap_or(0L)
+  self.rejected_data_points
 }
 
 ///|
 pub fn ExportMetricsPartialSuccess::set_rejected_data_points(self : ExportMetricsPartialSuccess, value : Int64) -> Unit {
-  self.rejected_data_points = Some(value)
+  self.rejected_data_points = value
 }
 
 ///|
 pub fn ExportMetricsPartialSuccess::error_message(self : ExportMetricsPartialSuccess) -> String {
-  self.error_message.unwrap_or("")
+  self.error_message
 }
 
 ///|
 pub fn ExportMetricsPartialSuccess::set_error_message(self : ExportMetricsPartialSuccess, value : String) -> Unit {
-  self.error_message = Some(value)
+  self.error_message = value
 }
 
 ///|
@@ -574,14 +574,8 @@ pub fn ExportMetricsPartialSuccess::from_json(text : String) -> ExportMetricsPar
 fn ExportMetricsPartialSuccess::read_field(self : ExportMetricsPartialSuccess, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.rejected_data_points {
-      Some(v) => @reflect.Int64(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.error_message {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Int64(self.rejected_data_points)
+    2 => @reflect.String(self.error_message)
     _ => @reflect.default_for(field)
   }
 }
@@ -628,8 +622,8 @@ pub impl @reflect.Message for ExportMetricsPartialSuccess with fn range_extensio
 pub impl @reflect.Message for ExportMetricsPartialSuccess with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.rejected_data_points)
-    2 => @reflect.is_set(self.error_message)
+    1 => self.rejected_data_points != 0L
+    2 => self.error_message.length() > 0
     _ => false
   }
 }
@@ -638,8 +632,8 @@ pub impl @reflect.Message for ExportMetricsPartialSuccess with fn has(self, fiel
 pub impl @reflect.Message for ExportMetricsPartialSuccess with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.rejected_data_points = None
-    2 => self.error_message = None
+    1 => self.rejected_data_points = 0L
+    2 => self.error_message = ""
     _ => ()
   }
 }
@@ -654,8 +648,8 @@ pub impl @reflect.Message for ExportMetricsPartialSuccess with fn set(self, fiel
   let _ = self
   let _ = value
   match field.number {
-    1 => self.rejected_data_points = Some(value.int())
-    2 => self.error_message = Some(value.string())
+    1 => self.rejected_data_points = value.int()
+    2 => self.error_message = value.string()
     _ => ()
   }
 }

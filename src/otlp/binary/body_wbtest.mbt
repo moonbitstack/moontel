@@ -337,10 +337,25 @@ test "the refused count is read out of a reply in either encoding" {
   assert_eq(@otlp.json.rejected(json_reply.body), Some(2))
   let response = ExportTraceServiceResponse::new()
   let success = ExportTracePartialSuccess::new()
-  success.rejected_spans = Some(2L)
+  success.rejected_spans = 2L
   response.partial_success = Some(success)
   let binary_reply = encoded(response)
   assert_eq(protobuf.rejected(binary_reply), Some(2))
+}
+
+///|
+/// A partial success that refused nothing still says so: the count is left off the
+/// wire as zero is, in both encodings, and that reads as zero, not as silence.
+test "a partial success without a count refused none" {
+  let json_body = @utf8.encode(
+    "{\"partialSuccess\":{\"errorMessage\":\"slow down\"}}",
+  )
+  assert_eq(@otlp.json.rejected(json_body), Some(0))
+  let response = ExportTraceServiceResponse::new()
+  let success = ExportTracePartialSuccess::new()
+  success.error_message = "slow down"
+  response.partial_success = Some(success)
+  assert_eq(protobuf.rejected(encoded(response)), Some(0))
 }
 
 ///|

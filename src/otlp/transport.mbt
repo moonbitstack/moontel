@@ -77,8 +77,9 @@ pub fn Reply::retry_after(self : Reply, now~ : Int64) -> Int64? {
 ///
 /// A partial success is an accepted request: the specification says the client
 /// MUST NOT retry it, and it says the count is what tells an operator that some
-/// data was turned away. A body that is not JSON, or carries no count, answers
-/// `None` rather than zero, because "said nothing" and "refused none" differ.
+/// data was turned away. A body that is not JSON, or carries no `partialSuccess`,
+/// answers `None` rather than zero, because "said nothing" and "refused none"
+/// differ. Inside one, a count left out is zero: the JSON mapping omits zeros.
 pub fn Reply::rejected(self : Reply) -> Int32? {
   rejected_in_json(self.text())
 }
@@ -113,7 +114,7 @@ fn rejected_in_json(text : String) -> Int32? {
       _ => ()
     }
   }
-  None
+  Some(0)
 }
 
 ///|

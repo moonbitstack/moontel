@@ -34,9 +34,9 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
     @desc.DescriptorProto::{
       name: "ResourceMetrics",
       field: [
-        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "resource", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.resource.v1.Resource"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "scope_metrics", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ScopeMetrics"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -56,9 +56,9 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
     @desc.DescriptorProto::{
       name: "ScopeMetrics",
       field: [
-        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "scope", number: 1, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.InstrumentationScope"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "metrics", number: 2, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Metric"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "schema_url", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -78,9 +78,9 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
     @desc.DescriptorProto::{
       name: "Metric",
       field: [
-        @desc.FieldDescriptorProto::{ name: "name", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "description", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "unit", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "name", number: 1, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "description", number: 2, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "unit", number: 3, label: 1, type_code: 9, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "gauge", number: 5, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Gauge"), json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "sum", number: 7, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Sum"), json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "histogram", number: 9, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Histogram"), json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
@@ -128,8 +128,8 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "Sum",
       field: [
         @desc.FieldDescriptorProto::{ name: "data_points", number: 1, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.NumberDataPoint"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "is_monotonic", number: 3, label: 1, type_code: 8, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "is_monotonic", number: 3, label: 1, type_code: 8, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -150,7 +150,7 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "Histogram",
       field: [
         @desc.FieldDescriptorProto::{ name: "data_points", number: 1, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.HistogramDataPoint"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -171,7 +171,7 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "ExponentialHistogram",
       field: [
         @desc.FieldDescriptorProto::{ name: "data_points", number: 1, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "aggregation_temporality", number: 2, label: 1, type_code: 14, type_name: Some("opentelemetry.proto.metrics.v1.AggregationTemporality"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -212,12 +212,12 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "NumberDataPoint",
       field: [
         @desc.FieldDescriptorProto::{ name: "attributes", number: 7, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "as_double", number: 4, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "as_int", number: 6, label: 1, type_code: 16, type_name: None, json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "exemplars", number: 5, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Exemplar"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -239,14 +239,14 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "HistogramDataPoint",
       field: [
         @desc.FieldDescriptorProto::{ name: "attributes", number: 9, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "sum", number: 5, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "bucket_counts", number: 6, label: 3, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "explicit_bounds", number: 7, label: 3, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "exemplars", number: 8, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Exemplar"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "min", number: 11, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "max", number: 12, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
@@ -269,25 +269,25 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "ExponentialHistogramDataPoint",
       field: [
         @desc.FieldDescriptorProto::{ name: "attributes", number: 1, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "sum", number: 5, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "scale", number: 6, label: 1, type_code: 17, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "zero_count", number: 7, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "positive", number: 8, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "negative", number: 9, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets"), json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "scale", number: 6, label: 1, type_code: 17, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "zero_count", number: 7, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "positive", number: 8, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "negative", number: 9, label: 1, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint.Buckets"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 10, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "exemplars", number: 11, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.Exemplar"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "min", number: 12, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "max", number: 13, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "zero_threshold", number: 14, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "zero_threshold", number: 14, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
         @desc.DescriptorProto::{
           name: "Buckets",
           field: [
-            @desc.FieldDescriptorProto::{ name: "offset", number: 1, label: 1, type_code: 17, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "offset", number: 1, label: 1, type_code: 17, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
             @desc.FieldDescriptorProto::{ name: "bucket_counts", number: 2, label: 3, type_code: 4, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
           ],
           nested_type: [
@@ -323,19 +323,19 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "SummaryDataPoint",
       field: [
         @desc.FieldDescriptorProto::{ name: "attributes", number: 7, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "sum", number: 5, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "start_time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 3, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "count", number: 4, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "sum", number: 5, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "quantile_values", number: 6, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.metrics.v1.SummaryDataPoint.ValueAtQuantile"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "flags", number: 8, label: 1, type_code: 13, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
         @desc.DescriptorProto::{
           name: "ValueAtQuantile",
           field: [
-            @desc.FieldDescriptorProto::{ name: "quantile", number: 1, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-            @desc.FieldDescriptorProto::{ name: "value", number: 2, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "quantile", number: 1, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+            @desc.FieldDescriptorProto::{ name: "value", number: 2, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
           ],
           nested_type: [
           ],
@@ -370,11 +370,11 @@ pub fn file_descriptor_metrics_proto() -> @reflect.FileDescriptor raise @desc.Re
       name: "Exemplar",
       field: [
         @desc.FieldDescriptorProto::{ name: "filtered_attributes", number: 7, label: 3, type_code: 11, type_name: Some("opentelemetry.proto.common.v1.KeyValue"), json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "time_unix_nano", number: 2, label: 1, type_code: 6, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "as_double", number: 3, label: 1, type_code: 1, type_name: None, json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
         @desc.FieldDescriptorProto::{ name: "as_int", number: 6, label: 1, type_code: 16, type_name: None, json_name: None, default_value: None, oneof_index: Some(0), proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "span_id", number: 4, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
-        @desc.FieldDescriptorProto::{ name: "trace_id", number: 5, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: true, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "span_id", number: 4, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
+        @desc.FieldDescriptorProto::{ name: "trace_id", number: 5, label: 1, type_code: 12, type_name: None, json_name: None, default_value: None, oneof_index: None, proto3_optional: false, packed_off: false, extendee: None, features: @desc.Features::{ field_presence: 0, enum_type: 0, repeated_field_encoding: 0, message_encoding: 0, utf8_validation: 0, json_format: 0 }, options: [] },
       ],
       nested_type: [
       ],
@@ -694,7 +694,7 @@ pub let metricsData_type : &@reflect.MessageType = (MetricsDataType::new() as &@
 pub struct ResourceMetrics {
   mut resource : Resource?
   scope_metrics : Array[ScopeMetrics]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -703,7 +703,7 @@ pub fn ResourceMetrics::new() -> ResourceMetrics {
   {
     resource: None,
     scope_metrics: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -733,12 +733,12 @@ pub fn ResourceMetrics::scope_metrics(self : ResourceMetrics) -> &@reflect.ListF
 
 ///|
 pub fn ResourceMetrics::schema_url(self : ResourceMetrics) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ResourceMetrics::set_schema_url(self : ResourceMetrics, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -762,10 +762,7 @@ fn ResourceMetrics::read_field(self : ResourceMetrics, field : @reflect.FieldDes
       None => @reflect.Message((Resource::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.scope_metrics, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeMetrics::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -814,7 +811,7 @@ pub impl @reflect.Message for ResourceMetrics with fn has(self, field : @reflect
   match field.number {
     1 => @reflect.is_set(self.resource)
     2 => self.scope_metrics.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -825,7 +822,7 @@ pub impl @reflect.Message for ResourceMetrics with fn clear(self, field : @refle
   match field.number {
     1 => self.resource = None
     2 => self.scope_metrics.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -848,7 +845,7 @@ pub impl @reflect.Message for ResourceMetrics with fn set(self, field : @reflect
   }
 
     2 => @reflect.assign_list(self.scope_metrics, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ScopeMetrics::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -942,7 +939,7 @@ pub let resourceMetrics_type : &@reflect.MessageType = (ResourceMetricsType::new
 pub struct ScopeMetrics {
   mut scope : InstrumentationScope?
   metrics : Array[Metric]
-  mut schema_url : String?
+  mut schema_url : String
   mut unknown_fields : Bytes
 }
 
@@ -951,7 +948,7 @@ pub fn ScopeMetrics::new() -> ScopeMetrics {
   {
     scope: None,
     metrics: [],
-    schema_url: None,
+    schema_url: "",
     unknown_fields: b"",
   }
 }
@@ -981,12 +978,12 @@ pub fn ScopeMetrics::metrics(self : ScopeMetrics) -> &@reflect.ListField {
 
 ///|
 pub fn ScopeMetrics::schema_url(self : ScopeMetrics) -> String {
-  self.schema_url.unwrap_or("")
+  self.schema_url
 }
 
 ///|
 pub fn ScopeMetrics::set_schema_url(self : ScopeMetrics, value : String) -> Unit {
-  self.schema_url = Some(value)
+  self.schema_url = value
 }
 
 ///|
@@ -1010,10 +1007,7 @@ fn ScopeMetrics::read_field(self : ScopeMetrics, field : @reflect.FieldDescripto
       None => @reflect.Message((InstrumentationScope::new() as &@reflect.Message))
     }
     2 => @reflect.ListView(@reflect.list_view(self.metrics, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Metric::new(), (v, m) => @proto.merge(v, m))))
-    3 => match self.schema_url {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    3 => @reflect.String(self.schema_url)
     _ => @reflect.default_for(field)
   }
 }
@@ -1062,7 +1056,7 @@ pub impl @reflect.Message for ScopeMetrics with fn has(self, field : @reflect.Fi
   match field.number {
     1 => @reflect.is_set(self.scope)
     2 => self.metrics.length() > 0
-    3 => @reflect.is_set(self.schema_url)
+    3 => self.schema_url.length() > 0
     _ => false
   }
 }
@@ -1073,7 +1067,7 @@ pub impl @reflect.Message for ScopeMetrics with fn clear(self, field : @reflect.
   match field.number {
     1 => self.scope = None
     2 => self.metrics.clear()
-    3 => self.schema_url = None
+    3 => self.schema_url = ""
     _ => ()
   }
 }
@@ -1096,7 +1090,7 @@ pub impl @reflect.Message for ScopeMetrics with fn set(self, field : @reflect.Fi
   }
 
     2 => @reflect.assign_list(self.metrics, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Metric::new(), (v, m) => @proto.merge(v, m)))
-    3 => self.schema_url = Some(value.string())
+    3 => self.schema_url = value.string()
     _ => ()
   }
 }
@@ -1188,9 +1182,9 @@ pub let scopeMetrics_type : &@reflect.MessageType = (ScopeMetricsType::new() as 
 
 ///|
 pub struct Metric {
-  mut name : String?
-  mut description : String?
-  mut unit : String?
+  mut name : String
+  mut description : String
+  mut unit : String
   metadata : Array[KeyValue]
   mut data : Metric_Data
   mut unknown_fields : Bytes
@@ -1199,9 +1193,9 @@ pub struct Metric {
 ///|
 pub fn Metric::new() -> Metric {
   {
-    name: None,
-    description: None,
-    unit: None,
+    name: "",
+    description: "",
+    unit: "",
     metadata: [],
     data: Metric_Data::NoData,
     unknown_fields: b"",
@@ -1210,32 +1204,32 @@ pub fn Metric::new() -> Metric {
 
 ///|
 pub fn Metric::name(self : Metric) -> String {
-  self.name.unwrap_or("")
+  self.name
 }
 
 ///|
 pub fn Metric::set_name(self : Metric, value : String) -> Unit {
-  self.name = Some(value)
+  self.name = value
 }
 
 ///|
 pub fn Metric::description(self : Metric) -> String {
-  self.description.unwrap_or("")
+  self.description
 }
 
 ///|
 pub fn Metric::set_description(self : Metric, value : String) -> Unit {
-  self.description = Some(value)
+  self.description = value
 }
 
 ///|
 pub fn Metric::unit(self : Metric) -> String {
-  self.unit.unwrap_or("")
+  self.unit
 }
 
 ///|
 pub fn Metric::set_unit(self : Metric, value : String) -> Unit {
-  self.unit = Some(value)
+  self.unit = value
 }
 
 ///|
@@ -1369,18 +1363,9 @@ pub fn Metric::from_json(text : String) -> Metric raise @json.Refused {
 fn Metric::read_field(self : Metric, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.name {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.description {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.unit {
-      Some(v) => @reflect.String(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.String(self.name)
+    2 => @reflect.String(self.description)
+    3 => @reflect.String(self.unit)
     5 => match self.data {
       Gauge(v) => @reflect.Message(v as &@reflect.Message)
       _ => @reflect.default_for(field)
@@ -1448,9 +1433,9 @@ pub impl @reflect.Message for Metric with fn range_extensions(self, f : (@reflec
 pub impl @reflect.Message for Metric with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.name)
-    2 => @reflect.is_set(self.description)
-    3 => @reflect.is_set(self.unit)
+    1 => self.name.length() > 0
+    2 => self.description.length() > 0
+    3 => self.unit.length() > 0
     5 => match self.data {
       Gauge(_) => true
       _ => false
@@ -1480,9 +1465,9 @@ pub impl @reflect.Message for Metric with fn has(self, field : @reflect.FieldDes
 pub impl @reflect.Message for Metric with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.name = None
-    2 => self.description = None
-    3 => self.unit = None
+    1 => self.name = ""
+    2 => self.description = ""
+    3 => self.unit = ""
     5 => self.data = Metric_Data::NoData
     7 => self.data = Metric_Data::NoData
     9 => self.data = Metric_Data::NoData
@@ -1503,9 +1488,9 @@ pub impl @reflect.Message for Metric with fn set(self, field : @reflect.FieldDes
   let _ = self
   let _ = value
   match field.number {
-    1 => self.name = Some(value.string())
-    2 => self.description = Some(value.string())
-    3 => self.unit = Some(value.string())
+    1 => self.name = value.string()
+    2 => self.description = value.string()
+    3 => self.unit = value.string()
     5 => {
     let source = value.message()
     let target = Gauge::new()
@@ -1865,8 +1850,8 @@ pub let gauge_type : &@reflect.MessageType = (GaugeType::new() as &@reflect.Mess
 ///|
 pub struct Sum {
   data_points : Array[NumberDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
-  mut is_monotonic : Bool?
+  mut aggregation_temporality : AggregationTemporality
+  mut is_monotonic : Bool
   mut unknown_fields : Bytes
 }
 
@@ -1874,8 +1859,8 @@ pub struct Sum {
 pub fn Sum::new() -> Sum {
   {
     data_points: [],
-    aggregation_temporality: None,
-    is_monotonic: None,
+    aggregation_temporality: AggregationTemporality::of(0),
+    is_monotonic: false,
     unknown_fields: b"",
   }
 }
@@ -1887,25 +1872,22 @@ pub fn Sum::data_points(self : Sum) -> &@reflect.ListField {
 
 ///|
 pub fn Sum::aggregation_temporality(self : Sum) -> Int32 {
-  match self.aggregation_temporality {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.aggregation_temporality.code()
 }
 
 ///|
 pub fn Sum::set_aggregation_temporality(self : Sum, value : Int32) -> Unit {
-  self.aggregation_temporality = Some(AggregationTemporality::of(value))
+  self.aggregation_temporality = AggregationTemporality::of(value)
 }
 
 ///|
 pub fn Sum::is_monotonic(self : Sum) -> Bool {
-  self.is_monotonic.unwrap_or(false)
+  self.is_monotonic
 }
 
 ///|
 pub fn Sum::set_is_monotonic(self : Sum, value : Bool) -> Unit {
-  self.is_monotonic = Some(value)
+  self.is_monotonic = value
 }
 
 ///|
@@ -1925,14 +1907,8 @@ fn Sum::read_field(self : Sum, field : @reflect.FieldDescriptor) -> @reflect.Val
   let _ = self
   match field.number {
     1 => @reflect.ListView(@reflect.list_view(self.data_points, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => NumberDataPoint::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.aggregation_temporality {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
-    3 => match self.is_monotonic {
-      Some(v) => @reflect.Bool(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Enum(self.aggregation_temporality.code())
+    3 => @reflect.Bool(self.is_monotonic)
     _ => @reflect.default_for(field)
   }
 }
@@ -1980,8 +1956,8 @@ pub impl @reflect.Message for Sum with fn has(self, field : @reflect.FieldDescri
   let _ = self
   match field.number {
     1 => self.data_points.length() > 0
-    2 => @reflect.is_set(self.aggregation_temporality)
-    3 => @reflect.is_set(self.is_monotonic)
+    2 => self.aggregation_temporality.code() != 0
+    3 => self.is_monotonic
     _ => false
   }
 }
@@ -1991,8 +1967,8 @@ pub impl @reflect.Message for Sum with fn clear(self, field : @reflect.FieldDesc
   let _ = self
   match field.number {
     1 => self.data_points.clear()
-    2 => self.aggregation_temporality = None
-    3 => self.is_monotonic = None
+    2 => self.aggregation_temporality = AggregationTemporality::of(0)
+    3 => self.is_monotonic = false
     _ => ()
   }
 }
@@ -2008,8 +1984,8 @@ pub impl @reflect.Message for Sum with fn set(self, field : @reflect.FieldDescri
   let _ = value
   match field.number {
     1 => @reflect.assign_list(self.data_points, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => NumberDataPoint::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.aggregation_temporality = Some(AggregationTemporality::of(value.enum_number()))
-    3 => self.is_monotonic = Some(value.bool())
+    2 => self.aggregation_temporality = AggregationTemporality::of(value.enum_number())
+    3 => self.is_monotonic = value.bool()
     _ => ()
   }
 }
@@ -2093,7 +2069,7 @@ pub let sum_type : &@reflect.MessageType = (SumType::new() as &@reflect.MessageT
 ///|
 pub struct Histogram {
   data_points : Array[HistogramDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
+  mut aggregation_temporality : AggregationTemporality
   mut unknown_fields : Bytes
 }
 
@@ -2101,7 +2077,7 @@ pub struct Histogram {
 pub fn Histogram::new() -> Histogram {
   {
     data_points: [],
-    aggregation_temporality: None,
+    aggregation_temporality: AggregationTemporality::of(0),
     unknown_fields: b"",
   }
 }
@@ -2113,15 +2089,12 @@ pub fn Histogram::data_points(self : Histogram) -> &@reflect.ListField {
 
 ///|
 pub fn Histogram::aggregation_temporality(self : Histogram) -> Int32 {
-  match self.aggregation_temporality {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.aggregation_temporality.code()
 }
 
 ///|
 pub fn Histogram::set_aggregation_temporality(self : Histogram, value : Int32) -> Unit {
-  self.aggregation_temporality = Some(AggregationTemporality::of(value))
+  self.aggregation_temporality = AggregationTemporality::of(value)
 }
 
 ///|
@@ -2141,10 +2114,7 @@ fn Histogram::read_field(self : Histogram, field : @reflect.FieldDescriptor) -> 
   let _ = self
   match field.number {
     1 => @reflect.ListView(@reflect.list_view(self.data_points, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => HistogramDataPoint::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.aggregation_temporality {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Enum(self.aggregation_temporality.code())
     _ => @reflect.default_for(field)
   }
 }
@@ -2192,7 +2162,7 @@ pub impl @reflect.Message for Histogram with fn has(self, field : @reflect.Field
   let _ = self
   match field.number {
     1 => self.data_points.length() > 0
-    2 => @reflect.is_set(self.aggregation_temporality)
+    2 => self.aggregation_temporality.code() != 0
     _ => false
   }
 }
@@ -2202,7 +2172,7 @@ pub impl @reflect.Message for Histogram with fn clear(self, field : @reflect.Fie
   let _ = self
   match field.number {
     1 => self.data_points.clear()
-    2 => self.aggregation_temporality = None
+    2 => self.aggregation_temporality = AggregationTemporality::of(0)
     _ => ()
   }
 }
@@ -2218,7 +2188,7 @@ pub impl @reflect.Message for Histogram with fn set(self, field : @reflect.Field
   let _ = value
   match field.number {
     1 => @reflect.assign_list(self.data_points, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => HistogramDataPoint::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.aggregation_temporality = Some(AggregationTemporality::of(value.enum_number()))
+    2 => self.aggregation_temporality = AggregationTemporality::of(value.enum_number())
     _ => ()
   }
 }
@@ -2302,7 +2272,7 @@ pub let histogram_type : &@reflect.MessageType = (HistogramType::new() as &@refl
 ///|
 pub struct ExponentialHistogram {
   data_points : Array[ExponentialHistogramDataPoint]
-  mut aggregation_temporality : AggregationTemporality?
+  mut aggregation_temporality : AggregationTemporality
   mut unknown_fields : Bytes
 }
 
@@ -2310,7 +2280,7 @@ pub struct ExponentialHistogram {
 pub fn ExponentialHistogram::new() -> ExponentialHistogram {
   {
     data_points: [],
-    aggregation_temporality: None,
+    aggregation_temporality: AggregationTemporality::of(0),
     unknown_fields: b"",
   }
 }
@@ -2322,15 +2292,12 @@ pub fn ExponentialHistogram::data_points(self : ExponentialHistogram) -> &@refle
 
 ///|
 pub fn ExponentialHistogram::aggregation_temporality(self : ExponentialHistogram) -> Int32 {
-  match self.aggregation_temporality {
-    Some(v) => v.code()
-    None => 0
-  }
+  self.aggregation_temporality.code()
 }
 
 ///|
 pub fn ExponentialHistogram::set_aggregation_temporality(self : ExponentialHistogram, value : Int32) -> Unit {
-  self.aggregation_temporality = Some(AggregationTemporality::of(value))
+  self.aggregation_temporality = AggregationTemporality::of(value)
 }
 
 ///|
@@ -2350,10 +2317,7 @@ fn ExponentialHistogram::read_field(self : ExponentialHistogram, field : @reflec
   let _ = self
   match field.number {
     1 => @reflect.ListView(@reflect.list_view(self.data_points, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ExponentialHistogramDataPoint::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.aggregation_temporality {
-      Some(v) => @reflect.Enum(v.code())
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Enum(self.aggregation_temporality.code())
     _ => @reflect.default_for(field)
   }
 }
@@ -2401,7 +2365,7 @@ pub impl @reflect.Message for ExponentialHistogram with fn has(self, field : @re
   let _ = self
   match field.number {
     1 => self.data_points.length() > 0
-    2 => @reflect.is_set(self.aggregation_temporality)
+    2 => self.aggregation_temporality.code() != 0
     _ => false
   }
 }
@@ -2411,7 +2375,7 @@ pub impl @reflect.Message for ExponentialHistogram with fn clear(self, field : @
   let _ = self
   match field.number {
     1 => self.data_points.clear()
-    2 => self.aggregation_temporality = None
+    2 => self.aggregation_temporality = AggregationTemporality::of(0)
     _ => ()
   }
 }
@@ -2427,7 +2391,7 @@ pub impl @reflect.Message for ExponentialHistogram with fn set(self, field : @re
   let _ = value
   match field.number {
     1 => @reflect.assign_list(self.data_points, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => ExponentialHistogramDataPoint::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.aggregation_temporality = Some(AggregationTemporality::of(value.enum_number()))
+    2 => self.aggregation_temporality = AggregationTemporality::of(value.enum_number())
     _ => ()
   }
 }
@@ -2698,10 +2662,10 @@ pub let summary_type : &@reflect.MessageType = (SummaryType::new() as &@reflect.
 ///|
 pub struct NumberDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
   exemplars : Array[Exemplar]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut value : NumberDataPoint_Value
   mut unknown_fields : Bytes
 }
@@ -2710,10 +2674,10 @@ pub struct NumberDataPoint {
 pub fn NumberDataPoint::new() -> NumberDataPoint {
   {
     attributes: [],
-    start_time_unix_nano: None,
-    time_unix_nano: None,
+    start_time_unix_nano: 0UL,
+    time_unix_nano: 0UL,
     exemplars: [],
-    flags: None,
+    flags: 0U,
     value: NumberDataPoint_Value::NoValue,
     unknown_fields: b"",
   }
@@ -2726,22 +2690,22 @@ pub fn NumberDataPoint::attributes(self : NumberDataPoint) -> &@reflect.ListFiel
 
 ///|
 pub fn NumberDataPoint::start_time_unix_nano(self : NumberDataPoint) -> UInt64 {
-  self.start_time_unix_nano.unwrap_or(0UL)
+  self.start_time_unix_nano
 }
 
 ///|
 pub fn NumberDataPoint::set_start_time_unix_nano(self : NumberDataPoint, value : UInt64) -> Unit {
-  self.start_time_unix_nano = Some(value)
+  self.start_time_unix_nano = value
 }
 
 ///|
 pub fn NumberDataPoint::time_unix_nano(self : NumberDataPoint) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn NumberDataPoint::set_time_unix_nano(self : NumberDataPoint, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
@@ -2777,12 +2741,12 @@ pub fn NumberDataPoint::exemplars(self : NumberDataPoint) -> &@reflect.ListField
 
 ///|
 pub fn NumberDataPoint::flags(self : NumberDataPoint) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn NumberDataPoint::set_flags(self : NumberDataPoint, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
@@ -2819,14 +2783,8 @@ fn NumberDataPoint::read_field(self : NumberDataPoint, field : @reflect.FieldDes
   let _ = self
   match field.number {
     7 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.start_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint64(self.start_time_unix_nano)
+    3 => @reflect.Uint64(self.time_unix_nano)
     4 => match self.value {
       As_double(v) => @reflect.Double(v)
       _ => @reflect.default_for(field)
@@ -2836,10 +2794,7 @@ fn NumberDataPoint::read_field(self : NumberDataPoint, field : @reflect.FieldDes
       _ => @reflect.default_for(field)
     }
     5 => @reflect.ListView(@reflect.list_view(self.exemplars, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m))))
-    8 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    8 => @reflect.Uint32(self.flags)
     _ => @reflect.default_for(field)
   }
 }
@@ -2887,8 +2842,8 @@ pub impl @reflect.Message for NumberDataPoint with fn has(self, field : @reflect
   let _ = self
   match field.number {
     7 => self.attributes.length() > 0
-    2 => @reflect.is_set(self.start_time_unix_nano)
-    3 => @reflect.is_set(self.time_unix_nano)
+    2 => self.start_time_unix_nano != 0UL
+    3 => self.time_unix_nano != 0UL
     4 => match self.value {
       As_double(_) => true
       _ => false
@@ -2898,7 +2853,7 @@ pub impl @reflect.Message for NumberDataPoint with fn has(self, field : @reflect
       _ => false
     }
     5 => self.exemplars.length() > 0
-    8 => @reflect.is_set(self.flags)
+    8 => self.flags != 0U
     _ => false
   }
 }
@@ -2908,12 +2863,12 @@ pub impl @reflect.Message for NumberDataPoint with fn clear(self, field : @refle
   let _ = self
   match field.number {
     7 => self.attributes.clear()
-    2 => self.start_time_unix_nano = None
-    3 => self.time_unix_nano = None
+    2 => self.start_time_unix_nano = 0UL
+    3 => self.time_unix_nano = 0UL
     4 => self.value = NumberDataPoint_Value::NoValue
     6 => self.value = NumberDataPoint_Value::NoValue
     5 => self.exemplars.clear()
-    8 => self.flags = None
+    8 => self.flags = 0U
     _ => ()
   }
 }
@@ -2929,12 +2884,12 @@ pub impl @reflect.Message for NumberDataPoint with fn set(self, field : @reflect
   let _ = value
   match field.number {
     7 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.start_time_unix_nano = Some(value.uint())
-    3 => self.time_unix_nano = Some(value.uint())
+    2 => self.start_time_unix_nano = value.uint()
+    3 => self.time_unix_nano = value.uint()
     4 => self.value = NumberDataPoint_Value::As_double(value.float())
     6 => self.value = NumberDataPoint_Value::As_int(value.int())
     5 => @reflect.assign_list(self.exemplars, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m)))
-    8 => self.flags = Some(value.uint().to_uint())
+    8 => self.flags = value.uint().to_uint()
     _ => ()
   }
 }
@@ -3023,14 +2978,14 @@ pub let numberDataPoint_type : &@reflect.MessageType = (NumberDataPointType::new
 ///|
 pub struct HistogramDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
   mut sum : Double?
   bucket_counts : Array[UInt64]
   explicit_bounds : Array[Double]
   exemplars : Array[Exemplar]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut min : Double?
   mut max : Double?
   mut unknown_fields : Bytes
@@ -3040,14 +2995,14 @@ pub struct HistogramDataPoint {
 pub fn HistogramDataPoint::new() -> HistogramDataPoint {
   {
     attributes: [],
-    start_time_unix_nano: None,
-    time_unix_nano: None,
-    count: None,
+    start_time_unix_nano: 0UL,
+    time_unix_nano: 0UL,
+    count: 0UL,
     sum: None,
     bucket_counts: [],
     explicit_bounds: [],
     exemplars: [],
-    flags: None,
+    flags: 0U,
     min: None,
     max: None,
     unknown_fields: b"",
@@ -3061,32 +3016,32 @@ pub fn HistogramDataPoint::attributes(self : HistogramDataPoint) -> &@reflect.Li
 
 ///|
 pub fn HistogramDataPoint::start_time_unix_nano(self : HistogramDataPoint) -> UInt64 {
-  self.start_time_unix_nano.unwrap_or(0UL)
+  self.start_time_unix_nano
 }
 
 ///|
 pub fn HistogramDataPoint::set_start_time_unix_nano(self : HistogramDataPoint, value : UInt64) -> Unit {
-  self.start_time_unix_nano = Some(value)
+  self.start_time_unix_nano = value
 }
 
 ///|
 pub fn HistogramDataPoint::time_unix_nano(self : HistogramDataPoint) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn HistogramDataPoint::set_time_unix_nano(self : HistogramDataPoint, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
 pub fn HistogramDataPoint::count(self : HistogramDataPoint) -> UInt64 {
-  self.count.unwrap_or(0UL)
+  self.count
 }
 
 ///|
 pub fn HistogramDataPoint::set_count(self : HistogramDataPoint, value : UInt64) -> Unit {
-  self.count = Some(value)
+  self.count = value
 }
 
 ///|
@@ -3116,12 +3071,12 @@ pub fn HistogramDataPoint::exemplars(self : HistogramDataPoint) -> &@reflect.Lis
 
 ///|
 pub fn HistogramDataPoint::flags(self : HistogramDataPoint) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn HistogramDataPoint::set_flags(self : HistogramDataPoint, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
@@ -3161,18 +3116,9 @@ fn HistogramDataPoint::read_field(self : HistogramDataPoint, field : @reflect.Fi
   let _ = self
   match field.number {
     9 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.start_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    4 => match self.count {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint64(self.start_time_unix_nano)
+    3 => @reflect.Uint64(self.time_unix_nano)
+    4 => @reflect.Uint64(self.count)
     5 => match self.sum {
       Some(v) => @reflect.Double(v)
       None => @reflect.default_for(field)
@@ -3180,10 +3126,7 @@ fn HistogramDataPoint::read_field(self : HistogramDataPoint, field : @reflect.Fi
     6 => @reflect.ListView(@reflect.list_view(self.bucket_counts, @reflect.scalar_element(v => @reflect.Uint64(v), v => v.uint(), () => 0UL)))
     7 => @reflect.ListView(@reflect.list_view(self.explicit_bounds, @reflect.scalar_element(v => @reflect.Double(v), v => v.float(), () => 0.0)))
     8 => @reflect.ListView(@reflect.list_view(self.exemplars, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m))))
-    10 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    10 => @reflect.Uint32(self.flags)
     11 => match self.min {
       Some(v) => @reflect.Double(v)
       None => @reflect.default_for(field)
@@ -3239,14 +3182,14 @@ pub impl @reflect.Message for HistogramDataPoint with fn has(self, field : @refl
   let _ = self
   match field.number {
     9 => self.attributes.length() > 0
-    2 => @reflect.is_set(self.start_time_unix_nano)
-    3 => @reflect.is_set(self.time_unix_nano)
-    4 => @reflect.is_set(self.count)
+    2 => self.start_time_unix_nano != 0UL
+    3 => self.time_unix_nano != 0UL
+    4 => self.count != 0UL
     5 => @reflect.is_set(self.sum)
     6 => self.bucket_counts.length() > 0
     7 => self.explicit_bounds.length() > 0
     8 => self.exemplars.length() > 0
-    10 => @reflect.is_set(self.flags)
+    10 => self.flags != 0U
     11 => @reflect.is_set(self.min)
     12 => @reflect.is_set(self.max)
     _ => false
@@ -3258,14 +3201,14 @@ pub impl @reflect.Message for HistogramDataPoint with fn clear(self, field : @re
   let _ = self
   match field.number {
     9 => self.attributes.clear()
-    2 => self.start_time_unix_nano = None
-    3 => self.time_unix_nano = None
-    4 => self.count = None
+    2 => self.start_time_unix_nano = 0UL
+    3 => self.time_unix_nano = 0UL
+    4 => self.count = 0UL
     5 => self.sum = None
     6 => self.bucket_counts.clear()
     7 => self.explicit_bounds.clear()
     8 => self.exemplars.clear()
-    10 => self.flags = None
+    10 => self.flags = 0U
     11 => self.min = None
     12 => self.max = None
     _ => ()
@@ -3283,14 +3226,14 @@ pub impl @reflect.Message for HistogramDataPoint with fn set(self, field : @refl
   let _ = value
   match field.number {
     9 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.start_time_unix_nano = Some(value.uint())
-    3 => self.time_unix_nano = Some(value.uint())
-    4 => self.count = Some(value.uint())
+    2 => self.start_time_unix_nano = value.uint()
+    3 => self.time_unix_nano = value.uint()
+    4 => self.count = value.uint()
     5 => self.sum = Some(value.float())
     6 => @reflect.assign_list(self.bucket_counts, value.list(), @reflect.scalar_element(v => @reflect.Uint64(v), v => v.uint(), () => 0UL))
     7 => @reflect.assign_list(self.explicit_bounds, value.list(), @reflect.scalar_element(v => @reflect.Double(v), v => v.float(), () => 0.0))
     8 => @reflect.assign_list(self.exemplars, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m)))
-    10 => self.flags = Some(value.uint().to_uint())
+    10 => self.flags = value.uint().to_uint()
     11 => self.min = Some(value.float())
     12 => self.max = Some(value.float())
     _ => ()
@@ -3376,19 +3319,19 @@ pub let histogramDataPoint_type : &@reflect.MessageType = (HistogramDataPointTyp
 ///|
 pub struct ExponentialHistogramDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
   mut sum : Double?
-  mut scale : Int32?
-  mut zero_count : UInt64?
+  mut scale : Int32
+  mut zero_count : UInt64
   mut positive : ExponentialHistogramDataPoint_Buckets?
   mut negative : ExponentialHistogramDataPoint_Buckets?
-  mut flags : UInt32?
+  mut flags : UInt32
   exemplars : Array[Exemplar]
   mut min : Double?
   mut max : Double?
-  mut zero_threshold : Double?
+  mut zero_threshold : Double
   mut unknown_fields : Bytes
 }
 
@@ -3396,19 +3339,19 @@ pub struct ExponentialHistogramDataPoint {
 pub fn ExponentialHistogramDataPoint::new() -> ExponentialHistogramDataPoint {
   {
     attributes: [],
-    start_time_unix_nano: None,
-    time_unix_nano: None,
-    count: None,
+    start_time_unix_nano: 0UL,
+    time_unix_nano: 0UL,
+    count: 0UL,
     sum: None,
-    scale: None,
-    zero_count: None,
+    scale: 0,
+    zero_count: 0UL,
     positive: None,
     negative: None,
-    flags: None,
+    flags: 0U,
     exemplars: [],
     min: None,
     max: None,
-    zero_threshold: None,
+    zero_threshold: 0.0,
     unknown_fields: b"",
   }
 }
@@ -3420,32 +3363,32 @@ pub fn ExponentialHistogramDataPoint::attributes(self : ExponentialHistogramData
 
 ///|
 pub fn ExponentialHistogramDataPoint::start_time_unix_nano(self : ExponentialHistogramDataPoint) -> UInt64 {
-  self.start_time_unix_nano.unwrap_or(0UL)
+  self.start_time_unix_nano
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_start_time_unix_nano(self : ExponentialHistogramDataPoint, value : UInt64) -> Unit {
-  self.start_time_unix_nano = Some(value)
+  self.start_time_unix_nano = value
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::time_unix_nano(self : ExponentialHistogramDataPoint) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_time_unix_nano(self : ExponentialHistogramDataPoint, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::count(self : ExponentialHistogramDataPoint) -> UInt64 {
-  self.count.unwrap_or(0UL)
+  self.count
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_count(self : ExponentialHistogramDataPoint, value : UInt64) -> Unit {
-  self.count = Some(value)
+  self.count = value
 }
 
 ///|
@@ -3460,22 +3403,22 @@ pub fn ExponentialHistogramDataPoint::set_sum(self : ExponentialHistogramDataPoi
 
 ///|
 pub fn ExponentialHistogramDataPoint::scale(self : ExponentialHistogramDataPoint) -> Int32 {
-  self.scale.unwrap_or(0)
+  self.scale
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_scale(self : ExponentialHistogramDataPoint, value : Int32) -> Unit {
-  self.scale = Some(value)
+  self.scale = value
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::zero_count(self : ExponentialHistogramDataPoint) -> UInt64 {
-  self.zero_count.unwrap_or(0UL)
+  self.zero_count
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_zero_count(self : ExponentialHistogramDataPoint, value : UInt64) -> Unit {
-  self.zero_count = Some(value)
+  self.zero_count = value
 }
 
 ///|
@@ -3516,12 +3459,12 @@ pub fn ExponentialHistogramDataPoint::set_negative(self : ExponentialHistogramDa
 
 ///|
 pub fn ExponentialHistogramDataPoint::flags(self : ExponentialHistogramDataPoint) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_flags(self : ExponentialHistogramDataPoint, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
@@ -3551,12 +3494,12 @@ pub fn ExponentialHistogramDataPoint::set_max(self : ExponentialHistogramDataPoi
 
 ///|
 pub fn ExponentialHistogramDataPoint::zero_threshold(self : ExponentialHistogramDataPoint) -> Double {
-  self.zero_threshold.unwrap_or(0.0)
+  self.zero_threshold
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint::set_zero_threshold(self : ExponentialHistogramDataPoint, value : Double) -> Unit {
-  self.zero_threshold = Some(value)
+  self.zero_threshold = value
 }
 
 ///|
@@ -3576,30 +3519,15 @@ fn ExponentialHistogramDataPoint::read_field(self : ExponentialHistogramDataPoin
   let _ = self
   match field.number {
     1 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.start_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    4 => match self.count {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint64(self.start_time_unix_nano)
+    3 => @reflect.Uint64(self.time_unix_nano)
+    4 => @reflect.Uint64(self.count)
     5 => match self.sum {
       Some(v) => @reflect.Double(v)
       None => @reflect.default_for(field)
     }
-    6 => match self.scale {
-      Some(v) => @reflect.Int32(v)
-      None => @reflect.default_for(field)
-    }
-    7 => match self.zero_count {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    6 => @reflect.Int32(self.scale)
+    7 => @reflect.Uint64(self.zero_count)
     8 => match self.positive {
       Some(v) => @reflect.Message(v as &@reflect.Message)
       None => @reflect.Message((ExponentialHistogramDataPoint_Buckets::new() as &@reflect.Message))
@@ -3608,10 +3536,7 @@ fn ExponentialHistogramDataPoint::read_field(self : ExponentialHistogramDataPoin
       Some(v) => @reflect.Message(v as &@reflect.Message)
       None => @reflect.Message((ExponentialHistogramDataPoint_Buckets::new() as &@reflect.Message))
     }
-    10 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    10 => @reflect.Uint32(self.flags)
     11 => @reflect.ListView(@reflect.list_view(self.exemplars, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m))))
     12 => match self.min {
       Some(v) => @reflect.Double(v)
@@ -3621,10 +3546,7 @@ fn ExponentialHistogramDataPoint::read_field(self : ExponentialHistogramDataPoin
       Some(v) => @reflect.Double(v)
       None => @reflect.default_for(field)
     }
-    14 => match self.zero_threshold {
-      Some(v) => @reflect.Double(v)
-      None => @reflect.default_for(field)
-    }
+    14 => @reflect.Double(self.zero_threshold)
     _ => @reflect.default_for(field)
   }
 }
@@ -3672,19 +3594,19 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint with fn has(self, fi
   let _ = self
   match field.number {
     1 => self.attributes.length() > 0
-    2 => @reflect.is_set(self.start_time_unix_nano)
-    3 => @reflect.is_set(self.time_unix_nano)
-    4 => @reflect.is_set(self.count)
+    2 => self.start_time_unix_nano != 0UL
+    3 => self.time_unix_nano != 0UL
+    4 => self.count != 0UL
     5 => @reflect.is_set(self.sum)
-    6 => @reflect.is_set(self.scale)
-    7 => @reflect.is_set(self.zero_count)
+    6 => self.scale != 0
+    7 => self.zero_count != 0UL
     8 => @reflect.is_set(self.positive)
     9 => @reflect.is_set(self.negative)
-    10 => @reflect.is_set(self.flags)
+    10 => self.flags != 0U
     11 => self.exemplars.length() > 0
     12 => @reflect.is_set(self.min)
     13 => @reflect.is_set(self.max)
-    14 => @reflect.is_set(self.zero_threshold)
+    14 => self.zero_threshold != 0.0
     _ => false
   }
 }
@@ -3694,19 +3616,19 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint with fn clear(self, 
   let _ = self
   match field.number {
     1 => self.attributes.clear()
-    2 => self.start_time_unix_nano = None
-    3 => self.time_unix_nano = None
-    4 => self.count = None
+    2 => self.start_time_unix_nano = 0UL
+    3 => self.time_unix_nano = 0UL
+    4 => self.count = 0UL
     5 => self.sum = None
-    6 => self.scale = None
-    7 => self.zero_count = None
+    6 => self.scale = 0
+    7 => self.zero_count = 0UL
     8 => self.positive = None
     9 => self.negative = None
-    10 => self.flags = None
+    10 => self.flags = 0U
     11 => self.exemplars.clear()
     12 => self.min = None
     13 => self.max = None
-    14 => self.zero_threshold = None
+    14 => self.zero_threshold = 0.0
     _ => ()
   }
 }
@@ -3722,12 +3644,12 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint with fn set(self, fi
   let _ = value
   match field.number {
     1 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.start_time_unix_nano = Some(value.uint())
-    3 => self.time_unix_nano = Some(value.uint())
-    4 => self.count = Some(value.uint())
+    2 => self.start_time_unix_nano = value.uint()
+    3 => self.time_unix_nano = value.uint()
+    4 => self.count = value.uint()
     5 => self.sum = Some(value.float())
-    6 => self.scale = Some(value.int().to_int())
-    7 => self.zero_count = Some(value.uint())
+    6 => self.scale = value.int().to_int()
+    7 => self.zero_count = value.uint()
     8 => {
   let source = value.message()
   let target = ExponentialHistogramDataPoint_Buckets::new()
@@ -3742,11 +3664,11 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint with fn set(self, fi
   self.negative = Some(target)
   }
 
-    10 => self.flags = Some(value.uint().to_uint())
+    10 => self.flags = value.uint().to_uint()
     11 => @reflect.assign_list(self.exemplars, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => Exemplar::new(), (v, m) => @proto.merge(v, m)))
     12 => self.min = Some(value.float())
     13 => self.max = Some(value.float())
-    14 => self.zero_threshold = Some(value.float())
+    14 => self.zero_threshold = value.float()
     _ => ()
   }
 }
@@ -3847,7 +3769,7 @@ pub let exponentialHistogramDataPoint_type : &@reflect.MessageType = (Exponentia
 
 ///|
 pub struct ExponentialHistogramDataPoint_Buckets {
-  mut offset : Int32?
+  mut offset : Int32
   bucket_counts : Array[UInt64]
   mut unknown_fields : Bytes
 }
@@ -3855,7 +3777,7 @@ pub struct ExponentialHistogramDataPoint_Buckets {
 ///|
 pub fn ExponentialHistogramDataPoint_Buckets::new() -> ExponentialHistogramDataPoint_Buckets {
   {
-    offset: None,
+    offset: 0,
     bucket_counts: [],
     unknown_fields: b"",
   }
@@ -3863,12 +3785,12 @@ pub fn ExponentialHistogramDataPoint_Buckets::new() -> ExponentialHistogramDataP
 
 ///|
 pub fn ExponentialHistogramDataPoint_Buckets::offset(self : ExponentialHistogramDataPoint_Buckets) -> Int32 {
-  self.offset.unwrap_or(0)
+  self.offset
 }
 
 ///|
 pub fn ExponentialHistogramDataPoint_Buckets::set_offset(self : ExponentialHistogramDataPoint_Buckets, value : Int32) -> Unit {
-  self.offset = Some(value)
+  self.offset = value
 }
 
 ///|
@@ -3892,10 +3814,7 @@ pub fn ExponentialHistogramDataPoint_Buckets::from_json(text : String) -> Expone
 fn ExponentialHistogramDataPoint_Buckets::read_field(self : ExponentialHistogramDataPoint_Buckets, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.offset {
-      Some(v) => @reflect.Int32(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Int32(self.offset)
     2 => @reflect.ListView(@reflect.list_view(self.bucket_counts, @reflect.scalar_element(v => @reflect.Uint64(v), v => v.uint(), () => 0UL)))
     _ => @reflect.default_for(field)
   }
@@ -3943,7 +3862,7 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets with fn rang
 pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.offset)
+    1 => self.offset != 0
     2 => self.bucket_counts.length() > 0
     _ => false
   }
@@ -3953,7 +3872,7 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets with fn has(
 pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.offset = None
+    1 => self.offset = 0
     2 => self.bucket_counts.clear()
     _ => ()
   }
@@ -3969,7 +3888,7 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint_Buckets with fn set(
   let _ = self
   let _ = value
   match field.number {
-    1 => self.offset = Some(value.int().to_int())
+    1 => self.offset = value.int().to_int()
     2 => @reflect.assign_list(self.bucket_counts, value.list(), @reflect.scalar_element(v => @reflect.Uint64(v), v => v.uint(), () => 0UL))
     _ => ()
   }
@@ -4054,12 +3973,12 @@ pub let exponentialHistogramDataPoint_Buckets_type : &@reflect.MessageType = (Ex
 ///|
 pub struct SummaryDataPoint {
   attributes : Array[KeyValue]
-  mut start_time_unix_nano : UInt64?
-  mut time_unix_nano : UInt64?
-  mut count : UInt64?
-  mut sum : Double?
+  mut start_time_unix_nano : UInt64
+  mut time_unix_nano : UInt64
+  mut count : UInt64
+  mut sum : Double
   quantile_values : Array[SummaryDataPoint_ValueAtQuantile]
-  mut flags : UInt32?
+  mut flags : UInt32
   mut unknown_fields : Bytes
 }
 
@@ -4067,12 +3986,12 @@ pub struct SummaryDataPoint {
 pub fn SummaryDataPoint::new() -> SummaryDataPoint {
   {
     attributes: [],
-    start_time_unix_nano: None,
-    time_unix_nano: None,
-    count: None,
-    sum: None,
+    start_time_unix_nano: 0UL,
+    time_unix_nano: 0UL,
+    count: 0UL,
+    sum: 0.0,
     quantile_values: [],
-    flags: None,
+    flags: 0U,
     unknown_fields: b"",
   }
 }
@@ -4084,42 +4003,42 @@ pub fn SummaryDataPoint::attributes(self : SummaryDataPoint) -> &@reflect.ListFi
 
 ///|
 pub fn SummaryDataPoint::start_time_unix_nano(self : SummaryDataPoint) -> UInt64 {
-  self.start_time_unix_nano.unwrap_or(0UL)
+  self.start_time_unix_nano
 }
 
 ///|
 pub fn SummaryDataPoint::set_start_time_unix_nano(self : SummaryDataPoint, value : UInt64) -> Unit {
-  self.start_time_unix_nano = Some(value)
+  self.start_time_unix_nano = value
 }
 
 ///|
 pub fn SummaryDataPoint::time_unix_nano(self : SummaryDataPoint) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn SummaryDataPoint::set_time_unix_nano(self : SummaryDataPoint, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
 pub fn SummaryDataPoint::count(self : SummaryDataPoint) -> UInt64 {
-  self.count.unwrap_or(0UL)
+  self.count
 }
 
 ///|
 pub fn SummaryDataPoint::set_count(self : SummaryDataPoint, value : UInt64) -> Unit {
-  self.count = Some(value)
+  self.count = value
 }
 
 ///|
 pub fn SummaryDataPoint::sum(self : SummaryDataPoint) -> Double {
-  self.sum.unwrap_or(0.0)
+  self.sum
 }
 
 ///|
 pub fn SummaryDataPoint::set_sum(self : SummaryDataPoint, value : Double) -> Unit {
-  self.sum = Some(value)
+  self.sum = value
 }
 
 ///|
@@ -4129,12 +4048,12 @@ pub fn SummaryDataPoint::quantile_values(self : SummaryDataPoint) -> &@reflect.L
 
 ///|
 pub fn SummaryDataPoint::flags(self : SummaryDataPoint) -> UInt32 {
-  self.flags.unwrap_or(0U)
+  self.flags
 }
 
 ///|
 pub fn SummaryDataPoint::set_flags(self : SummaryDataPoint, value : UInt32) -> Unit {
-  self.flags = Some(value)
+  self.flags = value
 }
 
 ///|
@@ -4154,27 +4073,12 @@ fn SummaryDataPoint::read_field(self : SummaryDataPoint, field : @reflect.FieldD
   let _ = self
   match field.number {
     7 => @reflect.ListView(@reflect.list_view(self.attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.start_time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    3 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    4 => match self.count {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
-    5 => match self.sum {
-      Some(v) => @reflect.Double(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint64(self.start_time_unix_nano)
+    3 => @reflect.Uint64(self.time_unix_nano)
+    4 => @reflect.Uint64(self.count)
+    5 => @reflect.Double(self.sum)
     6 => @reflect.ListView(@reflect.list_view(self.quantile_values, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => SummaryDataPoint_ValueAtQuantile::new(), (v, m) => @proto.merge(v, m))))
-    8 => match self.flags {
-      Some(v) => @reflect.Uint32(v)
-      None => @reflect.default_for(field)
-    }
+    8 => @reflect.Uint32(self.flags)
     _ => @reflect.default_for(field)
   }
 }
@@ -4222,12 +4126,12 @@ pub impl @reflect.Message for SummaryDataPoint with fn has(self, field : @reflec
   let _ = self
   match field.number {
     7 => self.attributes.length() > 0
-    2 => @reflect.is_set(self.start_time_unix_nano)
-    3 => @reflect.is_set(self.time_unix_nano)
-    4 => @reflect.is_set(self.count)
-    5 => @reflect.is_set(self.sum)
+    2 => self.start_time_unix_nano != 0UL
+    3 => self.time_unix_nano != 0UL
+    4 => self.count != 0UL
+    5 => self.sum != 0.0
     6 => self.quantile_values.length() > 0
-    8 => @reflect.is_set(self.flags)
+    8 => self.flags != 0U
     _ => false
   }
 }
@@ -4237,12 +4141,12 @@ pub impl @reflect.Message for SummaryDataPoint with fn clear(self, field : @refl
   let _ = self
   match field.number {
     7 => self.attributes.clear()
-    2 => self.start_time_unix_nano = None
-    3 => self.time_unix_nano = None
-    4 => self.count = None
-    5 => self.sum = None
+    2 => self.start_time_unix_nano = 0UL
+    3 => self.time_unix_nano = 0UL
+    4 => self.count = 0UL
+    5 => self.sum = 0.0
     6 => self.quantile_values.clear()
-    8 => self.flags = None
+    8 => self.flags = 0U
     _ => ()
   }
 }
@@ -4258,12 +4162,12 @@ pub impl @reflect.Message for SummaryDataPoint with fn set(self, field : @reflec
   let _ = value
   match field.number {
     7 => @reflect.assign_list(self.attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.start_time_unix_nano = Some(value.uint())
-    3 => self.time_unix_nano = Some(value.uint())
-    4 => self.count = Some(value.uint())
-    5 => self.sum = Some(value.float())
+    2 => self.start_time_unix_nano = value.uint()
+    3 => self.time_unix_nano = value.uint()
+    4 => self.count = value.uint()
+    5 => self.sum = value.float()
     6 => @reflect.assign_list(self.quantile_values, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => SummaryDataPoint_ValueAtQuantile::new(), (v, m) => @proto.merge(v, m)))
-    8 => self.flags = Some(value.uint().to_uint())
+    8 => self.flags = value.uint().to_uint()
     _ => ()
   }
 }
@@ -4346,38 +4250,38 @@ pub let summaryDataPoint_type : &@reflect.MessageType = (SummaryDataPointType::n
 
 ///|
 pub struct SummaryDataPoint_ValueAtQuantile {
-  mut quantile : Double?
-  mut value : Double?
+  mut quantile : Double
+  mut value : Double
   mut unknown_fields : Bytes
 }
 
 ///|
 pub fn SummaryDataPoint_ValueAtQuantile::new() -> SummaryDataPoint_ValueAtQuantile {
   {
-    quantile: None,
-    value: None,
+    quantile: 0.0,
+    value: 0.0,
     unknown_fields: b"",
   }
 }
 
 ///|
 pub fn SummaryDataPoint_ValueAtQuantile::quantile(self : SummaryDataPoint_ValueAtQuantile) -> Double {
-  self.quantile.unwrap_or(0.0)
+  self.quantile
 }
 
 ///|
 pub fn SummaryDataPoint_ValueAtQuantile::set_quantile(self : SummaryDataPoint_ValueAtQuantile, value : Double) -> Unit {
-  self.quantile = Some(value)
+  self.quantile = value
 }
 
 ///|
 pub fn SummaryDataPoint_ValueAtQuantile::value(self : SummaryDataPoint_ValueAtQuantile) -> Double {
-  self.value.unwrap_or(0.0)
+  self.value
 }
 
 ///|
 pub fn SummaryDataPoint_ValueAtQuantile::set_value(self : SummaryDataPoint_ValueAtQuantile, value : Double) -> Unit {
-  self.value = Some(value)
+  self.value = value
 }
 
 ///|
@@ -4396,14 +4300,8 @@ pub fn SummaryDataPoint_ValueAtQuantile::from_json(text : String) -> SummaryData
 fn SummaryDataPoint_ValueAtQuantile::read_field(self : SummaryDataPoint_ValueAtQuantile, field : @reflect.FieldDescriptor) -> @reflect.Value {
   let _ = self
   match field.number {
-    1 => match self.quantile {
-      Some(v) => @reflect.Double(v)
-      None => @reflect.default_for(field)
-    }
-    2 => match self.value {
-      Some(v) => @reflect.Double(v)
-      None => @reflect.default_for(field)
-    }
+    1 => @reflect.Double(self.quantile)
+    2 => @reflect.Double(self.value)
     _ => @reflect.default_for(field)
   }
 }
@@ -4450,8 +4348,8 @@ pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn range_ext
 pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => @reflect.is_set(self.quantile)
-    2 => @reflect.is_set(self.value)
+    1 => self.quantile != 0.0
+    2 => self.value != 0.0
     _ => false
   }
 }
@@ -4460,8 +4358,8 @@ pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn has(self,
 pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn clear(self, field : @reflect.FieldDescriptor) -> Unit {
   let _ = self
   match field.number {
-    1 => self.quantile = None
-    2 => self.value = None
+    1 => self.quantile = 0.0
+    2 => self.value = 0.0
     _ => ()
   }
 }
@@ -4476,8 +4374,8 @@ pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn set(self,
   let _ = self
   let _ = value
   match field.number {
-    1 => self.quantile = Some(value.float())
-    2 => self.value = Some(value.float())
+    1 => self.quantile = value.float()
+    2 => self.value = value.float()
     _ => ()
   }
 }
@@ -4561,9 +4459,9 @@ pub let summaryDataPoint_ValueAtQuantile_type : &@reflect.MessageType = (Summary
 ///|
 pub struct Exemplar {
   filtered_attributes : Array[KeyValue]
-  mut time_unix_nano : UInt64?
-  mut span_id : Bytes?
-  mut trace_id : Bytes?
+  mut time_unix_nano : UInt64
+  mut span_id : Bytes
+  mut trace_id : Bytes
   mut value : Exemplar_Value
   mut unknown_fields : Bytes
 }
@@ -4572,9 +4470,9 @@ pub struct Exemplar {
 pub fn Exemplar::new() -> Exemplar {
   {
     filtered_attributes: [],
-    time_unix_nano: None,
-    span_id: None,
-    trace_id: None,
+    time_unix_nano: 0UL,
+    span_id: b"",
+    trace_id: b"",
     value: Exemplar_Value::NoValue,
     unknown_fields: b"",
   }
@@ -4587,12 +4485,12 @@ pub fn Exemplar::filtered_attributes(self : Exemplar) -> &@reflect.ListField {
 
 ///|
 pub fn Exemplar::time_unix_nano(self : Exemplar) -> UInt64 {
-  self.time_unix_nano.unwrap_or(0UL)
+  self.time_unix_nano
 }
 
 ///|
 pub fn Exemplar::set_time_unix_nano(self : Exemplar, value : UInt64) -> Unit {
-  self.time_unix_nano = Some(value)
+  self.time_unix_nano = value
 }
 
 ///|
@@ -4623,22 +4521,22 @@ pub fn Exemplar::set_as_int(self : Exemplar, value : Int64) -> Unit {
 
 ///|
 pub fn Exemplar::span_id(self : Exemplar) -> Bytes {
-  self.span_id.unwrap_or(b"")
+  self.span_id
 }
 
 ///|
 pub fn Exemplar::set_span_id(self : Exemplar, value : Bytes) -> Unit {
-  self.span_id = Some(value)
+  self.span_id = value
 }
 
 ///|
 pub fn Exemplar::trace_id(self : Exemplar) -> Bytes {
-  self.trace_id.unwrap_or(b"")
+  self.trace_id
 }
 
 ///|
 pub fn Exemplar::set_trace_id(self : Exemplar, value : Bytes) -> Unit {
-  self.trace_id = Some(value)
+  self.trace_id = value
 }
 
 ///|
@@ -4675,10 +4573,7 @@ fn Exemplar::read_field(self : Exemplar, field : @reflect.FieldDescriptor) -> @r
   let _ = self
   match field.number {
     7 => @reflect.ListView(@reflect.list_view(self.filtered_attributes, @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m))))
-    2 => match self.time_unix_nano {
-      Some(v) => @reflect.Uint64(v)
-      None => @reflect.default_for(field)
-    }
+    2 => @reflect.Uint64(self.time_unix_nano)
     3 => match self.value {
       As_double(v) => @reflect.Double(v)
       _ => @reflect.default_for(field)
@@ -4687,14 +4582,8 @@ fn Exemplar::read_field(self : Exemplar, field : @reflect.FieldDescriptor) -> @r
       As_int(v) => @reflect.Int64(v)
       _ => @reflect.default_for(field)
     }
-    4 => match self.span_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
-    5 => match self.trace_id {
-      Some(v) => @reflect.Bytes(v)
-      None => @reflect.default_for(field)
-    }
+    4 => @reflect.Bytes(self.span_id)
+    5 => @reflect.Bytes(self.trace_id)
     _ => @reflect.default_for(field)
   }
 }
@@ -4742,7 +4631,7 @@ pub impl @reflect.Message for Exemplar with fn has(self, field : @reflect.FieldD
   let _ = self
   match field.number {
     7 => self.filtered_attributes.length() > 0
-    2 => @reflect.is_set(self.time_unix_nano)
+    2 => self.time_unix_nano != 0UL
     3 => match self.value {
       As_double(_) => true
       _ => false
@@ -4751,8 +4640,8 @@ pub impl @reflect.Message for Exemplar with fn has(self, field : @reflect.FieldD
       As_int(_) => true
       _ => false
     }
-    4 => @reflect.is_set(self.span_id)
-    5 => @reflect.is_set(self.trace_id)
+    4 => self.span_id.length() > 0
+    5 => self.trace_id.length() > 0
     _ => false
   }
 }
@@ -4762,11 +4651,11 @@ pub impl @reflect.Message for Exemplar with fn clear(self, field : @reflect.Fiel
   let _ = self
   match field.number {
     7 => self.filtered_attributes.clear()
-    2 => self.time_unix_nano = None
+    2 => self.time_unix_nano = 0UL
     3 => self.value = Exemplar_Value::NoValue
     6 => self.value = Exemplar_Value::NoValue
-    4 => self.span_id = None
-    5 => self.trace_id = None
+    4 => self.span_id = b""
+    5 => self.trace_id = b""
     _ => ()
   }
 }
@@ -4782,11 +4671,11 @@ pub impl @reflect.Message for Exemplar with fn set(self, field : @reflect.FieldD
   let _ = value
   match field.number {
     7 => @reflect.assign_list(self.filtered_attributes, value.list(), @reflect.message_element(v => @reflect.Message(v as &@reflect.Message), () => KeyValue::new(), (v, m) => @proto.merge(v, m)))
-    2 => self.time_unix_nano = Some(value.uint())
+    2 => self.time_unix_nano = value.uint()
     3 => self.value = Exemplar_Value::As_double(value.float())
     6 => self.value = Exemplar_Value::As_int(value.int())
-    4 => self.span_id = Some(value.bytes())
-    5 => self.trace_id = Some(value.bytes())
+    4 => self.span_id = value.bytes()
+    5 => self.trace_id = value.bytes()
     _ => ()
   }
 }
