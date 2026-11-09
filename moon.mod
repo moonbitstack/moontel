@@ -1,6 +1,6 @@
 name = "moonbitstack/moontel"
 
-version = "0.1.1"
+version = "0.1.2"
 
 readme = "README.md"
 
@@ -54,17 +54,17 @@ description = "OpenTelemetry for MoonBit."
 source = "src"
 
 import {
-  "moonbitstack/moonast@0.2.6",
+  "moonbitstack/moonast@0.2.7",
   "moonbitlang/parser@0.4.6",
   "moonbitlang/async@0.22.5",
-  "moonbitstack/moonasgi@0.10.6",
-  "moonbitstack/moonbase@0.4.3",
-  "moonbitstack/moonseed@0.1.1",
-  "moonbitstack/moonfetch@0.1.6",
-  "moonbitstack/moonlog@0.1.6",
-  "moonbitstack/moonzip@0.3.7",
-  "moonbitstack/moonp8s@0.1.1",
-  "moonbitstack/moonrpc@0.21.13",
-  "moonbitstack/moonhttp@0.15.9",
-  "moonbitstack/moonproto@0.1.0",
+  "moonbitstack/moonasgi@0.10.8",
+  "moonbitstack/moonbase@0.4.4",
+  "moonbitstack/moonseed@0.1.3",
+  "moonbitstack/moonfetch@0.1.8",
+  "moonbitstack/moonlog@0.1.7",
+  "moonbitstack/moonzip@0.3.8",
+  "moonbitstack/moonp8s@0.1.2",
+  "moonbitstack/moonrpc@0.21.14",
+  "moonbitstack/moonhttp@0.15.10",
+  "moonbitstack/moonproto@0.1.1",
 }
