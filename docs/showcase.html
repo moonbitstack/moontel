@@ -74,7 +74,7 @@
           <dl class="page-facts">
             <div><dt>Fields</dt><dd>four, separated by dashes</dd></div>
             <div><dt>Ids</dt><dd>16 and 8 octets, lowercase hex</dd></div>
-            <div><dt>Answers</dt><dd>from <code>parse</code>, <code>start</code>, <code>inject</code></dd></div>
+            <div><dt>Answers</dt><dd>from <code>parse</code>, <code>start</code>, <code>record</code></dd></div>
           </dl>
         </section>
 
@@ -206,6 +206,66 @@
   })
 }</code></pre>
             </div>
+          </div>
+        </section>
+
+        <section class="plate spectrum" id="spectrum" data-ruler-section="The distribution">
+          <div class="plate-head">
+            <span class="plate-no">04</span>
+            <h2>One distribution,<br /><em>two ways to count it.</em></h2>
+            <p class="note">
+              Five hundred and twelve requests, recorded twice: once into boundaries
+              a person chose, once into buckets that follow the values. Every bar
+              below is a count this library produced in this tab.
+            </p>
+          </div>
+          <div class="plate-body spectrum-body">
+            <div class="spectrum-control">
+              <label for="spread">spread <b id="spread-value">0.45</b></label>
+              <input id="spread" type="range" min="0" max="100" value="45" />
+              <div class="presets" role="group" aria-label="Distributions">
+                <button class="preset" type="button" data-spread="0">steady</button>
+                <button class="preset" type="button" data-spread="45">mixed</button>
+                <button class="preset" type="button" data-spread="100">long tail</button>
+              </div>
+              <dl class="spectrum-facts" id="spectrum-facts"></dl>
+            </div>
+
+            <figure class="spectrum-chart" id="spectrum-chart">
+              <div class="chart-row">
+                <div class="chart-label">
+                  <span>explicit</span>
+                  <b id="explicit-note">…</b>
+                </div>
+                <svg
+                  id="explicit"
+                  viewBox="0 0 1000 100"
+                  preserveAspectRatio="none"
+                  role="img"
+                  aria-label="Counts of the explicit buckets"
+                ></svg>
+              </div>
+              <div class="chart-row">
+                <div class="chart-label">
+                  <span>exponential</span>
+                  <b id="exponential-note">…</b>
+                </div>
+                <svg
+                  id="exponential"
+                  viewBox="0 0 1000 100"
+                  preserveAspectRatio="none"
+                  role="img"
+                  aria-label="Counts of the exponential buckets"
+                ></svg>
+              </div>
+              <div class="chart-axis" id="spectrum-axis" aria-hidden="true"></div>
+              <figcaption id="spectrum-caption">
+                Each row is scaled to its own tallest bucket, and both share a
+                logarithmic axis, so a bar sits over the span of values it counts. The
+                dashed mark is the exemplar: the slowest request, and the trace it came
+                from.
+              </figcaption>
+            </figure>
           </div>
         </section>
       </main>

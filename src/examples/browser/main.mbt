@@ -303,6 +303,7 @@ fn value_text(value : @trace.Value) -> String {
 fn main {
   publish(trace_json().stringify())
   expose_sampler(kept_json)
+  expose_distribution(distribution_json)
   expose_parse(parse_json)
   expose_hop(hop_json)
 }
@@ -458,4 +459,147 @@ fn hop_rand() -> (Int32) -> Bytes {
     }
     Bytes::from_array(bytes)
   }
+}
+
+///|
+/// Hands the page the distribution: one set of latencies, counted two ways.
+extern "js" fn expose_distribution(f : (Double) -> String) -> Unit =
+  #|(f) => { globalThis.moontelDistribution = (spread) => JSON.parse(f(spread)) }
+
+///|
+/// How many requests the picture counts. A number large enough that the shape is the
+/// shape and not the noise of a small sample, and small enough to compute while the
+/// reader drags the control.
+let spectrum_size : Int32 = 512
+
+///|
+/// The boundaries of the explicit histogram: the ones a person picks when they think
+/// they know what a request costs. Nine buckets, from ten milliseconds to two and a
+/// half seconds.
+let spectrum_bounds : Array[Double] = [
+  0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5,
+]
+
+///|
+/// The span a measurement made on this page belongs to, so the exemplar the chart
+/// marks names a trace the rest of the sheet also draws.
+let spectrum_span : @trace.TraceContext = @trace.TraceContext::new(
+  trace_id=b"\x1c\x9d\x4f\x7a\x2b\x8e\x53\x06\xad\x41\xc7\xe9\xb0\x2f\x6d\x38",
+  span_id=b"\xa7\x12\x3e\x9b\x54\xd8\x60\x1f",
+  flags=@trace.sampled_flag,
+)
+
+///|
+/// The `i`th request's latency, in seconds, at this spread.
+///
+/// A log-normal is what a latency distribution looks like: mostly near the median,
+/// with a tail that reaches far right. `spread` multiplies the standard deviation of
+/// the logarithm, so the control widens the distribution rather than moving it. The
+/// last request is the slowest one, which is why the exemplar marks it.
+fn spectrum_latency(i : Int32, spread : Double) -> Double {
+  let z = if i == spectrum_size - 1 {
+    3.2
+  } else {
+    normal(mix(i.to_int64().reinterpret_as_uint64()))
+  }
+  0.05 * @math.exp(spread * 1.4 * z)
+}
+
+///|
+/// A standard normal from a 64-bit word: Box-Muller on two uniforms taken from the
+/// two halves, which is enough for a picture and does not need a source of entropy.
+fn normal(word : UInt64) -> Double {
+  let high = (word >> 11).to_double() / 9007199254740992.0
+  let low = (word & 0x1FFFFFFFFFFFFFUL).to_double() / 9007199254740992.0
+  let u = if high <= 0.0 { 1.0e-12 } else { high }
+  let v = if low <= 0.0 { 1.0e-12 } else { low }
+  (-2.0 * @math.ln(u)).sqrt() * @math.cos(6.283185307179586 * v)
+}
+
+///|
+/// One distribution, two histograms, as the page reads it: the bucket counts, the
+/// scale the exponential one settled on, and the exemplar of the slowest request.
+fn distribution_json(spread : Double) -> String {
+  let provider = @meter.MeterProvider::new(
+    sink=@otlp.MetricRecorder::new(),
+    now=() => 0L,
+    current=() => Some(spectrum_span),
+  )
+  let meter = provider.meter(name="moontel-showcase")
+  let explicit = meter.histogram(
+    "request.duration",
+    unit="s",
+    bounds=spectrum_bounds,
+  ) catch {
+    _ => abort("the showcase boundaries are not boundaries")
+  }
+  let exponential = meter.exponential_histogram(
+    "request.duration.adaptive",
+    unit="s",
+  ) catch {
+    _ => abort("the showcase instrument name was refused")
+  }
+  for i in 0..<spectrum_size {
+    let value = spectrum_latency(i, spread)
+    explicit.record(value, at=0L)
+    // Only the slowest request carries its span: the library keeps one exemplar per
+    // series, and the reader wants to know which request filled the tail.
+    if i == spectrum_size - 1 {
+      exponential.record(value, at=0L, context=spectrum_span)
+    } else {
+      exponential.record(value, at=0L)
+    }
+  }
+  let metrics = provider.collect(at=1_000_000L)
+  let explicit_json = match metrics[0].points[0].point {
+    @otlp.Buckets(bounds~, counts~, sum~, count~, min~, max~) =>
+      Json::object({
+        "bounds": Json::array(bounds.map(fn(value) { Json::number(value) })),
+        "counts": Json::array(
+          counts.map(fn(value) { Json::number(value.to_double()) }),
+        ),
+        "sum": Json::number(sum),
+        "count": Json::number(count.to_double()),
+        "min": Json::number(min.unwrap_or(0.0)),
+        "max": Json::number(max.unwrap_or(0.0)),
+      })
+    _ => Json::null()
+  }
+  let exponential_json = match metrics[1].points[0].point {
+    @otlp.ExponentialBuckets(
+      scale~,
+      positive_offset~,
+      positive_counts~,
+      zero_count~,
+      count~,
+      sum~,
+      ..
+    ) =>
+      Json::object({
+        "scale": Json::number(scale.to_double()),
+        "offset": Json::number(positive_offset.to_double()),
+        "counts": Json::array(
+          positive_counts.map(fn(value) { Json::number(value.to_double()) }),
+        ),
+        "zero": Json::number(zero_count.to_double()),
+        "count": Json::number(count.to_double()),
+        "sum": Json::number(sum),
+      })
+    _ => Json::null()
+  }
+  let exemplar_json = match metrics[1].points[0].exemplars {
+    [exemplar, ..] =>
+      Json::object({
+        "trace": Json::string(encode_id(exemplar.trace_id.unwrap_or(b""))),
+        "span": Json::string(encode_id(exemplar.span_id.unwrap_or(b""))),
+        "value": Json::number(exemplar.value),
+      })
+    [] => Json::null()
+  }
+  Json::object({
+    "explicit": explicit_json,
+    "exponential": exponential_json,
+    "exemplar": exemplar_json,
+    "requests": Json::number(spectrum_size.to_double()),
+  }).stringify()
 }
