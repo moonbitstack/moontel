@@ -180,6 +180,12 @@ jobs:
       - name: send the three signals over gRPC
         run: moon run src/examples/05-grpc --target native -- 127.0.0.1:4317
 
+      # The meter's four instruments, once, through the same exporter the other
+      # signals use. Their names, units, attributes and buckets are read back out
+      # of the collector below.
+      - name: send the meter's four instruments
+        run: moon run src/examples/06-meter --target native -- http://localhost:4318
+
       - name: the collector parsed every signal
         run: |
           docker logs collector > collector.log 2>&1
@@ -223,19 +229,116 @@ jobs:
               "Body: Str(order placed)",
               "Name: orders_placed",
               "Name: order_latency",
-              "Unit: s",
           ]:
               seen = text.count(item)
               if seen != runs:
                   print(f"{item!r} arrived {seen} times, expected {runs}")
                   sys.exit(1)
+          # The four runs of the Prometheus-style latency, plus the meter's
+          # duration histogram, which is measured in seconds as the GenAI
+          # conventions say.
+          if text.count("Unit: s") != runs + 1:
+              print(f"seconds arrived {text.count('Unit: s')} times, expected {runs + 1}")
+              sys.exit(1)
           # One span and both records name a trace on every run.
           traces = text.count("Trace ID")
           if traces < runs * 3:
               print(f"expected the trace id on the span and both records per run, saw {traces}")
               sys.exit(1)
-          print(f"the collector parsed all three signals on every transport; {traces} records name a trace")
+          # The meter's run: one metric per instrument, with the dotted names, the
+          # units and the attribute group the conventions spell. Each of the four
+          # points carries all four attributes.
+          for item, want in [
+              ("-> Name: gen_ai.client.token.usage", 1),
+              ("-> Name: gen_ai.client.operation.duration", 1),
+              ("-> Name: gen_ai.client.active.requests", 1),
+              ("-> Name: gen_ai.client.queue.depth", 1),
+              ("-> Unit: {token}", 1),
+              ("-> Unit: {request}", 2),
+              ("-> IsMonotonic: false", 1),
+              ("-> gen_ai.provider.name: Str(openai)", 4),
+              ("-> gen_ai.operation.name: Str(chat)", 4),
+              ("-> gen_ai.request.model: Str(gpt-4o)", 4),
+              ("-> gen_ai.response.model: Str(gpt-4o-2024-08-06)", 4),
+              # The default boundaries, one line each, and the bucket the 6-second
+              # measurement fell into.
+              ("Buckets #2, Count: 1", runs + 1),
+          ]:
+              seen = text.count(item)
+              if seen != want:
+                  print(f"{item!r} appeared {seen} times, expected {want}")
+                  sys.exit(1)
+          for index, bound in enumerate(
+              [0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]
+          ):
+              item = f"ExplicitBounds #{index}: {bound:.6f}"
+              if text.count(item) != 1:
+                  print(f"{item!r} appeared {text.count(item)} times, expected 1")
+                  sys.exit(1)
+          print(
+              "the collector parsed all three signals on every transport; "
+              f"{traces} records name a trace; the meter's four instruments and "
+              "fifteen boundaries are accounted for",
+          )
           EOF
+
+  # The meter's four instruments against the semantic conventions. First against a
+  # registry in this repository, which describes exactly what the example emits, so
+  # a name, a unit, an attribute or an instrument that drifts fails here. Then
+  # against the GenAI registry upstream, which is the authority for the names the
+  # example borrows.
+  weaver:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: post install
+        run: |
+          moon version --all
+          moon update
+
+      # The payload and the sample list are both derived from one run of the
+      # example, so the live check reads what the meter really writes.
+      - name: the meter's payload and the samples a live check reads
+        run: |
+          moon run src/examples/06-meter --target native -- dump > metrics.json
+          python3 scripts/gen_weaver_samples.py metrics.json samples.json
+
+      - name: install weaver
+        run: |
+          curl -fsSL -o weaver.tar.xz \
+            https://github.com/open-telemetry/weaver/releases/download/v0.28.0/weaver-x86_64-unknown-linux-gnu.tar.xz
+          tar -xf weaver.tar.xz
+          echo "$PWD/weaver-x86_64-unknown-linux-gnu" >> $GITHUB_PATH
+
+      - name: the four instruments match this repository's registry
+        run: |
+          weaver registry check -r integration/weaver/registry
+          weaver registry live-check -r integration/weaver/registry \
+            --input-source samples.json --input-format json \
+            --format json --output own-report --no-stream
+          python3 scripts/check_weaver_report.py own-report
+
+      # Three of the metric names belong to the example rather than to the GenAI
+      # conventions, so the report is expected to carry advisories. The check
+      # asserts what has to be recognised, and the README's conformance section
+      # names every advisory that remains.
+      - name: the GenAI conventions recognise the attributes
+        run: |
+          weaver registry live-check \
+            -r 'https://github.com/open-telemetry/semantic-conventions-genai.git@aa3b7f4394245fec260013898049780975a407a4[model]' \
+            --input-source samples.json --input-format json \
+            --format json --output genai-report --no-stream || true
+          python3 scripts/check_weaver_report.py genai-report --genai
 
   # The official W3C Trace Context suite drives a hop built on this library. A
   # context that survives one process must survive the next, and this is the program

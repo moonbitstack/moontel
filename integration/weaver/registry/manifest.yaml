@@ -1,0 +1,5 @@
+file_format: definition_manifest/2.0
+name: moontel_example
+description: The names, units and attributes the moontel meter example emits, checked by the live-check job.
+schema_url: https://moonbitstack.github.io/moontel/schemas/0.1.0
+dependencies: []

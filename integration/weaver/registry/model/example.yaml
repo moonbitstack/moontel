@@ -1,0 +1,82 @@
+groups:
+  - id: registry.moontel.example
+    type: attribute_group
+    brief: The attributes the example records.
+    attributes:
+      - id: service.name
+        type: string
+        stability: stable
+        brief: The service that produced the telemetry.
+        examples: [moontel-example]
+      - id: gen_ai.provider.name
+        type: string
+        stability: stable
+        brief: The GenAI provider.
+        examples: [openai]
+      - id: gen_ai.operation.name
+        type: string
+        stability: stable
+        brief: The operation the client asked for.
+        examples: [chat]
+      - id: gen_ai.request.model
+        type: string
+        stability: stable
+        brief: The model the client asked for.
+        examples: [gpt-4o]
+      - id: gen_ai.response.model
+        type: string
+        stability: stable
+        brief: The model that answered.
+        examples: [gpt-4o-2024-08-06]
+
+  - id: metric.gen_ai.client.token.usage
+    type: metric
+    metric_name: gen_ai.client.token.usage
+    stability: stable
+    brief: Tokens used by the client.
+    instrument: counter
+    unit: "{token}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
+
+  - id: metric.gen_ai.client.operation.duration
+    type: metric
+    metric_name: gen_ai.client.operation.duration
+    stability: stable
+    brief: GenAI operation duration.
+    instrument: histogram
+    unit: s
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
+
+  - id: metric.gen_ai.client.active.requests
+    type: metric
+    metric_name: gen_ai.client.active.requests
+    stability: stable
+    brief: Requests in flight.
+    instrument: updowncounter
+    unit: "{request}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
+
+  - id: metric.gen_ai.client.queue.depth
+    type: metric
+    metric_name: gen_ai.client.queue.depth
+    stability: stable
+    brief: Requests waiting.
+    instrument: gauge
+    unit: "{request}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
