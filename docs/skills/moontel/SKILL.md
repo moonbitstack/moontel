@@ -1,6 +1,6 @@
 ---
 name: moontel
-description: "OpenTelemetry for MoonBit: spans, samplers, the W3C headers that carry a trace between services, log records written beside a span, a meter with counters, up-down counters, histograms and gauges, and export of all three signals to a collector over OTLP. Use it to add tracing or metrics to a MoonBit service, to join a trace that arrives with a request, or to send spans, logs and metrics somewhere that reads them."
+description: "OpenTelemetry for MoonBit: spans, samplers, the W3C headers that carry a trace between services, log records written beside a span, a meter with written and observed instruments, exponential histograms that adapt to the data, views and exemplars, and export of all three signals to a collector over OTLP. Use it to add tracing or metrics to a MoonBit service, to join a trace that arrives with a request, or to send spans, logs and metrics somewhere that reads them."
 ---
 
 # moontel
@@ -14,7 +14,7 @@ moon add moonbitstack/moontel
 | `moonbitstack/moontel/trace` | spans, samplers, the `Sink` a finished span goes to |
 | `moonbitstack/moontel/propagate` | `traceparent`, `tracestate` and `baggage` |
 | `moonbitstack/moontel/log` | records, a logger, sinks |
-| `moonbitstack/moontel/meter` | counters, up-down counters, histograms, gauges |
+| `moonbitstack/moontel/meter` | counters, up-down counters, histograms, gauges, observed instruments, views |
 | `moonbitstack/moontel/otlp` | the export: queue, batch, retry, the JSON body |
 | `moonbitstack/moontel/otlp/http` | the transport over an HTTP connection |
 | `moonbitstack/moontel/otlp/binary` | the binary body, when the collector wants protobuf |
@@ -173,6 +173,80 @@ A histogram without `bounds` uses the fifteen boundaries the metrics SDK specifi
 `[0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]`. Pass a
 sampled `@trace.TraceContext` as `context?` to keep an exemplar beside the series.
 
+## Instruments that report at collection time
+
+A queue depth or a cache size is read, not added to. An observable instrument takes a
+callback that runs once per collection and states one value per series:
+
+```moonbit
+fn observed(provider : @meter.MeterProvider) -> Unit raise {
+  let meter = provider.meter(name="checkout")
+  let depth = meter.observable_gauge(
+    "gen_ai.client.queue.depth",
+    unit="{request}",
+    observe=fn(observer) { observer.observe(7.0) },
+  )
+  ignore(depth)
+  let tokens = meter.observable_counter(
+    "gen_ai.client.tokens.reported",
+    unit="{token}",
+    observe=fn(observer) { observer.observe(512.0) },
+  )
+  ignore(tokens)
+}
+```
+
+The callback states a total, not an increment. A cumulative reader sees the total; a
+delta reader sees the difference from the previous export, which is what a scraper
+wants. `collect` and `emit` are what run the callbacks — nothing runs between them.
+
+## Distributions that adapt
+
+An exponential histogram puts a measurement in a bucket whose width grows with the
+value, so one set of buckets resolves a millisecond and a minute:
+
+```moonbit
+fn adaptive(provider : @meter.MeterProvider) -> Unit raise {
+  let meter = provider.meter(name="checkout")
+  let latency = meter.exponential_histogram("checkout.latency", unit="s")
+  latency.record(0.052, at=0L)
+  latency.record(1.7, at=0L)
+}
+```
+
+It starts at scale 20 and merges buckets in pairs — halving the resolution — when it
+would need more than 160 of them, the metrics SDK's default. The exported point
+carries the scale it settled on, so a reader never guesses what a bucket index means.
+
+## Views, and where attributes are decided
+
+A view changes what one instrument looks like on the wire, without touching the call
+sites that write to it:
+
+```moonbit
+fn viewed(now : () -> Int64) -> @meter.MeterProvider {
+  @meter.MeterProvider::new(
+    sink=@otlp.MetricRecorder::new(),
+    now~,
+    views=[
+      @meter.View::new(
+        instrument="gen_ai.client.token.usage",
+        attribute_keys=[@semconv.gen_ai_provider_name],
+      ),
+      @meter.View::new(instrument="billing.debug.tick", aggregation=@meter.Drop),
+    ],
+  )
+}
+```
+
+`attribute_keys` is an allowlist: a key it does not name never becomes part of a
+series, so it cannot multiply the series either. One instrument seen through two views
+is two metrics; a `Drop` view keeps the instrument registered and sends nothing.
+
+`@meter.MeterProvider::new` also takes `exemplar` (`TraceBased`, the default,
+`AlwaysOn` or `AlwaysOff`) and `current`, a function that hands a measurement the span
+the program is inside when the call site does not pass `context?`.
+
 ## Rules that catch people out
 
 - A tracer is handed `rand~` and times; it never reads either itself. The same tracer
@@ -198,3 +272,8 @@ sampled `@trace.TraceContext` as `context?` to keep an exemplar beside the serie
 - The meter reads no clock: `MeterProvider::new` takes `now~`, and `collect` and
   `emit` take `at~`. A histogram past its cardinality limit drops the new series and
   counts it in `MeterProvider::dropped`.
+- An observable instrument's callback must not block or call `collect`; it is running
+  inside one. Report and return.
+- A view that asks for a distribution of an observed instrument is ignored, and the
+  instrument keeps its own aggregation: a callback states values, and bucketing an
+  aggregate measures nothing.

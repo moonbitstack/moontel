@@ -352,18 +352,21 @@
           </div>
 
           <div class="index-group">
-            <h3>meter — the four instruments</h3>
-            <div class="index-row"><span class="name">MeterProvider::new</span><span class="leader"></span><span class="sig">(sink~, now~, temporality?, limits?, start?) → MeterProvider</span></div>
+            <h3>meter — the instruments and the views</h3>
+            <div class="index-row"><span class="name">MeterProvider::new</span><span class="leader"></span><span class="sig">(sink~, now~, temporality?, limits?, exemplar?, current?, views?, start?) → MeterProvider</span></div>
             <div class="index-row"><span class="name">MeterProvider::meter</span><span class="leader"></span><span class="sig">(name~, version?, attributes?) → Meter</span></div>
-            <div class="index-row"><span class="name">collect, emit</span><span class="leader"></span><span class="sig">(at~) → Array[Metric] — what the points say · the same, written to the sink</span></div>
+            <div class="index-row"><span class="name">collect, emit</span><span class="leader"></span><span class="sig">(at~) → Array[Metric] — run the callbacks, then the points · the same, written to the sink</span></div>
             <div class="index-row"><span class="name">counter, up_down_counter, gauge</span><span class="leader"></span><span class="sig">(name, description?, unit?) → … raise</span></div>
-            <div class="index-row"><span class="name">histogram</span><span class="leader"></span><span class="sig">(name, description?, unit?, bounds?) → Histogram raise</span></div>
-            <div class="index-row"><span class="name">add, inc, set, record</span><span class="leader"></span><span class="sig">(Double, attributes?, at?, context?) → Unit</span></div>
+            <div class="index-row"><span class="name">histogram, exponential_histogram</span><span class="leader"></span><span class="sig">(name, description?, unit?, bounds? · scale?, max_buckets?) → … raise</span></div>
+            <div class="index-row"><span class="name">observable_counter, observable_up_down_counter, observable_gauge</span><span class="leader"></span><span class="sig">(name, description?, unit?, observe~) → … raise</span></div>
+            <div class="index-row"><span class="name">add, inc, set, record, observe</span><span class="leader"></span><span class="sig">(Double, attributes?, at?, context?) → Unit</span></div>
+            <div class="index-row"><span class="name">View, Aggregation</span><span class="leader"></span><span class="sig">a name, a description, an allowlist of keys, and Sum · LastValue · ExplicitBuckets · ExponentialBuckets · Drop</span></div>
+            <div class="index-row"><span class="name">ExemplarFilter</span><span class="leader"></span><span class="sig">TraceBased · AlwaysOn · AlwaysOff</span></div>
             <div class="index-row"><span class="name">Attributes</span><span class="leader"></span><span class="sig">new · with_attribute · get · to_array · len · identity</span></div>
             <div class="index-row"><span class="name">gen_ai_client_attributes</span><span class="leader"></span><span class="sig">(provider~, operation~, request_model~, response_model?, agent_name?, conversation_id?) → Attributes</span></div>
-            <div class="index-row"><span class="name">default_buckets</span><span class="leader"></span><span class="sig">the metrics SDK's fifteen boundaries, 0 through 10000</span></div>
+            <div class="index-row"><span class="name">default_buckets, max_exponential_buckets</span><span class="leader"></span><span class="sig">the metrics SDK's fifteen boundaries · its 160-bucket default</span></div>
             <div class="index-row"><span class="name">MeterLimits</span><span class="leader"></span><span class="sig">attributes 128 · series 2000 · exemplars 1 · attribute_value_length</span></div>
-            <div class="index-row"><span class="name">InstrumentKind, Refused</span><span class="leader"></span><span class="sig">Counter · UpDownCounter · Histogram · Gauge · why a name was refused</span></div>
+            <div class="index-row"><span class="name">InstrumentKind, Refused</span><span class="leader"></span><span class="sig">eight kinds of instrument · why a name was refused</span></div>
           </div>
 
           <div class="index-group">

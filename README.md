@@ -13,8 +13,8 @@
 
 OpenTelemetry for MoonBit: spans, the samplers that decide which of them to keep, the
 headers that carry a trace from one service to the next, log records written beside a
-span, the meter that counts what a service does, and the export of all three signals
-to a collector.
+span, the meter that counts what a service does — written as it runs or reported when
+the metrics are collected — and the export of all three signals to a collector.
 
 A request that touches five services is one trace with a tree of spans, and every
 service has to agree on the same names, the same ids and the same wire format for
@@ -360,9 +360,12 @@ structured logger: the level, the fields and the caller's file and line become a
 
 ## Metrics
 
-The meter keeps four instruments: a counter, an up-down counter, a histogram and a
-gauge. Register them once, write to them on the request path, and hand the exporter
-the same object spans and logs already leave through.
+The meter keeps three instrument families. Four are written as the program runs: a
+counter, an up-down counter, a histogram and a gauge. Three report themselves when the
+metrics are collected: an observable counter, an observable up-down counter and an
+observable gauge. The eighth is a distribution whose buckets follow the measurements.
+Register each name once, write to the handle on the request path or hand in a callback,
+and give the exporter the same object spans and logs already leave through.
 
 ```moonbit
 fn record_latency(
@@ -389,6 +392,113 @@ fn collect(provider : @meter.MeterProvider) -> Array[@otlp.Metric] {
 upper bound contains the measurement. Names and attribute keys keep their dots:
 `gen_ai.client.operation.duration` is exported as written, because that is the
 spelling a backend matches on.
+
+### Reported at collection
+
+A queue depth is not something to add up; it is something to look at when the reader
+asks. An observable instrument takes a callback instead of a value, and the callback
+runs once per collection:
+
+```moonbit
+fn queue_depth(provider : @meter.MeterProvider) -> Unit raise {
+  let meter = provider.meter(name="checkout")
+  let queue = meter.observable_gauge(
+    "checkout.queue.depth",
+    description="Requests waiting.",
+    unit="{request}",
+    observe=fn(observer) { observer.observe(7.0) },
+  )
+  ignore(queue)
+}
+```
+
+What the callback states is a total, not an increment: a cumulative reader sees
+`7`, and a delta reader sees the change since the last export — the first export
+reports `7`, the next one reports `7` less than it reports now, and nothing if the
+queue did not move. That is the difference between an observed value and a written
+one, and it is why an observable counter can be exported at all to a scraper that
+wants per-interval numbers.
+
+### Buckets that follow the measurements
+
+A histogram over fixed boundaries answers the questions its boundaries were chosen
+for. An exponential histogram answers at every scale: bucket `i` covers
+`(2^(i/2^scale), 2^((i+1)/2^scale)]`, so a millisecond and a minute are both resolved
+finely, and when the measurements spread wider than the bucket budget the buckets merge
+in pairs and the scale drops by one.
+
+```moonbit
+fn exponential_latency(provider : @meter.MeterProvider) -> Unit raise {
+  let meter = provider.meter(name="checkout")
+  let latency = meter.exponential_histogram(
+    "checkout.latency",
+    description="Time a request took.",
+    unit="s",
+  )
+  latency.record(0.004, at=0L)
+  latency.record(0.052, at=0L)
+  latency.record(1.7, at=0L)
+}
+```
+
+`scale` starts at 20, the finest the SDK defines, and `max_buckets` is 160, its
+default; the point carries the scale it settled on, so a reader never has to guess
+what a bucket index means. Measurements of exactly zero are counted separately, and
+the negative side is mirrored rather than folded into the positive one.
+
+### Views
+
+A view decides what a metric looks like on the wire without touching the call sites:
+a new name, a new description, which attributes survive, a different aggregation, or
+that the instrument is not wanted at all.
+
+```moonbit
+fn viewed_provider() -> @meter.MeterProvider {
+  @meter.MeterProvider::new(
+    sink=@otlp.MetricRecorder::new(),
+    now=() => 0L,
+    views=[
+      @meter.View::new(
+        instrument="checkout.token.usage",
+        name="checkout.tokens",
+        attribute_keys=["gen_ai.provider.name"],
+      ),
+      @meter.View::new(instrument="checkout.debug.tick", aggregation=@meter.Drop),
+    ],
+  )
+}
+```
+
+`instrument` is a name or `*`; `kind` narrows a wildcard to one type of instrument.
+`attribute_keys` is an allowlist, and dropping a key that told two requests apart is
+how two series become one with the sum of both. One instrument seen through two views
+is two metrics, and a `Drop` view leaves the instrument registered and nothing on the
+wire — which is what makes a metric cheap to retire. A view that asks for a
+distribution of an observed instrument keeps the instrument's own aggregation: a
+callback states values, and a histogram of values that are already aggregates measures
+nothing.
+
+### Exemplars
+
+An exemplar is a sample of what a number was made of: one measurement, the trace it
+was taken in, and the attributes of its series. A reader that sees a bucket double can
+follow the exemplar to the request that filled it.
+
+```moonbit
+fn with_current_span(span : @trace.TraceContext) -> @meter.MeterProvider {
+  @meter.MeterProvider::new(
+    sink=@otlp.MetricRecorder::new(),
+    now=() => 0L,
+    current=() => Some(span),
+  )
+}
+```
+
+`current` is the span the program is inside; a measurement that names a `context` of
+its own wins over it. The filter is `@meter.TraceBased` by default — only a sampled,
+valid trace becomes an exemplar, because an exemplar from a trace nobody kept names a
+span no backend holds. `AlwaysOn` keeps every measurement, `AlwaysOff` keeps none, and
+`MeterLimits::exemplars` says how many a series keeps.
 
 `MeterProvider::new` takes the sink that finished metrics go to and the clock the
 caller trusts. A `@otlp.MetricsExporter` is a sink, so the resource, the transport,
@@ -523,24 +633,31 @@ through the package that defines it, not through the facade.
 | `Sink` | `accept(LogRecord) -> Unit` |
 | `Recorder`, `Discard`, `Fanout`, `SpanEvents` | in memory, thrown away, several sinks, and a bridge onto the span |
 
-### `meter` — the four instruments
+### `meter` — the instruments, the views and the exemplars
 
 | Item | Signature |
 |:--|:--|
-| `MeterProvider::new` | `(sink~ : &MetricSink, now~ : () -> Int64, temporality? : Temporality, limits? : MeterLimits, start? : Int64) -> MeterProvider` |
+| `MeterProvider::new` | `(sink~ : &MetricSink, now~ : () -> Int64, temporality? : Temporality, limits? : MeterLimits, exemplar? : ExemplarFilter, current? : () -> TraceContext?, views? : Array[View], start? : Int64) -> MeterProvider` |
 | `MeterProvider::meter` | `(name~ : String, version? : String, attributes?) -> Meter` |
-| `MeterProvider::collect` | `(at~ : Int64) -> Array[Metric]` — the points as they stand, without writing them |
+| `MeterProvider::collect` | `(at~ : Int64) -> Array[Metric]` — run the callbacks, then the points as they stand, without writing them |
 | `MeterProvider::emit` | `(at~ : Int64) -> Array[Metric]` — collect, write every metric to the sink, and clear a delta reader |
 | `Meter::counter`, `up_down_counter`, `gauge` | `(name, description?, unit?) -> … raise Refused` |
 | `Meter::histogram` | `(name, description?, unit?, bounds? : Array[Double]) -> Histogram raise Refused` |
+| `Meter::exponential_histogram` | `(name, description?, unit?, scale? : Int32, max_buckets? : Int32) -> ExponentialHistogram raise Refused` |
+| `Meter::observable_counter`, `observable_up_down_counter`, `observable_gauge` | `(name, description?, unit?, observe~ : (Observer) -> Unit) -> … raise Refused` |
+| `Observer::observe` | `(value : Double, attributes?, at? : Int64, context? : TraceContext)` — one series' value at this collection |
 | `Counter::add`, `inc` | `(value : Double, attributes?, at? : Int64, context? : TraceContext)` — `inc` adds one |
 | `UpDownCounter::add` | `(value : Double, attributes?, at?, context?)` — either sign |
 | `Gauge::set` | `(value : Double, attributes?, at?, context?)` — the last value wins |
-| `Histogram::record` | `(value : Double, attributes?, at?, context?)` — into the bucket whose upper bound contains it |
+| `Histogram::record`, `ExponentialHistogram::record` | `(value : Double, attributes?, at?, context?)` — into the bucket that contains it |
+| `View::new` | `(instrument~ : String, kind? : InstrumentKind, name?, description?, attribute_keys? : Array[String], aggregation? : Aggregation) -> View` |
+| `Aggregation` | `Sum`, `LastValue`, `ExplicitBuckets(bounds)`, `ExponentialBuckets(scale, max_buckets)`, `Drop` |
+| `ExemplarFilter` | `TraceBased` (the default), `AlwaysOn`, `AlwaysOff` |
 | `Attributes` | `new`, `with_attribute`, `get`, `to_array`, `len`, `identity` |
 | `gen_ai_client_attributes` | `(provider~, operation~, request_model~, response_model?, agent_name?, conversation_id?) -> Attributes` |
 | `MeterLimits` | `attributes 128, series 2000, exemplars 1, attribute_value_length` |
-| `default_buckets` | the metrics SDK's fifteen boundaries, `0` through `10000` |
+| `default_buckets`, `max_exponential_buckets` | the metrics SDK's fifteen boundaries and its 160-bucket default |
+| `exponential_index`, `exponential_bucket_count`, `max_exponential_scale`, `min_exponential_scale` | the bucket rule, and the scale range the SDK defines |
 | `InstrumentKind`, `Refused` | what a name is registered as, and why a name or a bucket list was refused |
 
 ### `otlp` — the export
@@ -582,6 +699,10 @@ attributes. Past that a write is dropped and counted in `SpanData::dropped`, so 
 runaway loop of attributes cannot take the process down with it. `Limits` changes the
 numbers, including a maximum length for string values.
 
+An exponential histogram keeps at most 160 buckets, the metrics SDK's default: past
+that the buckets merge in pairs and the scale drops, down to `-10`, which is as coarse
+as the SDK defines.
+
 `tracestate` holds at most 32 members, a key at most 256 characters and a value at most
 256; `baggage` at most 64 members and 8192 octets of header. These are the limits the
 two specifications state, and a header past them is refused rather than truncated.
@@ -600,16 +721,18 @@ runs past 256 characters still drops the header.
   and metrics on HTTP/JSON, HTTP/JSON with gzip, HTTP/protobuf and gRPC. The CI job
   reads the collector's log and counts each item on each transport.
 - **Metrics.** `weaver registry live-check` runs against two registries. Against
-  `integration/weaver/registry`, which describes the four instruments of
-  `src/examples/06-meter`, it reports four metrics, four data points, registry coverage
-  1.0 and no advisory. Against the GenAI semantic conventions pinned at `aa3b7f4` it
-  recognises `gen_ai.client.operation.duration` and the four GenAI attributes. Four
-  advisories remain, and they are known: the three demonstration names
+  `integration/weaver/registry`, which describes the seven metrics of
+  `src/examples/06-meter`, it reports seven metrics, seven data points, registry
+  coverage 1.0 and no advisory. Against the GenAI semantic conventions pinned at
+  `aa3b7f4` it recognises `gen_ai.client.operation.duration` and the four GenAI
+  attributes. Seven violations remain, and they are known: the six demonstration names
   (`gen_ai.client.token.usage`, `gen_ai.client.active.requests`,
-  `gen_ai.client.queue.depth`) are not in that registry, and `service.name` is a
-  resource attribute it does not define. The remaining improvements are stability
-  levels — every GenAI metric is still `development` upstream — and the optional
-  `server.address`, `server.port` and `error.type` attributes.
+  `gen_ai.client.queue.length`, `gen_ai.client.tokens.reported`,
+  `gen_ai.client.workers.reported`, `moontel.example.latency`) are not in that
+  registry, and `service.name` is a resource attribute it does not define. The
+  remaining improvements are stability levels — every GenAI metric and attribute is
+  still `development` upstream — and the optional `server.address`, `server.port` and
+  conditional `error.type` attributes.
 
 ## What this is not
 
@@ -627,7 +750,7 @@ moon run src/examples/02-asgi         # the middleware over an application
 moon run src/examples/03-annotated    # the annotation, and the wrapper it generates
 moon run src/examples/04-otlp         # three signals, to a collector
 moon run src/examples/05-grpc         # the same three signals, over gRPC
-moon run src/examples/06-meter        # the four instruments, to a collector or a live check
+moon run src/examples/06-meter        # observed instruments, views and an exponential histogram
 ```
 
 ## Licence

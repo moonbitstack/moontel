@@ -88,7 +88,11 @@
           <a href="#asgi"><span>07</span>The middleware</a>
           <a href="#replay"><span>08</span>Replay</a>
           <a href="#limits"><span>09</span>Limits</a>
-          <a href="#absent"><span>10</span>Not here</a>
+          <a href="#export"><span>10</span>Export</a>
+          <a href="#logs"><span>11</span>Logs</a>
+          <a href="#metrics"><span>12</span>Metrics</a>
+          <a href="#observed"><span>13</span>Observed</a>
+          <a href="#absent"><span>14</span>Not here</a>
         </nav>
 
         <section class="doc-section" id="install" data-ruler-section="Install">
@@ -890,8 +894,130 @@ latency.observe(elapsed)
           </aside>
         </section>
 
-        <section class="doc-section" id="absent" data-ruler-section="Not here">
+        <section class="doc-section" id="observed" data-ruler-section="Observed">
           <div class="doc-mark"><span class="plate-no">13</span></div>
+          <div class="doc-body">
+            <h2>Metrics that report themselves.</h2>
+            <p>
+              Not every number is written by the code that changes it. A queue depth is
+              whatever it is when the reader asks; so is a cache size, a connection
+              count, a temperature. An observable instrument takes a callback instead of
+              a value, and the callback runs once per collection:
+            </p>
+<pre><code><span class="k">let</span> queue = meter.observable_gauge(
+  <span class="s">"checkout.queue.depth"</span>,
+  description=<span class="s">"Requests waiting."</span>,
+  unit=<span class="s">"{request}"</span>,
+  observe=<span class="k">fn</span>(observer) { observer.observe(<span class="n">7.0</span>) },
+)</code></pre>
+            <p>
+              What it states is a total, not an increment. A cumulative reader sees the
+              total; a delta reader sees the difference from the previous export, and
+              zero when the queue did not move. <code>observable_counter</code> and
+              <code>observable_up_down_counter</code> are the other two, and all three
+              are asked only by <code>collect</code> and <code>emit</code>.
+            </p>
+            <p>
+              A distribution can follow its data instead of a list of boundaries. An
+              exponential histogram puts a measurement in a bucket whose width grows
+              with the value, so a millisecond and a minute are both resolved finely:
+            </p>
+<pre><code><span class="k">let</span> latency = meter.exponential_histogram(
+  <span class="s">"moontel.example.latency"</span>,
+  unit=<span class="s">"s"</span>,
+)
+latency.record(<span class="n">0.004</span>, attributes~, at=<span class="n">0L</span>, context=span.context())
+latency.record(<span class="n">1.7</span>, attributes~, at=<span class="n">0L</span>, context=span.context())</code></pre>
+            <p>
+              It starts at scale 20. When the measurements would need more than 160
+              buckets it merges neighbouring pairs and the scale drops by one, which is
+              what keeps the memory bounded without throwing away the resolution where
+              the values actually are. A collector reads the five values as:
+            </p>
+<pre><code>     -&gt; Name: moontel.example.latency
+     -&gt; Unit: s
+     -&gt; DataType: ExponentialHistogram
+Count: 5
+Sum: 1.957000
+Min: 0.004000
+Max: 1.700000
+Bucket (0.010580, 0.011049], Count: 1
+Exemplars:
+Exemplar #0
+     -&gt; Trace ID: 4bf92f3577b34da6a3ce929d0e0e4736
+     -&gt; Span ID: 00f067aa0ba902b7
+     -&gt; Value: 1.700000</code></pre>
+            <p>
+              That exemplar is a sample of what the bucket was made of: one
+              measurement, the trace it came from, and the attributes of its series. The
+              default filter keeps only a sampled trace, because an exemplar from a
+              trace nobody kept points at a span the backend does not have. Hand the
+              provider <code>current=() =&gt; Some(span.context())</code> and a
+              measurement that does not name a context picks up the span the request is
+              in.
+            </p>
+            <p>
+              The last decision is what a metric looks like on the wire, and it belongs
+              in one place rather than at a hundred call sites. That is a view:
+            </p>
+<pre><code><span class="k">let</span> provider = <span class="a">@meter.MeterProvider</span>::new(
+  sink=exporter,
+  now~,
+  views=[
+    <span class="a">@meter.View</span>::new(
+      instrument=<span class="s">"gen_ai.client.token.usage"</span>,
+      attribute_keys=[
+        <span class="a">@semconv.gen_ai_provider_name</span>,
+        <span class="a">@semconv.gen_ai_operation_name</span>,
+      ],
+    ),
+    <span class="a">@meter.View</span>::new(
+      instrument=<span class="s">"gen_ai.client.queue.depth"</span>,
+      name=<span class="s">"gen_ai.client.queue.length"</span>,
+      attribute_keys=[<span class="a">@semconv.gen_ai_provider_name</span>],
+    ),
+    <span class="a">@meter.View</span>::new(
+      instrument=<span class="s">"moontel.example.debug.tick"</span>,
+      aggregation=<span class="a">@meter.Drop</span>,
+    ),
+  ],
+)</code></pre>
+            <p>
+              The first drops an attribute before it can become part of a series, which is
+              how a high-cardinality key is kept off the wire. The second renames the
+              metric and keeps one key. The third registers the instrument and sends
+              nothing, so retiring a metric is one line and no call site changes.
+              <code>aggregation</code> can also replace the aggregation — a view can turn
+              a histogram into an exponential one, or a gauge into a sum — and one
+              instrument seen through two views is two metrics.
+            </p>
+          </div>
+          <aside class="doc-aside">
+            <b>Why observed and written are two things</b>
+            <p>
+              A counter adds up what happened. An observed counter states what is true,
+              and the reader takes the difference. Mixing the two would make one number
+              mean two things depending on who wrote it, so the instrument says which one
+              it is and the wire format carries the temporality.
+            </p>
+            <b>The scale is on the point</b>
+            <p>
+              A bucket index means nothing without the scale it was computed at, so the
+              point carries it. A reader that receives two points at different scales
+              knows it is looking at a distribution that widened, not at a broken series.
+            </p>
+            <b>What a view cannot do</b>
+            <p>
+              A view cannot bucket an observed instrument: a callback states values, and
+              a histogram of values that are already aggregates measures nothing. The
+              instrument keeps its own aggregation and the view's wish is ignored, which
+              is what the SDK does with an aggregation that does not apply.
+            </p>
+          </aside>
+        </section>
+
+        <section class="doc-section" id="absent" data-ruler-section="Not here">
+          <div class="doc-mark"><span class="plate-no">14</span></div>
           <div class="doc-body">
             <h2>What is deliberately not here.</h2>
             <p>
