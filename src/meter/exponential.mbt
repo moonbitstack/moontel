@@ -198,13 +198,3 @@ fn downscale(offset : Int32, counts : Array[Int64]) -> (Int32, Array[Int64]) {
   }
   (next_offset, next)
 }
-
-///|
-/// How many buckets a point of an exponential histogram uses, both sides together.
-pub fn exponential_bucket_count(point : @otlp.Point) -> Int32 {
-  match point {
-    @otlp.ExponentialBuckets(positive_counts~, negative_counts~, ..) =>
-      positive_counts.length() + negative_counts.length()
-    _ => 0
-  }
-}

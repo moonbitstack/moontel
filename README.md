@@ -657,7 +657,7 @@ through the package that defines it, not through the facade.
 | `gen_ai_client_attributes` | `(provider~, operation~, request_model~, response_model?, agent_name?, conversation_id?) -> Attributes` |
 | `MeterLimits` | `attributes 128, series 2000, exemplars 1, attribute_value_length` |
 | `default_buckets`, `max_exponential_buckets` | the metrics SDK's fifteen boundaries and its 160-bucket default |
-| `exponential_index`, `exponential_bucket_count`, `max_exponential_scale`, `min_exponential_scale` | the bucket rule, and the scale range the SDK defines |
+| `exponential_index`, `max_exponential_scale`, `min_exponential_scale` | the bucket rule, and the scale range the SDK defines |
 | `InstrumentKind`, `Refused` | what a name is registered as, and why a name or a bucket list was refused |
 
 ### `otlp` — the export

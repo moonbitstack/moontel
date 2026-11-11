@@ -17,8 +17,6 @@ pub let empty_attributes : Attributes
 
 pub fn empty_counts(Array[Double]) -> Array[Int64]
 
-pub fn exponential_bucket_count(@otlp.Point) -> Int32
-
 pub fn exponential_index(Double, Int32) -> Int32
 
 pub fn gen_ai_client_attributes(provider~ : String, operation~ : String, request_model~ : String, response_model? : String, agent_name? : String, conversation_id? : String) -> Attributes
