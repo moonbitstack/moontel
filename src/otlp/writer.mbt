@@ -2,108 +2,127 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// A JSON writer for one OTLP request body.
+/// A JSON tree under construction, for one OTLP request body.
 ///
-/// It writes text into a `StringBuilder` rather than building a tree of values,
-/// because a batch of five hundred spans is large enough that the tree would cost
-/// more than the request it describes, and because the OpenTelemetry JSON mapping
-/// has rules a general-purpose encoder does not follow: 64-bit integers are
-/// decimal strings, enum fields are integers, and names are lowerCamelCase.
+/// The encoders write members in the order the protocol lists them and the tree
+/// keeps that order, so a body reads like the specification's own field table and
+/// two runs of the same program produce the same bytes. The text itself is written
+/// by `moonjson`, which is what keeps this package from owning a second JSON
+/// writer: escapes, number formatting and the strict grammar are the family
+/// library's job.
 ///
-/// A writer keeps two things per open container: whether it has written a member
-/// yet, and whether a name has just been written and its value is due.
+/// The OpenTelemetry JSON mapping has rules a general-purpose encoder does not
+/// follow — 64-bit integers are decimal strings, enum fields are integers, names
+/// are lowerCamelCase — so those are decided here, member by member.
+priv enum Container {
+  /// The values of an array, in the order they were written.
+  Listing(Array[Json])
+  /// The members of an object, in order, and the name whose value is due.
+  Members(Array[(String, Json)], String?)
+}
+
+///|
 priv struct JsonWriter {
-  out : StringBuilder
-  started : Array[Bool]
-  pending : Array[Bool]
+  stack : Array[Container]
+  mut root : Json?
 }
 
 ///|
 fn JsonWriter::new() -> JsonWriter {
-  { out: StringBuilder(), started: [], pending: [], }
+  { stack: [], root: None, }
 }
 
 ///|
 fn JsonWriter::text(self : JsonWriter) -> String {
-  self.out.to_string()
-}
-
-///|
-/// A comma if this container already has a member.
-fn JsonWriter::separate(self : JsonWriter) -> Unit {
-  let n = self.started.length()
-  if n > 0 {
-    if self.started[n - 1] {
-      self.out.write_char(',')
-    } else {
-      self.started[n - 1] = true
-    }
+  let tree = match self.root {
+    Some(tree) => tree
+    None => Json::null()
   }
+  @moonjson.dumps(tree)
 }
 
 ///|
-/// Called before anything that is a member value: a name just written swallows the
-/// separator it would otherwise take.
-fn JsonWriter::slot(self : JsonWriter) -> Unit {
-  let n = self.pending.length()
-  if n > 0 && self.pending[n - 1] {
-    self.pending[n - 1] = false
-  } else {
-    self.separate()
+/// Put a finished value where the open container wants it.
+fn JsonWriter::emit(self : JsonWriter, value : Json) -> Unit {
+  let depth = self.stack.length()
+  if depth == 0 {
+    self.root = Some(value)
+    return
+  }
+  let top = self.stack[depth - 1]
+  match top {
+    Listing(items) => items.push(value)
+    Members(members, waiting) =>
+      match waiting {
+        Some(name) => {
+          members.push((name, value))
+          self.stack[depth - 1] = Members(members, None)
+        }
+        // Every value inside an object is written after its name; a value with
+        // none would be a body no reader could parse, so it is a mistake here
+        // rather than on the wire.
+        None => abort("a JSON member was written without a name")
+      }
   }
 }
 
 ///|
 fn JsonWriter::open_object(self : JsonWriter) -> Unit {
-  self.slot()
-  self.out.write_char('{')
-  self.started.push(false)
-  self.pending.push(false)
+  self.stack.push(Members([], None))
 }
 
 ///|
 fn JsonWriter::close_object(self : JsonWriter) -> Unit {
-  self.started.pop() |> ignore
-  self.pending.pop() |> ignore
-  self.out.write_char('}')
+  let top = self.pop()
+  match top {
+    Members(members, _) => self.emit(object_of(members))
+    Listing(_) => abort("an array was closed as an object")
+  }
 }
 
 ///|
 fn JsonWriter::open_array(self : JsonWriter) -> Unit {
-  self.slot()
-  self.out.write_char('[')
-  self.started.push(false)
-  self.pending.push(false)
+  self.stack.push(Listing([]))
 }
 
 ///|
 fn JsonWriter::close_array(self : JsonWriter) -> Unit {
-  self.started.pop() |> ignore
-  self.pending.pop() |> ignore
-  self.out.write_char(']')
+  let top = self.pop()
+  match top {
+    Listing(items) => self.emit(Json::array(items))
+    Members(_, _) => abort("an object was closed as an array")
+  }
+}
+
+///|
+fn JsonWriter::pop(self : JsonWriter) -> Container {
+  match self.stack.pop() {
+    Some(top) => top
+    None => abort("a container was closed that was never opened")
+  }
 }
 
 ///|
 fn JsonWriter::name(self : JsonWriter, name : String) -> Unit {
-  self.separate()
-  self.write_escaped(name)
-  self.out.write_char(':')
-  let n = self.pending.length()
-  self.pending[n - 1] = true
+  let depth = self.stack.length()
+  if depth == 0 {
+    abort("a member name was written outside an object")
+  }
+  match self.stack[depth - 1] {
+    Members(members, _) => self.stack[depth - 1] = Members(members, Some(name))
+    Listing(_) => abort("a member name was written inside an array")
+  }
 }
 
 ///|
 fn JsonWriter::string(self : JsonWriter, value : String) -> Unit {
-  self.slot()
-  self.write_escaped(value)
+  self.emit(Json::string(value))
 }
 
 ///|
-/// A number that is already text, such as an enum's integer or a double this
-/// library has formatted itself.
+/// A number that is already text, such as an enum's integer.
 fn JsonWriter::raw(self : JsonWriter, value : String) -> Unit {
-  self.slot()
-  self.out.write_string(value)
+  self.emit(Json::number(0.0, repr=value))
 }
 
 ///|
@@ -111,10 +130,7 @@ fn JsonWriter::raw(self : JsonWriter, value : String) -> Unit {
 /// every timestamp in OTLP is such a field: a nanosecond value does not fit the
 /// 53 bits a JSON number survives.
 fn JsonWriter::int64(self : JsonWriter, value : Int64) -> Unit {
-  self.slot()
-  self.out.write_char('"')
-  self.out.write_string(value.to_string())
-  self.out.write_char('"')
+  self.emit(Json::string(value.to_string()))
 }
 
 ///|
@@ -122,56 +138,24 @@ fn JsonWriter::int64(self : JsonWriter, value : Int64) -> Unit {
 /// zero: a batch is worth more than the one point a broken producer contributed,
 /// and a request with `Infinity` in it is refused by every receiver.
 fn JsonWriter::double(self : JsonWriter, value : Double) -> Unit {
-  if !(value >= -1.7976931348623157e308) || !(value <= 1.7976931348623157e308) {
-    self.raw("0")
+  if value >= -1.7976931348623157e308 && value <= 1.7976931348623157e308 {
+    self.emit(Json::number(value))
   } else {
-    self.raw(value.to_string())
+    self.emit(Json::number(0.0))
   }
 }
 
 ///|
 fn JsonWriter::boolean(self : JsonWriter, value : Bool) -> Unit {
-  self.raw(if value { "true" } else { "false" })
+  self.emit(Json::boolean(value))
 }
 
 ///|
-/// A string with the escapes JSON requires: quote, reverse solidus and the control
-/// characters. Everything else is written as it stands, which keeps non-ASCII text
-/// readable in a request body instead of turning it into `\u` sequences.
-fn JsonWriter::write_escaped(self : JsonWriter, value : String) -> Unit {
-  self.out.write_char('"')
-  for c in value {
-    let code = c.to_int()
-    if code == 0x22 {
-      self.out.write_string("\\\"")
-    } else if code == 0x5c {
-      self.out.write_string("\\\\")
-    } else if code == 0x0a {
-      self.out.write_string("\\n")
-    } else if code == 0x0d {
-      self.out.write_string("\\r")
-    } else if code == 0x09 {
-      self.out.write_string("\\t")
-    } else if code == 0x08 {
-      self.out.write_string("\\b")
-    } else if code == 0x0c {
-      self.out.write_string("\\f")
-    } else if code < 0x20 {
-      self.out.write_string("\\u00")
-      self.out.write_char(hex_digit(code >> 4))
-      self.out.write_char(hex_digit(code & 0x0f))
-    } else {
-      self.out.write_char(c)
-    }
+/// An object from its members, in the order they were written.
+fn object_of(members : Array[(String, Json)]) -> Json {
+  let fields : Map[String, Json] = Map([])
+  for entry in members {
+    fields.set(entry.0, entry.1)
   }
-  self.out.write_char('"')
-}
-
-///|
-fn hex_digit(value : Int32) -> Char {
-  if value < 10 {
-    (0x30 + value).unsafe_to_char()
-  } else {
-    (0x61 + value - 10).unsafe_to_char()
-  }
+  Json::object(fields)
 }

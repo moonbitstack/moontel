@@ -90,7 +90,7 @@ pub fn Reply::rejected(self : Reply) -> Int32? {
 /// The JSON encoding and `Reply::rejected` are the same reader; keeping it here
 /// means a `partialSuccess` the protocol spells one way is not read two ways.
 fn rejected_in_json(text : String) -> Int32? {
-  let parsed = @json.parse(text[:], preserve_number_repr=true) catch {
+  let parsed = @moonjson.loads(text[:], @moonjson.strict) catch {
     _ => return None
   }
   let success = match parsed {

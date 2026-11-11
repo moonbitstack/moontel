@@ -71,6 +71,7 @@ import {
   "moonbitstack/moonlog@0.1.7",
   "moonbitstack/moonzip@0.3.8",
   "moonbitstack/moonp8s@0.1.2",
+  "moonbitstack/moonjson@0.4.4",
   "moonbitstack/moonrpc@0.21.14",
   "moonbitstack/moonhttp@0.15.10",
   "moonbitstack/moonproto@0.1.1",

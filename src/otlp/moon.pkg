@@ -8,6 +8,7 @@ import {
   "moonbitstack/moontel/trace",
   "moonbitstack/moontel/log",
   "moonbitstack/moonbase/base16",
+  "moonbitstack/moonjson",
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/json",
   "moonbitlang/async",
