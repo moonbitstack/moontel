@@ -182,9 +182,20 @@ jobs:
 
       # The meter's instruments, once, through the same exporter the other signals
       # use. Their names, units, attributes, data types and exemplars are read back
-      # out of the collector below.
+      # out of the collector below. The log is sliced here, so the lines this run
+      # produced are told apart from the ones the other examples produced: an item
+      # that appears once in this file appeared once in this run, not once per
+      # transport.
       - name: send the meter's instruments
-        run: moon run src/examples/06-meter --target native -- http://localhost:4318
+        run: |
+          before=$(docker logs collector 2>&1 | wc -l)
+          moon run src/examples/06-meter --target native -- http://localhost:4318
+          docker logs collector 2>&1 | tail -n +$((before + 1)) > meter.log
+          if ! grep -q "Name: gen_ai.client.token.usage" meter.log; then
+            echo "the meter's run left nothing in the collector's log"
+            cat meter.log
+            exit 1
+          fi
 
       - name: the collector parsed every signal
         run: |
@@ -194,6 +205,10 @@ jobs:
           import sys
 
           text = pathlib.Path("collector.log").read_text(errors="replace")
+          # The meter's own run, sliced out at the moment it was sent, so a count
+          # below is a count of this program's metrics and not of everything the
+          # collector has seen.
+          meter = pathlib.Path("meter.log").read_text(errors="replace")
           # What the collector prints only if it decoded the payload: a request it
           # accepted and a span it understood are two different things.
           required = [
@@ -284,9 +299,9 @@ jobs:
               ("Bucket (0.010580, 0.011049], Count: 1", 1),
               # The default boundaries, one line each, and the bucket the 6-second
               # measurement fell into.
-              ("Buckets #2, Count: 1", runs + 1),
+              ("Buckets #2, Count: 1", 1),
           ]:
-              seen = text.count(item)
+              seen = meter.count(item)
               if seen != want:
                   print(f"{item!r} appeared {seen} times, expected {want}")
                   sys.exit(1)
