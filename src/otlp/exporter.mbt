@@ -475,9 +475,9 @@ pub async fn LogsExporter::run(self : LogsExporter) -> Unit {
 ///|
 /// Metric export: posts what a collector hands it to `/v1/metrics`.
 ///
-/// A producer can be either the `meter` package, which accumulates the four OTel
-/// instruments, or `otlp/p8s`, which reads the snapshot of a registry a program
-/// already keeps. Both hand this exporter the same `Metric` shape, so the wire
+/// A producer can be either the `meter` package, which accumulates the instruments
+/// the specification defines and observes, or `otlp/p8s`, which reads the snapshot
+/// of a registry a program already keeps. Both hand this exporter the same `Metric` shape, so the wire
 /// format, the batching and the resource are one implementation no matter who
 /// counted.
 pub struct MetricsExporter {
