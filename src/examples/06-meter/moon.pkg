@@ -9,6 +9,7 @@ import {
   "moonbitstack/moontel/otlp",
   "moonbitstack/moontel/otlp/http",
   "moonbitstack/moontel/meter",
+  "moonbitstack/moontel/trace",
   "moonbitstack/moontel/semconv",
   "moonbitstack/moonseed",
   "moonbitstack/moonseed/system",

@@ -37,6 +37,10 @@ def instrument(metric):
         return "counter" if metric["sum"].get("isMonotonic") else "updowncounter"
     if "histogram" in metric:
         return "histogram"
+    # A registry has one histogram instrument and no separate exponential one: the
+    # difference is the aggregation, which is not a property the registry describes.
+    if "exponentialHistogram" in metric:
+        return "histogram"
     if "gauge" in metric:
         return "gauge"
     return "gauge"
@@ -50,6 +54,15 @@ def data_points(data):
             sample["value"] = point["asDouble"]
         elif "asInt" in point:
             sample["value"] = int(point["asInt"])
+        # An exponential histogram has no boundary list: its buckets are described by
+        # a scale and an offset, so only the aggregate travels to the live check.
+        if "scale" in point:
+            sample["count"] = int(point.get("count", 0))
+            sample["sum"] = point.get("sum", 0.0)
+            if "min" in point:
+                sample["min"] = point["min"]
+            if "max" in point:
+                sample["max"] = point["max"]
         if "bucketCounts" in point:
             sample["bucket_counts"] = [int(count) for count in point["bucketCounts"]]
             sample["count"] = int(point["count"])
@@ -81,6 +94,7 @@ def samples(body):
                 data = (
                     metric.get("sum")
                     or metric.get("histogram")
+                    or metric.get("exponentialHistogram")
                     or metric.get("gauge")
                     or {}
                 )

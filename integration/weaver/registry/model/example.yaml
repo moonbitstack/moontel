@@ -40,7 +40,6 @@ groups:
       - ref: gen_ai.provider.name
       - ref: gen_ai.operation.name
       - ref: gen_ai.request.model
-      - ref: gen_ai.response.model
 
   - id: metric.gen_ai.client.operation.duration
     type: metric
@@ -68,13 +67,51 @@ groups:
       - ref: gen_ai.request.model
       - ref: gen_ai.response.model
 
-  - id: metric.gen_ai.client.queue.depth
+  - id: metric.gen_ai.client.queue.length
     type: metric
-    metric_name: gen_ai.client.queue.depth
+    metric_name: gen_ai.client.queue.length
     stability: stable
-    brief: Requests waiting.
+    brief: Requests waiting, as the queue reports them at collection time.
     instrument: gauge
     unit: "{request}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+
+  - id: metric.gen_ai.client.tokens.reported
+    type: metric
+    metric_name: gen_ai.client.tokens.reported
+    stability: stable
+    brief: Tokens the client has used, as the provider counts them. The program
+      observes it at collection time, which a reader cannot see on the wire.
+    instrument: counter
+    unit: "{token}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
+
+  - id: metric.gen_ai.client.workers.reported
+    type: metric
+    metric_name: gen_ai.client.workers.reported
+    stability: stable
+    brief: Workers the client keeps for the model.
+    instrument: updowncounter
+    unit: "{worker}"
+    attributes:
+      - ref: gen_ai.provider.name
+      - ref: gen_ai.operation.name
+      - ref: gen_ai.request.model
+      - ref: gen_ai.response.model
+
+  - id: metric.moontel.example.latency
+    type: metric
+    metric_name: moontel.example.latency
+    stability: stable
+    brief: Time a request took, at any scale.
+    instrument: histogram
+    unit: s
     attributes:
       - ref: gen_ai.provider.name
       - ref: gen_ai.operation.name

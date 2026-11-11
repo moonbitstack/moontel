@@ -180,10 +180,10 @@ jobs:
       - name: send the three signals over gRPC
         run: moon run src/examples/05-grpc --target native -- 127.0.0.1:4317
 
-      # The meter's four instruments, once, through the same exporter the other
-      # signals use. Their names, units, attributes and buckets are read back out
-      # of the collector below.
-      - name: send the meter's four instruments
+      # The meter's instruments, once, through the same exporter the other signals
+      # use. Their names, units, attributes, data types and exemplars are read back
+      # out of the collector below.
+      - name: send the meter's instruments
         run: moon run src/examples/06-meter --target native -- http://localhost:4318
 
       - name: the collector parsed every signal
@@ -235,31 +235,53 @@ jobs:
                   print(f"{item!r} arrived {seen} times, expected {runs}")
                   sys.exit(1)
           # The four runs of the Prometheus-style latency, plus the meter's
-          # duration histogram, which is measured in seconds as the GenAI
-          # conventions say.
-          if text.count("Unit: s") != runs + 1:
-              print(f"seconds arrived {text.count('Unit: s')} times, expected {runs + 1}")
+          # duration histogram and its exponential latency, which are measured in
+          # seconds as the GenAI conventions say.
+          if text.count("Unit: s") != runs + 2:
+              print(f"seconds arrived {text.count('Unit: s')} times, expected {runs + 2}")
               sys.exit(1)
           # One span and both records name a trace on every run.
           traces = text.count("Trace ID")
           if traces < runs * 3:
               print(f"expected the trace id on the span and both records per run, saw {traces}")
               sys.exit(1)
-          # The meter's run: one metric per instrument, with the dotted names, the
-          # units and the attribute group the conventions spell. Each of the four
-          # points carries all four attributes.
+          # The meter's run: one metric per instrument, with the names the three
+          # views left, the units the conventions spell, and the data type each
+          # aggregation produces.
           for item, want in [
               ("-> Name: gen_ai.client.token.usage", 1),
               ("-> Name: gen_ai.client.operation.duration", 1),
               ("-> Name: gen_ai.client.active.requests", 1),
-              ("-> Name: gen_ai.client.queue.depth", 1),
-              ("-> Unit: {token}", 1),
+              # Renamed by a view, and with the two attributes that view kept.
+              ("-> Name: gen_ai.client.queue.length", 1),
+              ("-> Name: gen_ai.client.tokens.reported", 1),
+              ("-> Name: gen_ai.client.workers.reported", 1),
+              ("-> Name: moontel.example.latency", 1),
+              # A dropped view leaves the instrument registered and nothing on the
+              # wire, which is what makes a typo in a call site cheap to remove.
+              ("-> Name: moontel.example.debug.tick", 0),
+              ("DataType: Sum", 4),
+              ("DataType: Histogram", 1),
+              ("DataType: ExponentialHistogram", 1),
+              ("DataType: Gauge", 1),
+              ("-> Unit: {token}", 2),
               ("-> Unit: {request}", 2),
-              ("-> IsMonotonic: false", 1),
-              ("-> gen_ai.provider.name: Str(openai)", 4),
-              ("-> gen_ai.operation.name: Str(chat)", 4),
-              ("-> gen_ai.request.model: Str(gpt-4o)", 4),
-              ("-> gen_ai.response.model: Str(gpt-4o-2024-08-06)", 4),
+              ("-> Unit: {worker}", 1),
+              ("-> IsMonotonic: false", 2),
+              # Seven points and seven exemplars, each carrying the attributes of the
+              # series it belongs to: the four attributes on five points, three on the
+              # token counter after its view dropped one, two on the queue length.
+              ("-> gen_ai.provider.name: Str(openai)", 14),
+              ("-> gen_ai.operation.name: Str(chat)", 14),
+              ("-> gen_ai.request.model: Str(gpt-4o)", 12),
+              ("-> gen_ai.response.model: Str(gpt-4o-2024-08-06)", 10),
+              ("Exemplar #0", 7),
+              ("-> Trace ID: 4bf92f3577b34da6a3ce929d0e0e4736", 7),
+              # The exponential histogram: the range it spans, and the bucket the
+              # ten-millisecond measurement fell into at the scale it settled on.
+              ("Min: 0.004000", 1),
+              ("Max: 1.700000", 1),
+              ("Bucket (0.010580, 0.011049], Count: 1", 1),
               # The default boundaries, one line each, and the bucket the 6-second
               # measurement fell into.
               ("Buckets #2, Count: 1", runs + 1),
@@ -277,12 +299,12 @@ jobs:
                   sys.exit(1)
           print(
               "the collector parsed all three signals on every transport; "
-              f"{traces} records name a trace; the meter's four instruments and "
-              "fifteen boundaries are accounted for",
+              f"{traces} records name a trace; the meter's seven instruments, three "
+              "views, seven exemplars and fifteen boundaries are accounted for",
           )
           EOF
 
-  # The meter's four instruments against the semantic conventions. First against a
+  # The meter's seven metrics against the semantic conventions. First against a
   # registry in this repository, which describes exactly what the example emits, so
   # a name, a unit, an attribute or an instrument that drifts fails here. Then
   # against the GenAI registry upstream, which is the authority for the names the
@@ -320,7 +342,7 @@ jobs:
           tar -xf weaver.tar.xz
           echo "$PWD/weaver-x86_64-unknown-linux-gnu" >> $GITHUB_PATH
 
-      - name: the four instruments match this repository's registry
+      - name: the seven metrics match this repository's registry
         run: |
           weaver registry check -r integration/weaver/registry
           weaver registry live-check -r integration/weaver/registry \
