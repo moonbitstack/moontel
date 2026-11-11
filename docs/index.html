@@ -281,7 +281,7 @@
           <span class="plate-no">05 / 05</span>
           <h2>The index.</h2>
           <p class="note">
-            Six packages, three of them subpackages, and a facade. Import the package
+            Twelve packages, five of them subpackages, and a facade. Import the package
             that owns the type you construct: a re-exported type arrives without its
             constructors. The
             complete reference, down to the last derived method, is on
@@ -352,6 +352,21 @@
           </div>
 
           <div class="index-group">
+            <h3>meter — the four instruments</h3>
+            <div class="index-row"><span class="name">MeterProvider::new</span><span class="leader"></span><span class="sig">(sink~, now~, temporality?, limits?, start?) → MeterProvider</span></div>
+            <div class="index-row"><span class="name">MeterProvider::meter</span><span class="leader"></span><span class="sig">(name~, version?, attributes?) → Meter</span></div>
+            <div class="index-row"><span class="name">collect, emit</span><span class="leader"></span><span class="sig">(at~) → Array[Metric] — what the points say · the same, written to the sink</span></div>
+            <div class="index-row"><span class="name">counter, up_down_counter, gauge</span><span class="leader"></span><span class="sig">(name, description?, unit?) → … raise</span></div>
+            <div class="index-row"><span class="name">histogram</span><span class="leader"></span><span class="sig">(name, description?, unit?, bounds?) → Histogram raise</span></div>
+            <div class="index-row"><span class="name">add, inc, set, record</span><span class="leader"></span><span class="sig">(Double, attributes?, at?, context?) → Unit</span></div>
+            <div class="index-row"><span class="name">Attributes</span><span class="leader"></span><span class="sig">new · with_attribute · get · to_array · len · identity</span></div>
+            <div class="index-row"><span class="name">gen_ai_client_attributes</span><span class="leader"></span><span class="sig">(provider~, operation~, request_model~, response_model?, agent_name?, conversation_id?) → Attributes</span></div>
+            <div class="index-row"><span class="name">default_buckets</span><span class="leader"></span><span class="sig">the metrics SDK's fifteen boundaries, 0 through 10000</span></div>
+            <div class="index-row"><span class="name">MeterLimits</span><span class="leader"></span><span class="sig">attributes 128 · series 2000 · exemplars 1 · attribute_value_length</span></div>
+            <div class="index-row"><span class="name">InstrumentKind, Refused</span><span class="leader"></span><span class="sig">Counter · UpDownCounter · Histogram · Gauge · why a name was refused</span></div>
+          </div>
+
+          <div class="index-group">
             <h3>otlp — the export</h3>
             <div class="index-row"><span class="name">TraceExporter::new</span><span class="leader"></span><span class="sig">(transport~, endpoint?, headers?, resource?, scope?, policy?, backoff?, attempts?, now~, rand~) → TraceExporter</span></div>
             <div class="index-row"><span class="name">LogsExporter, MetricsExporter</span><span class="leader"></span><span class="sig">the same shape for the other two signals</span></div>
@@ -365,6 +380,7 @@
             <div class="index-row"><span class="name">Transport, Request, Reply, Failed</span><span class="leader"></span><span class="sig">send(Request) → Reply raise · the seam a socket plugs into</span></div>
             <div class="index-row"><span class="name">Resource, Scope</span><span class="leader"></span><span class="sig">service.name and the rest · the instrumentation scope</span></div>
             <div class="index-row"><span class="name">Metric, DataPoint, Point</span><span class="leader"></span><span class="sig">a family · one series · asDouble / asInt / buckets / quantiles</span></div>
+            <div class="index-row"><span class="name">MetricSink, MetricRecorder</span><span class="leader"></span><span class="sig">accept(Metric) · the metrics kept in memory</span></div>
             <div class="index-row"><span class="name">otlp/binary.protobuf</span><span class="leader"></span><span class="sig">the binary body: the protocol's messages, generated from its schema</span></div>
             <div class="index-row"><span class="name">otlp/binary.encode_traces, encode_logs, encode_metrics</span><span class="leader"></span><span class="sig">(records, resource~, scope~) → Bytes — a body without an exporter</span></div>
             <div class="index-row"><span class="name">otlp/grpc.GrpcTransport</span><span class="leader"></span><span class="sig">connect(host, port?, encoding?) — one unary call per request on a channel</span></div>

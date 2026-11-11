@@ -37,6 +37,7 @@ PACKAGES = (
     ("propagate", "propagate"),
     ("asgi", "asgi"),
     ("log", "log"),
+    ("meter", "meter"),
     ("semconv", "semconv"),
     ("otlp", "otlp"),
     ("otlp-http", "otlp/http"),

@@ -65,7 +65,7 @@
       <main>
         <section class="page-head">
           <span class="marginalia page-kicker">Examples</span>
-          <h1 class="page-title">Six programs,<br /><em>and what they print.</em></h1>
+          <h1 class="page-title">Seven programs,<br /><em>and what they print.</em></h1>
           <p class="page-lede">
             No excerpts and no pseudo-code: each listing below is the whole file
             under <code>src/examples</code>, and each output is what that file
@@ -78,6 +78,7 @@
             <div><dt>03</dt><dd>one function, traced by an annotation</dd></div>
             <div><dt>04</dt><dd>three signals, out of the process</dd></div>
             <div><dt>05</dt><dd>the three signals, over gRPC</dd></div>
+            <div><dt>06</dt><dd>the four instruments, counted and sent</dd></div>
           </dl>
         </section>
 
@@ -958,19 +959,178 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
           </div>
         </section>
 
+        <section class="example" id="meter" data-ruler-section="06 · meter">
+          <header class="example-head">
+            <span class="plate-no">06</span>
+            <h2>meter</h2>
+            <span class="path">src/examples/06-meter/main.mbt</span>
+            <span class="run">moon run src/examples/06-meter --target native -- http://localhost:4318</span>
+          </header>
+          <div class="example-body">
+            <div class="listing"><pre><code>// Copyright 2026 Leo Cheng
+// SPDX-License-Identifier: Apache-2.0
+
+///|
+/// Four instruments, one attribute group, one exporter.
+///
+///     moon run src/examples/06-meter --target native -- http://localhost:4318
+///     moon run src/examples/06-meter --target native -- dump
+///
+/// With an endpoint the program requires the collector to be there. With `dump`
+/// it writes one `ExportMetricsServiceRequest` to standard output, which is the
+/// payload the live-check job reads back and compares against the semantic
+/// conventions. Both paths come from the same `MeterProvider::collect`.
+#coverage.skip
+async fn main {
+  let arguments = @env.args()
+  let mode = if arguments.length() &gt; 1 {
+    arguments[1]
+  } else {
+    &quot;http://localhost:4318&quot;
+  }
+  let started = 1_700_000_000_000_000_000L
+  let resource = @otlp.Resource::of_service(&quot;moontel-example&quot;)
+  // `openai` is one of the provider names the semantic conventions enumerate; a
+  // name outside that list is a value no dashboard can join on.
+  let attributes = @meter.gen_ai_client_attributes(
+    provider=&quot;openai&quot;,
+    operation=&quot;chat&quot;,
+    request_model=&quot;gpt-4o&quot;,
+    response_model=&quot;gpt-4o-2024-08-06&quot;,
+  )
+  if mode == &quot;dump&quot; {
+    let recorder = @otlp.MetricRecorder::new()
+    let provider = @meter.MeterProvider::new(
+      sink=recorder,
+      now=() =&gt; started,
+      start=started,
+    )
+    record(provider, attributes, started) catch {
+      _ =&gt; abort(&quot;an instrument name was refused&quot;)
+    }
+    println(
+      @otlp.encode_metrics(
+        provider.collect(at=started + 1_000_000L),
+        resource~,
+      ),
+    )
+    return
+  }
+  let transport = @http.HttpTransport::new()
+  let exporter = @otlp.MetricsExporter::new(
+    transport~,
+    endpoint=mode,
+    resource~,
+    now=millis,
+    rand=random_bytes,
+  )
+  let provider = @meter.MeterProvider::new(
+    sink=exporter,
+    now=millis,
+    start=started,
+  )
+  record(provider, attributes, started) catch {
+    _ =&gt; abort(&quot;an instrument name was refused&quot;)
+  }
+  // `emit` queues the metrics on the same exporter that carries spans and logs;
+  // `flush` is what puts them on the wire.
+  provider.emit(at=started + 1_000_000L) |&gt; ignore
+  let report = exporter.flush()
+  println(
+    &quot;metrics: delivered \{report.delivered}, rejected \{report.rejected}, &quot; +
+    &quot;dropped \{report.dropped}, requests \{report.attempts}&quot;,
+  )
+  if report.dropped != 0 || report.rejected != 0 || report.attempts == 0 {
+    abort(&quot;a collector was named at \{mode} and did not take every metric&quot;)
+  }
+}
+
+///|
+/// The four instruments a service would register once and write to on every
+/// request. Every name and every attribute key keeps its dots, because OTLP and
+/// the semantic conventions both spell them that way.
+fn record(
+  provider : @meter.MeterProvider,
+  attributes : @meter.Attributes,
+  started : Int64,
+) -&gt; Unit raise @meter.Refused {
+  let meter = provider.meter(name=&quot;moontel-example/orders&quot;)
+  let tokens = meter.counter(
+    &quot;gen_ai.client.token.usage&quot;,
+    description=&quot;Tokens used by the client.&quot;,
+    unit=&quot;{token}&quot;,
+  )
+  tokens.add(128.0, attributes~, at=started)
+  let duration = meter.histogram(
+    @semconv.gen_ai_client_operation_duration,
+    description=&quot;GenAI operation duration.&quot;,
+    unit=&quot;s&quot;,
+  )
+  duration.record(6.0, attributes~, at=started)
+  let active = meter.up_down_counter(
+    &quot;gen_ai.client.active.requests&quot;,
+    description=&quot;Requests in flight.&quot;,
+    unit=&quot;{request}&quot;,
+  )
+  active.add(3.0, attributes~, at=started)
+  active.add(-1.0, attributes~, at=started)
+  let depth = meter.gauge(
+    &quot;gen_ai.client.queue.depth&quot;,
+    description=&quot;Requests waiting.&quot;,
+    unit=&quot;{request}&quot;,
+  )
+  depth.set(7.0, attributes~, at=started)
+}
+
+///|
+fn millis() -&gt; Int64 {
+  @async.now()
+}
+
+///|
+fn random_bytes(width : Int32) -&gt; Bytes {
+  @moonseed.bytes(width, @system.source) catch {
+    _ =&gt; abort(&quot;the platform has no entropy source&quot;)
+  }
+}
+</code></pre></div>
+            <div class="notes">
+              <p>
+                The four instruments, one attribute group and one exporter. The counter
+                and the up-down counter are sums on the wire, differing in whether a
+                measurement may go down; the histogram fills the fifteen explicit
+                boundaries the metrics SDK specifies; the gauge keeps the last value.
+                Every name and every attribute key keeps its dots, because that is the
+                spelling a backend and a dashboard both match on.
+              </p>
+              <p>
+                <code>dump</code> writes the same payload to standard output instead of
+                sending it. The live-check job reads that body, flattens it into the
+                sample list Weaver ingests, and compares the four metrics, their units
+                and their attributes against a registry; the same payload is posted to a
+                real collector, which is where the names, units, attributes and buckets
+                are counted back out of its log.
+              </p>
+              <p class="output-label">One run, against a collector on its default HTTP port</p>
+              <pre class="output">metrics: delivered 4, rejected 0, dropped 0, requests 1</pre>
+            </div>
+          </div>
+        </section>
+
         <section class="doc-section" id="run" data-ruler-section="Run them">
           <div class="doc-mark"><span class="plate-no">04</span></div>
           <div class="doc-body">
             <h2>Run them yourself.</h2>
             <p>
-              The six programs are packages in this repository, so a checkout can
+              The seven programs are packages in this repository, so a checkout can
               run them without installing anything else:
             </p>
 <pre><code><span class="a">moon</span> run src/examples/00-hello --target native
 <span class="a">moon</span> run src/examples/01-propagate --target native
 <span class="a">moon</span> run src/examples/02-asgi --target native
 <span class="a">moon</span> run src/examples/04-otlp --target native -- http://localhost:4318
-<span class="a">moon</span> run src/examples/05-grpc --target native -- 127.0.0.1:4317</code></pre>
+<span class="a">moon</span> run src/examples/05-grpc --target native -- 127.0.0.1:4317
+<span class="a">moon</span> run src/examples/06-meter --target native -- http://localhost:4318</code></pre>
             <p>
               <code>00-hello</code> and <code>01-propagate</code> build on every
               target. <code>02-asgi</code> awaits what the application sends, and the
@@ -978,7 +1138,7 @@ metrics: delivered 2, rejected 0, dropped 0, requests 1</pre>
               that says so rather than a program that only looks like the example.
               <code>04-otlp</code> needs a socket, which the JavaScript backends do not
               have, so it is built for native and wasm only; <code>05-grpc</code> needs
-              a channel, which is a TCP connection, so it is native alone.
+              a channel, which is a TCP connection, so it is native alone; <code>06-meter</code> uses the HTTP transport and builds like <code>04-otlp</code>.
             </p>
             <p>
               The home page runs a fourth program: it compiles this library to

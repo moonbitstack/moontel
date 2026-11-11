@@ -795,11 +795,47 @@ logger.log(
         <section class="doc-section" id="metrics" data-ruler-section="Metrics">
           <div class="doc-mark"><span class="plate-no">12</span></div>
           <div class="doc-body">
-            <h2>Metrics from a snapshot.</h2>
+            <h2>Metrics from a meter.</h2>
             <p>
-              This library does not keep a meter. A program that already counts keeps
-              counting, and the bridge turns the snapshot into OTLP: one place where a
-              counter lives, and one place where it leaves.
+              The meter keeps four instruments — a counter, an up-down counter, a
+              histogram and a gauge — and a provider collects them into OTLP. Register
+              each name once and write to the handle on the request path.
+            </p>
+<pre><code><span class="k">let</span> recorder = <span class="a">@otlp.MetricRecorder</span>::new()
+<span class="k">let</span> provider = <span class="a">@meter.MeterProvider</span>::new(
+  sink=recorder,
+  now=() =&gt; <span class="n">0L</span>,
+  start=<span class="n">0L</span>,
+)
+<span class="k">let</span> attributes = <span class="a">@meter.gen_ai_client_attributes</span>(
+  provider=<span class="s">"openai"</span>,
+  operation=<span class="s">"chat"</span>,
+  request_model=<span class="s">"gpt-4o"</span>,
+)
+<span class="k">let</span> meter = provider.meter(name=<span class="s">"checkout"</span>)
+<span class="k">let</span> duration = meter.histogram(
+  <span class="s">"gen_ai.client.operation.duration"</span>,
+  description=<span class="s">"GenAI operation duration."</span>,
+  unit=<span class="s">"s"</span>,
+)
+duration.record(<span class="n">6.0</span>, attributes~, at=<span class="n">0L</span>)
+<span class="k">let</span> tokens = meter.counter(<span class="s">"gen_ai.client.token.usage"</span>, unit=<span class="s">"{token}"</span>)
+tokens.add(<span class="n">128.0</span>, attributes~, at=<span class="n">0L</span>)
+provider.emit(at=<span class="n">1_000_000L</span>) |&gt; ignore</code></pre>
+            <p>
+              Names and attribute keys keep their dots:
+              <code>gen_ai.client.operation.duration</code> is exported as written,
+              because that is the spelling a backend matches on. A histogram without
+              <code>bounds</code> uses the fifteen boundaries the metrics SDK
+              specifies, <code>0</code> through <code>10000</code>, and each point keeps
+              its own sum, count, min and max. A sampled trace context becomes an
+              exemplar, which is how a reader jumps from a slow bucket to the request
+              that filled it.
+            </p>
+            <p>
+              A program that already counts with a Prometheus-style registry does not
+              need a second set of numbers. The bridge turns the snapshot it takes into
+              OTLP metrics:
             </p>
 <pre><code><span class="k">let</span> registry = <span class="a">@metric.Registry</span>::new()
 <span class="k">let</span> latency = registry.histogram(<span class="s">"order_latency"</span>, <span class="s">"Latency."</span>, unit=<span class="s">"seconds"</span>)
@@ -841,7 +877,15 @@ latency.observe(elapsed)
             <p>
               A point counts from the start of the process (cumulative) or since the last
               export (delta), and a reader has to know which before it adds two of them.
-              The bridge always reports what the snapshot is: cumulative.
+              The bridge always reports what the snapshot is: cumulative; the meter takes
+              either, and clears a delta reader after every export.
+            </p>
+            <b>One series, one set</b>
+            <p>
+              An attribute set is identified by its keys, not by the order they were
+              written in. Two writes that name the same facts in a different order land
+              in one series, which is what makes a sum of them a truth rather than an
+              accident.
             </p>
           </aside>
         </section>
@@ -856,11 +900,6 @@ latency.observe(elapsed)
               purpose:
             </p>
             <ul>
-              <li>
-                <b>No meter.</b> Metrics are read out of a snapshot a program already
-                keeps and translated to OTLP. Counting them here would mean two answers
-                to one question.
-              </li>
               <li>
                 <b>No storage, no query, no page.</b> A collector, a hosted backend or a
                 local one reads what this sends; none of them is part of this library.

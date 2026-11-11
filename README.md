@@ -13,7 +13,8 @@
 
 OpenTelemetry for MoonBit: spans, the samplers that decide which of them to keep, the
 headers that carry a trace from one service to the next, log records written beside a
-span, and the export of all three signals to a collector.
+span, the meter that counts what a service does, and the export of all three signals
+to a collector.
 
 A request that touches five services is one trace with a tree of spans, and every
 service has to agree on the same names, the same ids and the same wire format for
@@ -359,8 +360,64 @@ structured logger: the level, the fields and the caller's file and line become a
 
 ## Metrics
 
-There is no meter here. A program that already counts keeps counting, and the bridge
-turns the snapshot it takes into OTLP metrics:
+The meter keeps four instruments: a counter, an up-down counter, a histogram and a
+gauge. Register them once, write to them on the request path, and hand the exporter
+the same object spans and logs already leave through.
+
+```moonbit
+fn record_latency(
+  provider : @meter.MeterProvider,
+  seconds : Double,
+  attributes : @meter.Attributes,
+) -> Unit raise {
+  let meter = provider.meter(name="checkout")
+  let duration = meter.histogram(
+    "gen_ai.client.operation.duration",
+    description="GenAI operation duration.",
+    unit="s",
+  )
+  duration.record(seconds, attributes~, at=0L)
+}
+
+fn collect(provider : @meter.MeterProvider) -> Array[@otlp.Metric] {
+  provider.collect(at=1_000_000L)
+}
+```
+
+`Counter::add` refuses a negative amount, `UpDownCounter::add` takes either sign,
+`Gauge::set` keeps the last value, and `Histogram::record` fills the bucket whose
+upper bound contains the measurement. Names and attribute keys keep their dots:
+`gen_ai.client.operation.duration` is exported as written, because that is the
+spelling a backend matches on.
+
+`MeterProvider::new` takes the sink that finished metrics go to and the clock the
+caller trusts. A `@otlp.MetricsExporter` is a sink, so the resource, the transport,
+the batching and the retry rules are the ones that already carry the other two
+signals. The provider also takes the temporality a reader wants, cumulative by
+default and delta for a scraper, and the limits that keep one instrument bounded.
+
+The default histogram boundaries are the fifteen values the metrics SDK specifies,
+`[0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]`; pass
+`bounds` to a histogram to use others. Each recorded point carries its own `sum`,
+`count`, `min` and `max`, and a sampled trace context becomes an exemplar, which is
+how a reader jumps from a slow bucket to the request that filled it.
+
+An attribute set is identified by its keys, not by the order they were written in.
+`Attributes::new` sorts and deduplicates, and `gen_ai_client_attributes` fills the
+GenAI group from the `semconv` constants:
+
+```moonbit
+fn chat_attributes() -> @meter.Attributes {
+  @meter.gen_ai_client_attributes(
+    provider="openai",
+    operation="chat",
+    request_model="gpt-5",
+  )
+}
+```
+
+A program that already counts with a Prometheus-style registry does not need a
+second set of numbers. The bridge turns the snapshot it takes into OTLP metrics:
 
 ```moonbit
 fn export(
@@ -398,7 +455,7 @@ matches, and this package is where the spelling lives.
 
 ## The interface
 
-Eleven packages, five of them subpackages, plus a facade that re-exports four of them.
+Twelve packages, five of them subpackages, plus a facade that re-exports five of them.
 Import the package that owns the type you construct — an enum constructor is reached
 through the package that defines it, not through the facade.
 
@@ -466,6 +523,26 @@ through the package that defines it, not through the facade.
 | `Sink` | `accept(LogRecord) -> Unit` |
 | `Recorder`, `Discard`, `Fanout`, `SpanEvents` | in memory, thrown away, several sinks, and a bridge onto the span |
 
+### `meter` — the four instruments
+
+| Item | Signature |
+|:--|:--|
+| `MeterProvider::new` | `(sink~ : &MetricSink, now~ : () -> Int64, temporality? : Temporality, limits? : MeterLimits, start? : Int64) -> MeterProvider` |
+| `MeterProvider::meter` | `(name~ : String, version? : String, attributes?) -> Meter` |
+| `MeterProvider::collect` | `(at~ : Int64) -> Array[Metric]` — the points as they stand, without writing them |
+| `MeterProvider::emit` | `(at~ : Int64) -> Array[Metric]` — collect, write every metric to the sink, and clear a delta reader |
+| `Meter::counter`, `up_down_counter`, `gauge` | `(name, description?, unit?) -> … raise Refused` |
+| `Meter::histogram` | `(name, description?, unit?, bounds? : Array[Double]) -> Histogram raise Refused` |
+| `Counter::add`, `inc` | `(value : Double, attributes?, at? : Int64, context? : TraceContext)` — `inc` adds one |
+| `UpDownCounter::add` | `(value : Double, attributes?, at?, context?)` — either sign |
+| `Gauge::set` | `(value : Double, attributes?, at?, context?)` — the last value wins |
+| `Histogram::record` | `(value : Double, attributes?, at?, context?)` — into the bucket whose upper bound contains it |
+| `Attributes` | `new`, `with_attribute`, `get`, `to_array`, `len`, `identity` |
+| `gen_ai_client_attributes` | `(provider~, operation~, request_model~, response_model?, agent_name?, conversation_id?) -> Attributes` |
+| `MeterLimits` | `attributes 128, series 2000, exemplars 1, attribute_value_length` |
+| `default_buckets` | the metrics SDK's fifteen boundaries, `0` through `10000` |
+| `InstrumentKind`, `Refused` | what a name is registered as, and why a name or a bucket list was refused |
+
 ### `otlp` — the export
 
 | Item | Signature |
@@ -483,6 +560,8 @@ through the package that defines it, not through the facade.
 | `Transport` | `async fn send(Self, Request) -> Reply raise Failed` |
 | `Resource`, `Scope` | what produced the telemetry, and which library in it did |
 | `Metric`, `MetricKind`, `DataPoint`, `Point`, `Temporality`, `Exemplar` | the OTLP metric shapes, for a producer that has its own numbers |
+| `MetricSink` | `accept(Metric) -> Unit` — where a producer writes finished metrics |
+| `MetricRecorder` | `new`, `metrics`, `len`, `take` — the metrics kept in memory |
 
 ### `otlp/http`, `otlp/p8s`, `semconv`
 
@@ -513,14 +592,31 @@ letter or a digit, then up to 255 characters from `a-z`, `0-9`, `_`, `-`, `*`, `
 and `foo@@bar` travel through. A key that starts with `@`, carries anything else, or
 runs past 256 characters still drops the header.
 
+## Conformance
+
+- **W3C Trace Context.** The official suite in `integration/trace-context` drives a hop
+  built on this library, and every case passes.
+- **OTLP.** `otel/opentelemetry-collector-contrib` 0.164.0 decodes spans, log records
+  and metrics on HTTP/JSON, HTTP/JSON with gzip, HTTP/protobuf and gRPC. The CI job
+  reads the collector's log and counts each item on each transport.
+- **Metrics.** `weaver registry live-check` runs against two registries. Against
+  `integration/weaver/registry`, which describes the four instruments of
+  `src/examples/06-meter`, it reports four metrics, four data points, registry coverage
+  1.0 and no advisory. Against the GenAI semantic conventions pinned at `aa3b7f4` it
+  recognises `gen_ai.client.operation.duration` and the four GenAI attributes. Four
+  advisories remain, and they are known: the three demonstration names
+  (`gen_ai.client.token.usage`, `gen_ai.client.active.requests`,
+  `gen_ai.client.queue.depth`) are not in that registry, and `service.name` is a
+  resource attribute it does not define. The remaining improvements are stability
+  levels — every GenAI metric is still `development` upstream — and the optional
+  `server.address`, `server.port` and `error.type` attributes.
+
 ## What this is not
 
-- **No meter.** Metrics are read out of a snapshot a program already keeps and
-  translated to OTLP; nothing is counted twice.
 - **No storage, no query, no page.** A collector or a hosted backend reads what this
   sends.
 - **No clock, no sockets, no framework.** A tracer is handed its times, its ids and its
-  destination; a transport is handed a request.
+  destination; a meter is handed its clock; a transport is handed a request.
 
 ## Examples
 
@@ -531,6 +627,7 @@ moon run src/examples/02-asgi         # the middleware over an application
 moon run src/examples/03-annotated    # the annotation, and the wrapper it generates
 moon run src/examples/04-otlp         # three signals, to a collector
 moon run src/examples/05-grpc         # the same three signals, over gRPC
+moon run src/examples/06-meter        # the four instruments, to a collector or a live check
 ```
 
 ## Licence

@@ -1,6 +1,6 @@
 ---
 name: moontel
-description: "OpenTelemetry for MoonBit: spans, samplers, the W3C headers that carry a trace between services, log records written beside a span, and export of all three signals to a collector over OTLP. Use it to add tracing to a MoonBit service, to join a trace that arrives with a request, or to send spans, logs and metrics somewhere that reads them."
+description: "OpenTelemetry for MoonBit: spans, samplers, the W3C headers that carry a trace between services, log records written beside a span, a meter with counters, up-down counters, histograms and gauges, and export of all three signals to a collector over OTLP. Use it to add tracing or metrics to a MoonBit service, to join a trace that arrives with a request, or to send spans, logs and metrics somewhere that reads them."
 ---
 
 # moontel
@@ -14,13 +14,14 @@ moon add moonbitstack/moontel
 | `moonbitstack/moontel/trace` | spans, samplers, the `Sink` a finished span goes to |
 | `moonbitstack/moontel/propagate` | `traceparent`, `tracestate` and `baggage` |
 | `moonbitstack/moontel/log` | records, a logger, sinks |
+| `moonbitstack/moontel/meter` | counters, up-down counters, histograms, gauges |
 | `moonbitstack/moontel/otlp` | the export: queue, batch, retry, the JSON body |
 | `moonbitstack/moontel/otlp/http` | the transport over an HTTP connection |
 | `moonbitstack/moontel/otlp/binary` | the binary body, when the collector wants protobuf |
 | `moonbitstack/moontel/otlp/grpc` | the same body over one unary call |
 | `moonbitstack/moontel/semconv` | the GenAI semantic conventions as constants |
 
-`moonbitstack/moontel` itself is a facade that re-exports the first four.
+`moonbitstack/moontel` itself is a facade that re-exports the first five.
 
 ## Trace a unit of work
 
@@ -123,6 +124,55 @@ async fn grpc_exporter(now : () -> Int64, rand : (Int32) -> Bytes) -> @otlp.Trac
 }
 ```
 
+## Count what a service does
+
+The meter keeps four instruments. Register a name once, keep the handle, and write
+to it on the request path.
+
+```moonbit
+fn instrument(provider : @meter.MeterProvider, seconds : Double) -> Unit raise {
+  let attributes = @meter.gen_ai_client_attributes(
+    provider="openai",
+    operation="chat",
+    request_model="gpt-4o",
+  )
+  let meter = provider.meter(name="checkout")
+  let duration = meter.histogram(
+    "gen_ai.client.operation.duration",
+    description="GenAI operation duration.",
+    unit="s",
+  )
+  duration.record(seconds, attributes~, at=0L)
+  let tokens = meter.counter("gen_ai.client.token.usage", unit="{token}")
+  tokens.add(128.0, attributes~, at=0L)
+  let in_flight = meter.up_down_counter(
+    "gen_ai.client.active.requests",
+    unit="{request}",
+  )
+  in_flight.add(1.0, attributes~, at=0L)
+  in_flight.add(-1.0, attributes~, at=0L)
+  let depth = meter.gauge("gen_ai.client.queue.depth", unit="{request}")
+  depth.set(0.0, attributes~, at=0L)
+}
+
+fn meter_for(exporter : @otlp.MetricsExporter, now : () -> Int64) -> @meter.MeterProvider {
+  @meter.MeterProvider::new(sink=exporter, now~, start=now())
+}
+
+fn write_metrics(provider : @meter.MeterProvider) -> Array[@otlp.Metric] {
+  provider.emit(at=1_000_000L)
+}
+```
+
+`@otlp.MetricsExporter` is a `@otlp.MetricSink`, so the meter writes through the same
+exporter, resource and transport as spans and logs. `collect` returns the points
+without writing them; `emit` writes them and, for a delta reader, clears the
+accumulations afterwards.
+
+A histogram without `bounds` uses the fifteen boundaries the metrics SDK specifies,
+`[0, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000]`. Pass a
+sampled `@trace.TraceContext` as `context?` to keep an exemplar beside the series.
+
 ## Rules that catch people out
 
 - A tracer is handed `rand~` and times; it never reads either itself. The same tracer
@@ -138,3 +188,13 @@ async fn grpc_exporter(now : () -> Int64, rand : (Int32) -> Bytes) -> @otlp.Trac
 - A span past the library's limits drops the write and counts it in
   `SpanData::dropped`; it does not fail the call.
 - `semconv` is constants only. A key spelled by hand is a key no dashboard matches.
+- A counter's `add` ignores a negative or non-finite amount; an up-down counter takes
+  either sign; a gauge's `set` replaces the value instead of adding to it.
+- One name is one instrument, case-insensitively. Registering the same name as a
+  second kind raises `@meter.Refused`, rather than silently changing what the series
+  means.
+- Attribute keys keep their dots. Sorting and deduplication happen inside
+  `@meter.Attributes`; rewriting a key into underscores breaks the match.
+- The meter reads no clock: `MeterProvider::new` takes `now~`, and `collect` and
+  `emit` take `at~`. A histogram past its cardinality limit drops the new series and
+  counts it in `MeterProvider::dropped`.
