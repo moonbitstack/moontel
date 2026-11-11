@@ -1978,10 +1978,12 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
                 <h2>meter</h2>
                 <code>moonbitstack/moontel/meter</code>
                 <p>
-                  The OTel-style meter: a counter, an up-down counter, a histogram and
-                  a gauge, the attribute set that identifies their series, and the
-                  provider that collects them into OTLP metrics. It reads no clock and
-                  opens no socket; finished metrics leave through a
+                  The OTel-style meter: the instruments written as the program runs, the
+                  three that report at collection time, an exponential histogram whose
+                  buckets follow the measurements, the views that decide what reaches
+                  the wire, the attribute set that identifies a series, and the provider
+                  that collects all of it into OTLP metrics. It reads no clock and opens
+                  no socket; finished metrics leave through a
                   <code>MetricSink</code>, which the exporter already is.
                 </p>
               </header>
@@ -2021,6 +2023,21 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <div class="api-doc"><p>An empty set of bucket counts: one per finite boundary, plus the overflow.</p></div>
 </article>
+<article class="api-entry" id="meter-exponential_bucket_count" data-name="exponential_bucket_count">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">exponential_bucket_count</code><code class="api-sig">(@otlp.Point) -&gt; Int32</code></span>
+  </div>
+  <div class="api-doc"><p>How many buckets a point of an exponential histogram uses, both sides together.</p></div>
+</article>
+<article class="api-entry" id="meter-exponential_index" data-name="exponential_index">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">exponential_index</code><code class="api-sig">(Double, Int32) -&gt; Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The bucket a positive measurement belongs to, at this scale.</p>
+<p>Bucket <code>i</code> covers <code>(2^(i/2^scale), 2^((i+1)/2^scale)]</code>: the upper bound is part of the bucket, as it is for an explicit boundary, so a value that lands exactly on a boundary is counted in the lower bucket rather than the upper one.</p></div>
+</article>
 <article class="api-entry" id="meter-gen_ai_client_attributes" data-name="gen_ai_client_attributes">
   <div class="api-line">
     <span class="api-kind">fn</span>
@@ -2050,12 +2067,35 @@ sink, and the <code>sampled</code> bit stays clear so its children are dropped t
   </div>
   <div class="api-doc"><p>Whether <code>name</code> is an instrument name the specification allows.</p></div>
 </article>
+<article class="api-entry" id="meter-max_exponential_buckets" data-name="max_exponential_buckets">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">max_exponential_buckets</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The most buckets one exponential histogram may use.</p>
+<p>Source: the OpenTelemetry Metrics SDK specification, "Exponential Histogram Aggregations", the <code>MaxSize</code> row of the aggregation's parameter table, which states the default as 160: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/sdk.md#exponential-bucket-histogram-aggregation</p>
+<p>A measurement whose bucket is not among the ones in use takes a new one; when the count would pass this limit the buckets are merged in pairs and <code>scale</code> drops by one, which is what keeps the memory one instrument may take bounded without giving up resolution where the measurements actually are.</p></div>
+</article>
+<article class="api-entry" id="meter-max_exponential_scale" data-name="max_exponential_scale">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">max_exponential_scale</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The finest scale the SDK defines: a bucket spans a ratio of <code>2^(2^-20)</code>, about 1.00000095.</p></div>
+</article>
 <article class="api-entry" id="meter-meter_limits" data-name="meter_limits">
   <div class="api-line">
     <span class="api-kind">let</span>
     <span class="api-call"><code class="api-name">meter_limits</code><code class="api-sig">: MeterLimits</code></span>
   </div>
   <div class="api-doc"><p>The OpenTelemetry defaults, from the metrics SDK specification's attribute limits and cardinality limit sections.</p></div>
+</article>
+<article class="api-entry" id="meter-min_exponential_scale" data-name="min_exponential_scale">
+  <div class="api-line">
+    <span class="api-kind">let</span>
+    <span class="api-call"><code class="api-name">min_exponential_scale</code><code class="api-sig">: Int32</code></span>
+  </div>
+  <div class="api-doc"><p>The coarsest scale the SDK defines. At <code>-10</code> a bucket spans a ratio of <code>2^1024</code>, which is wider than the range of a double, so the whole positive range is one bucket.</p></div>
 </article>
 </div>
 <div class="api-group">
@@ -2097,6 +2137,42 @@ it, at this position in the list.</p>
 </div>
 <div class="api-group">
   <h3 class="api-group-title">Types and methods</h3>
+<article class="api-entry api-type" id="meter-Aggregation" data-name="Aggregation">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">Aggregation</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>How a stream turns measurements into a point.</p>
+<p>The aggregation is chosen by the instrument unless a view overrides it, which is what lets one program export a duration both as an explicit-bucket histogram and as an exponential one without recording it twice.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>Sum</code>
+      <p>A running total. A monotonic sum only grows; a non-monotonic one takes either
+sign.</p>
+    </div>
+    <div class="api-variant">
+      <code>LastValue</code>
+      <p>The most recent measurement.</p>
+    </div>
+    <div class="api-variant">
+      <code>ExplicitBuckets(bounds~ : Array[Double])</code>
+      <p>A distribution over these boundaries, the last count being everything above
+the last bound.</p>
+    </div>
+    <div class="api-variant">
+      <code>ExponentialBuckets(scale~ : Int32, max_buckets~ : Int32)</code>
+      <p>A base-2 distribution whose buckets split and merge so that no more than
+<code>max_buckets</code> are in use. <code>scale</code> is where it starts: the finer the scale, the
+more buckets a given range of measurements takes.</p>
+    </div>
+    <div class="api-variant">
+      <code>Drop</code>
+      <p>Nothing: the instrument is registered and its measurements are thrown away.</p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
 <article class="api-entry api-type" id="meter-Attributes" data-name="Attributes">
   <div class="api-line">
     <span class="api-kind">struct</span>
@@ -2193,6 +2269,58 @@ it, at this position in the list.</p>
 </article>
   </div>
 </article>
+<article class="api-entry api-type" id="meter-ExemplarFilter" data-name="ExemplarFilter">
+  <div class="api-line">
+    <span class="api-kind">enum</span>
+    <span class="api-call"><code class="api-name">ExemplarFilter</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>Which measurements are kept as exemplars.</p>
+<p>An exemplar is a sample of what a number was made of: the trace id and span id of one request that landed in that bucket, so a reader can jump from "the ninth bucket doubled" to the request behind it.</p>
+<p>The default is <code>TraceBased</code>, which is the metrics SDK's default and the only filter that keeps the promise the jump makes: an exemplar from a trace that was not sampled names a span no backend holds, and one with no context at all names nothing.</p></div>
+  <div class="api-variants">
+    <div class="api-variant">
+      <code>AlwaysOn</code>
+      <p>Keep every measurement, with or without a trace context.</p>
+    </div>
+    <div class="api-variant">
+      <code>AlwaysOff</code>
+      <p>Keep none.</p>
+    </div>
+    <div class="api-variant">
+      <code>TraceBased</code>
+      <p>Keep a measurement only when it arrived inside a sampled trace.</p>
+    </div>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
+</article>
+<article class="api-entry api-type" id="meter-ExponentialHistogram" data-name="ExponentialHistogram">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ExponentialHistogram</code></span>
+  </div>
+  <div class="api-doc"><p>A distribution whose buckets adapt to the measurements.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>provider</dt>
+      <dd>MeterProvider</dd>
+    </div>
+    <div>
+      <dt>index</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="meter-ExponentialHistogram-record" data-name="ExponentialHistogram::record">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">ExponentialHistogram::record</code><code class="api-sig">(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Record one measurement into the exponential bucket that contains it.</p>
+<p>A bucket grows with the value it holds, so a millisecond and a minute are both resolved finely with one set of buckets; when the measurements spread out enough to need more than <code>max_buckets</code>, neighbouring buckets merge and the scale drops. The scale a point was written at is on the point, so a reader never has to guess it.</p></div>
+</article>
+  </div>
+</article>
 <article class="api-entry api-type" id="meter-Gauge" data-name="Gauge">
   <div class="api-line">
     <span class="api-kind">struct</span>
@@ -2251,7 +2379,7 @@ it, at this position in the list.</p>
     <span class="api-kind">struct</span>
     <span class="api-call"><code class="api-name">Instrument</code></span>
   </div>
-  <div class="api-doc"><p>What every instrument of one name shares.</p></div>
+  <div class="api-doc"><p>What every stream of one name shares.</p></div>
   <dl class="api-fields">
     <div>
       <dt>name</dt>
@@ -2274,12 +2402,24 @@ it, at this position in the list.</p>
       <dd>Array[Double]</dd>
     </div>
     <div>
+      <dt>max_buckets</dt>
+      <dd>Int32</dd>
+    </div>
+    <div>
       <dt>limits</dt>
       <dd>MeterLimits</dd>
     </div>
     <div>
       <dt>temporality</dt>
       <dd>@otlp.Temporality</dd>
+    </div>
+    <div>
+      <dt>exemplar</dt>
+      <dd>ExemplarFilter</dd>
+    </div>
+    <div>
+      <dt>current</dt>
+      <dd>() -&gt; @trace.TraceContext?</dd>
     </div>
     <div>
       <dt>now</dt>
@@ -2290,8 +2430,13 @@ it, at this position in the list.</p>
       <dd>Int64</dd>
     </div>
     <div>
-      <dt>series</dt>
-      <dd>@ref.Ref[Array[Series]]</dd>
+      <dt>observe</dt>
+      <dd>((Observer) -&gt; Unit)?</dd>
+      <dd class="api-field-doc"><p>The callback an observable instrument reports through, run once per collection.</p></dd>
+    </div>
+    <div>
+      <dt>streams</dt>
+      <dd>Array[Stream]</dd>
     </div>
     <div>
       <dt>dropped</dt>
@@ -2305,7 +2450,8 @@ it, at this position in the list.</p>
     <span class="api-call"><code class="api-name">InstrumentKind</code></span>
     <span class="api-meta">Eq · Debug</span>
   </div>
-  <div class="api-doc"><p>Which of the four synchronous instruments a name belongs to.</p>
+  <div class="api-doc"><p>Which instrument a name belongs to.</p>
+<p>The first four are written to as the program runs. The three <code>Observable</code> ones are read when the metrics are collected: the program registers a callback, and the callback reports the values that are true at that moment. An exponential histogram is a histogram whose buckets adapt to the measurements rather than being fixed.</p>
 <p>The OTLP exporter has its own kinds because a reader sees a sum, a gauge, a histogram or a summary; this one says what the producer is allowed to do. A counter and an up-down counter are both sums on the wire, but only one of them may go down.</p></div>
   <div class="api-variants">
     <div class="api-variant">
@@ -2322,6 +2468,22 @@ it, at this position in the list.</p>
     </div>
     <div class="api-variant">
       <code>Gauge</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>ObservableCounter</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>ObservableUpDownCounter</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>ObservableGauge</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
+      <code>ExponentialHistogram</code>
       <p></p>
     </div>
   </div>
@@ -2350,14 +2512,22 @@ it, at this position in the list.</p>
     <span class="api-kind">fn</span>
     <span class="api-call"><code class="api-name">Meter::counter</code><code class="api-sig">(Self, String, description? : String, unit? : String) -&gt; Counter raise Refused</code></span>
   </div>
-  <div class="api-doc"><p>A monotonic sum. <code>add</code> with a negative amount is ignored.</p></div>
+  <div class="api-doc"><p>A monotonic sum, written as the program runs. <code>add</code> with a negative amount is ignored.</p></div>
+</article>
+<article class="api-entry api-method" id="meter-Meter-exponential_histogram" data-name="Meter::exponential_histogram">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Meter::exponential_histogram</code><code class="api-sig">(Self, String, description? : String, unit? : String, scale? : Int32, max_buckets? : Int32) -&gt; ExponentialHistogram raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>A distribution whose buckets follow the measurements.</p>
+<p><code>scale</code> is where it starts — 20 is the finest the SDK defines, and each step down halves the resolution and doubles what one bucket covers — and <code>max_buckets</code> is how many buckets it may use before the scale drops, 160 by default. The point carries the scale it ended at, so a reader never has to guess what a bucket index means.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-Meter-gauge" data-name="Meter::gauge">
   <div class="api-line">
     <span class="api-kind">fn</span>
     <span class="api-call"><code class="api-name">Meter::gauge</code><code class="api-sig">(Self, String, description? : String, unit? : String) -&gt; Gauge raise Refused</code></span>
   </div>
-  <div class="api-doc"><p>The most recent value of a series.</p></div>
+  <div class="api-doc"><p>The most recent value of a series, written as the program runs.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-Meter-histogram" data-name="Meter::histogram">
   <div class="api-line">
@@ -2365,6 +2535,28 @@ it, at this position in the list.</p>
     <span class="api-call"><code class="api-name">Meter::histogram</code><code class="api-sig">(Self, String, description? : String, unit? : String, bounds? : Array[Double]) -&gt; Histogram raise Refused</code></span>
   </div>
   <div class="api-doc"><p>A distribution over <code>bounds</code>, which default to the OpenTelemetry SDK's explicit bucket boundaries. The unit on the instrument is the unit of every boundary and of every recorded value.</p></div>
+</article>
+<article class="api-entry api-method" id="meter-Meter-observable_counter" data-name="Meter::observable_counter">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Meter::observable_counter</code><code class="api-sig">(Self, String, description? : String, unit? : String, observe~ : (Observer) -&gt; Unit) -&gt; ObservableCounter raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>A monotonic sum whose value is reported when the metrics are collected.</p>
+<p>The callback runs once per collection and reports the totals that are true at that moment. A cumulative reader sees the total; a delta reader sees what changed since the last export.</p></div>
+</article>
+<article class="api-entry api-method" id="meter-Meter-observable_gauge" data-name="Meter::observable_gauge">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Meter::observable_gauge</code><code class="api-sig">(Self, String, description? : String, unit? : String, observe~ : (Observer) -&gt; Unit) -&gt; ObservableGauge raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>A value reported when the metrics are collected, such as a queue depth or a temperature: a number that is what it is rather than a total of anything.</p></div>
+</article>
+<article class="api-entry api-method" id="meter-Meter-observable_up_down_counter" data-name="Meter::observable_up_down_counter">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Meter::observable_up_down_counter</code><code class="api-sig">(Self, String, description? : String, unit? : String, observe~ : (Observer) -&gt; Unit) -&gt; ObservableUpDownCounter raise Refused</code></span>
+  </div>
+  <div class="api-doc"><p>A sum either sign of which is reported when the metrics are collected.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-Meter-scope" data-name="Meter::scope">
   <div class="api-line">
@@ -2378,7 +2570,7 @@ it, at this position in the list.</p>
     <span class="api-kind">fn</span>
     <span class="api-call"><code class="api-name">Meter::up_down_counter</code><code class="api-sig">(Self, String, description? : String, unit? : String) -&gt; UpDownCounter raise Refused</code></span>
   </div>
-  <div class="api-doc"><p>A sum that may go up or down.</p></div>
+  <div class="api-doc"><p>A sum that may go up or down, written as the program runs.</p></div>
 </article>
   </div>
 </article>
@@ -2445,6 +2637,18 @@ it, at this position in the list.</p>
       <dd>MeterLimits</dd>
     </div>
     <div>
+      <dt>exemplar</dt>
+      <dd>ExemplarFilter</dd>
+    </div>
+    <div>
+      <dt>current</dt>
+      <dd>() -&gt; @trace.TraceContext?</dd>
+    </div>
+    <div>
+      <dt>views</dt>
+      <dd>Array[View]</dd>
+    </div>
+    <div>
       <dt>start</dt>
       <dd>Int64</dd>
     </div>
@@ -2459,8 +2663,8 @@ it, at this position in the list.</p>
     <span class="api-kind">fn</span>
     <span class="api-call"><code class="api-name">MeterProvider::collect</code><code class="api-sig">(Self, at~ : Int64) -&gt; Array[@otlp.Metric]</code></span>
   </div>
-  <div class="api-doc"><p>The metrics accumulated so far, dated <code>at</code>, in registration order.</p>
-<p>Collection does not change what a cumulative reader sees: the same points can be collected again, or handed to more than one sink. <code>emit</code> is the call that also writes them to the sink.</p></div>
+  <div class="api-doc"><p>The metrics as they stand, dated <code>at</code>, in registration order.</p>
+<p>An observable instrument's callback is run first, because its value is defined as what the callback says at that moment; every instrument then contributes one metric per stream. Collection does not clear a cumulative reader's numbers, so the same points can be read again or handed to more than one sink. <code>emit</code> is the call that also writes them to the sink.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-MeterProvider-dropped" data-name="MeterProvider::dropped">
   <div class="api-line">
@@ -2476,6 +2680,13 @@ it, at this position in the list.</p>
   </div>
   <div class="api-doc"><p>Collect and hand every metric to the sink.</p>
 <p>With delta temporality the accumulations are cleared afterwards, so one measurement is never counted in two consecutive exports. With cumulative temporality they are kept, and a restart of the process is what resets them.</p></div>
+</article>
+<article class="api-entry api-method" id="meter-MeterProvider-exemplar_filter" data-name="MeterProvider::exemplar_filter">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">MeterProvider::exemplar_filter</code><code class="api-sig">(Self) -&gt; ExemplarFilter</code></span>
+  </div>
+  <div class="api-doc"><p>Which measurements this provider keeps as exemplars.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-MeterProvider-len" data-name="MeterProvider::len">
   <div class="api-line">
@@ -2501,10 +2712,11 @@ it, at this position in the list.</p>
 <article class="api-entry api-method" id="meter-MeterProvider-new" data-name="MeterProvider::new">
   <div class="api-line">
     <span class="api-kind">fn</span>
-    <span class="api-call"><code class="api-name">MeterProvider::new</code><code class="api-sig">(sink~ : &amp;@otlp.MetricSink, now~ : () -&gt; Int64, temporality? : @otlp.Temporality, limits? : MeterLimits, start? : Int64) -&gt; Self</code></span>
+    <span class="api-call"><code class="api-name">MeterProvider::new</code><code class="api-sig">(sink~ : &amp;@otlp.MetricSink, now~ : () -&gt; Int64, temporality? : @otlp.Temporality, limits? : MeterLimits, exemplar? : ExemplarFilter, current? : () -&gt; @trace.TraceContext?, views? : Array[View], start? : Int64) -&gt; Self</code></span>
   </div>
   <div class="api-doc"><p>A provider writing finished metrics to <code>sink</code>, timed by <code>now</code>.</p>
-<p><code>temporality</code> is the reader's choice: cumulative is what the OTLP exporters of most backends want, delta is what a Prometheus-style scraper wants. <code>start</code> is when the process began accumulating, in nanoseconds; it defaults to the first reading of <code>now</code>.</p></div>
+<p><code>temporality</code> is the reader's choice: cumulative is what the OTLP exporters of most backends want, delta is what a Prometheus-style scraper wants. <code>start</code> is when the process began accumulating, in nanoseconds; it defaults to the first reading of <code>now</code>.</p>
+<p><code>views</code> is how a program decides what the metrics look like without touching the call sites — a name, a description, which attributes survive, how the measurements are aggregated, or that an instrument is not wanted at all. <code>exemplar</code> says which measurements are worth keeping beside a bucket, and <code>current</code> says which span a measurement belongs to when the call site does not name one: hand it the span the request is in, and an exemplar points at that request.</p></div>
 </article>
 <article class="api-entry api-method" id="meter-MeterProvider-temporality" data-name="MeterProvider::temporality">
   <div class="api-line">
@@ -2513,6 +2725,92 @@ it, at this position in the list.</p>
   </div>
   <div class="api-doc"><p>Which temporality this provider exports.</p></div>
 </article>
+<article class="api-entry api-method" id="meter-MeterProvider-views" data-name="MeterProvider::views">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">MeterProvider::views</code><code class="api-sig">(Self) -&gt; Array[View]</code></span>
+  </div>
+  <div class="api-doc"><p>The views this provider applies to the instruments registered with it.</p></div>
+</article>
+  </div>
+</article>
+<article class="api-entry api-type" id="meter-ObservableCounter" data-name="ObservableCounter">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ObservableCounter</code></span>
+  </div>
+  <div class="api-doc"><p>A monotonic sum whose value is reported when the metrics are collected.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>provider</dt>
+      <dd>MeterProvider</dd>
+    </div>
+    <div>
+      <dt>index</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="meter-ObservableGauge" data-name="ObservableGauge">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ObservableGauge</code></span>
+  </div>
+  <div class="api-doc"><p>A value reported when the metrics are collected.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>provider</dt>
+      <dd>MeterProvider</dd>
+    </div>
+    <div>
+      <dt>index</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="meter-ObservableUpDownCounter" data-name="ObservableUpDownCounter">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">ObservableUpDownCounter</code></span>
+  </div>
+  <div class="api-doc"><p>A sum either sign of which is reported when the metrics are collected.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>provider</dt>
+      <dd>MeterProvider</dd>
+    </div>
+    <div>
+      <dt>index</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="meter-Observer" data-name="Observer">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Observer</code></span>
+  </div>
+  <div class="api-doc"><p>What an observable instrument's callback writes through.</p>
+<p>The observer is handed to the callback at the moment of collection and is only valid then: it writes into the series that collection is reading, so a value reported while nothing is being collected would have nowhere to go. Keeping it a value passed in — rather than a global the callback has to find — is what makes two providers in one process independent.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>provider</dt>
+      <dd>MeterProvider</dd>
+    </div>
+    <div>
+      <dt>index</dt>
+      <dd>Int32</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="meter-Observer-observe" data-name="Observer::observe">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">Observer::observe</code><code class="api-sig">(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -&gt; Unit</code></span>
+  </div>
+  <div class="api-doc"><p>Report the value of this series as it stands now.</p>
+<p>The callback of an observable counter runs at each collection, and what it observes replaces what was observed before: the value is a total, not an increment. A delta reader is given the difference between two collections, which is what makes an observed total usable by a scraper that wants per-interval numbers.</p></div>
+</article>
   </div>
 </article>
 <article class="api-entry api-type" id="meter-Series" data-name="Series">
@@ -2520,7 +2818,7 @@ it, at this position in the list.</p>
     <span class="api-kind">struct</span>
     <span class="api-call"><code class="api-name">Series</code></span>
   </div>
-  <div class="api-doc"><p>One series of one instrument: its attribute set, when it began, and the accumulated point that will be exported.</p>
+  <div class="api-doc"><p>One series of one stream: its attribute set, when it began, and the accumulated point that will be exported.</p>
 <p>The point is the OTLP shape itself. Accumulating it in place means collection has nothing to translate, and the JSON and protobuf encoders see the same numbers a hand-built metric would carry.</p></div>
   <dl class="api-fields">
     <div>
@@ -2542,6 +2840,41 @@ it, at this position in the list.</p>
     <div>
       <dt>exemplars</dt>
       <dd>Array[@otlp.Exemplar]</dd>
+    </div>
+    <div>
+      <dt>reported</dt>
+      <dd>Double?</dd>
+      <dd class="api-field-doc"><p>What an observable instrument reported at the last export, so a delta reader sees the change rather than the total. Unused by the synchronous instruments, whose delta is the accumulation since the last export.</p></dd>
+    </div>
+  </dl>
+</article>
+<article class="api-entry api-type" id="meter-Stream" data-name="Stream">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">Stream</code></span>
+  </div>
+  <div class="api-doc"><p>One way of seeing an instrument: its name, its aggregation, which attributes survive, and the series written under it.</p>
+<p>An instrument with no view over it has one stream, which is the instrument as it was registered. A view that renames it, aggregates it differently or drops some attributes adds a stream of its own, so the same measurement can reach a backend twice — once coarse and once fine — without being recorded twice.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>name</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>description</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>aggregation</dt>
+      <dd>Aggregation</dd>
+    </div>
+    <div>
+      <dt>attribute_keys</dt>
+      <dd>Array[String]?</dd>
+    </div>
+    <div>
+      <dt>series</dt>
+      <dd>Array[Series]</dd>
     </div>
   </dl>
 </article>
@@ -2570,6 +2903,53 @@ it, at this position in the list.</p>
   <div class="api-doc"><p>Add a positive or negative amount. Only non-finite values are ignored.</p></div>
 </article>
   </div>
+</article>
+<article class="api-entry api-type" id="meter-View" data-name="View">
+  <div class="api-line">
+    <span class="api-kind">struct</span>
+    <span class="api-call"><code class="api-name">View</code></span>
+    <span class="api-meta">Eq · Debug</span>
+  </div>
+  <div class="api-doc"><p>What a view does to the instruments it selects.</p>
+<p>A view is how a program decides what a metric looks like without touching the call sites: the name on the wire, the description, which attributes survive, and how the measurements are aggregated. One instrument can be seen through several views, and each view that is not <code>Drop</code> is a stream of its own on the wire.</p>
+<p><code>instrument</code> is the instrument's name, or <code>*</code> for every instrument. Matching is case-insensitive, as instrument names are.</p></div>
+  <dl class="api-fields">
+    <div>
+      <dt>instrument</dt>
+      <dd>String</dd>
+    </div>
+    <div>
+      <dt>kind</dt>
+      <dd>InstrumentKind?</dd>
+    </div>
+    <div>
+      <dt>name</dt>
+      <dd>String?</dd>
+    </div>
+    <div>
+      <dt>description</dt>
+      <dd>String?</dd>
+    </div>
+    <div>
+      <dt>attribute_keys</dt>
+      <dd>Array[String]?</dd>
+    </div>
+    <div>
+      <dt>aggregation</dt>
+      <dd>Aggregation?</dd>
+    </div>
+  </dl>
+  <div class="api-methods">
+<article class="api-entry api-method" id="meter-View-new" data-name="View::new">
+  <div class="api-line">
+    <span class="api-kind">fn</span>
+    <span class="api-call"><code class="api-name">View::new</code><code class="api-sig">(instrument? : String, kind? : InstrumentKind, name? : String, description? : String, attribute_keys? : Array[String], aggregation? : Aggregation) -&gt; Self</code></span>
+  </div>
+  <div class="api-doc"><p>A view over one instrument, or over every instrument.</p>
+<p><code>kind</code> widens the selection to a type of instrument, so one view can catch the four sums a library registers without naming each. <code>attribute_keys</code> is an allowlist: the keys named survive, the rest are dropped before the series are formed, which is how a program keeps a high-cardinality key such as a request id off the wire. <code>Some([])</code> keeps no attribute at all.</p></div>
+</article>
+  </div>
+  <p class="api-derived">Also on the type: <code>equal</code> · <code>not_equal</code> · <code>to_repr</code> — derived, or required by an implementation above.</p>
 </article>
 </div>
 <!-- END meter -->
@@ -3937,6 +4317,10 @@ it, at this position in the list.</p>
       <p></p>
     </div>
     <div class="api-variant">
+      <code>ExponentialHistogram(temporality~ : Temporality)</code>
+      <p></p>
+    </div>
+    <div class="api-variant">
       <code>Summary</code>
       <p></p>
     </div>
@@ -3989,7 +4373,7 @@ it, at this position in the list.</p>
     <span class="api-meta">MetricSink</span>
   </div>
   <div class="api-doc"><p>Metric export: posts what a collector hands it to <code>/v1/metrics</code>.</p>
-<p>A producer can be either the <code>meter</code> package, which accumulates the four OTel instruments, or <code>otlp/p8s</code>, which reads the snapshot of a registry a program already keeps. Both hand this exporter the same <a href="#otlp-Metric"><code>Metric</code></a> shape, so the wire format, the batching and the resource are one implementation no matter who counted.</p></div>
+<p>A producer can be either the <code>meter</code> package, which accumulates the instruments the specification defines and observes, or <code>otlp/p8s</code>, which reads the snapshot of a registry a program already keeps. Both hand this exporter the same <a href="#otlp-Metric"><code>Metric</code></a> shape, so the wire format, the batching and the resource are one implementation no matter who counted.</p></div>
   <dl class="api-fields">
     <div>
       <dt>outbox</dt>
@@ -4050,6 +4434,15 @@ it, at this position in the list.</p>
       <p>A histogram: the finite upper bounds of its buckets, one more count than
 there are bounds — the last count is everything above the last bound, which is
 how OTLP states the <code>+Inf</code> bucket.</p>
+    </div>
+    <div class="api-variant">
+      <code>ExponentialBuckets(scale~ : Int32, zero_count~ : Int64, positive_offset~ : Int32, positive_counts~ : Array[Int64], negative_offset~ : Int32, negative_counts~ : Array[Int64], sum~ : Double, count~ : Int64, min~ : Double?, max~ : Double?)</code>
+      <p>An exponential histogram: buckets whose width grows with the value, so a
+measurement near zero can be told apart as finely as one near a million. A
+bucket at index <code>i</code> covers <code>(2^(i/2^scale), 2^((i+1)/2^scale)]</code>, and only the
+buckets in use are carried — <code>offset</code> is the index of the first one. The
+negative side is mirrored, and measurements of exactly zero are counted
+separately.</p>
     </div>
     <div class="api-variant">
       <code>Quantiles(quantiles~ : Array[(Double, Double)], sum~ : Double, count~ : Int64)</code>

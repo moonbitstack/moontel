@@ -443,6 +443,16 @@ fn metric_message(metric : @otlp.Metric) -> Metric {
       histogram.set_aggregation_temporality(@otlp.temporality_code(temporality))
       Metric_Data::Histogram(histogram)
     }
+    @otlp.ExponentialHistogram(temporality~) => {
+      let histogram = ExponentialHistogram::new()
+      fill(
+        histogram.data_points,
+        metric.points.map(exponential_point),
+        messages(() => ExponentialHistogramDataPoint::new()),
+      )
+      histogram.set_aggregation_temporality(@otlp.temporality_code(temporality))
+      Metric_Data::Exponential_histogram(histogram)
+    }
     @otlp.Summary => {
       let summary = Summary::new()
       fill(
@@ -543,6 +553,84 @@ fn histogram_point(data : @otlp.DataPoint) -> HistogramDataPoint {
     message.attributes,
     key_values(data.attributes),
     messages(() => KeyValue::new()),
+  )
+  message
+}
+
+///|
+/// A point of an exponential histogram: the scale, the two sides of buckets, and the
+/// count of measurements that were exactly zero.
+fn exponential_point(data : @otlp.DataPoint) -> ExponentialHistogramDataPoint {
+  let message = ExponentialHistogramDataPoint::new()
+  match data.start {
+    Some(start) =>
+      message.set_start_time_unix_nano(start.reinterpret_as_uint64())
+    None => ()
+  }
+  message.set_time_unix_nano(data.time.reinterpret_as_uint64())
+  match data.point {
+    @otlp.ExponentialBuckets(
+      scale~,
+      zero_count~,
+      positive_offset~,
+      positive_counts~,
+      negative_offset~,
+      negative_counts~,
+      sum~,
+      count~,
+      min~,
+      max~
+    ) => {
+      message.set_scale(scale)
+      message.set_zero_count(zero_count.reinterpret_as_uint64())
+      message.set_count(count.reinterpret_as_uint64())
+      message.set_sum(sum)
+      message.positive = Some(bucket_run(positive_offset, positive_counts))
+      message.negative = Some(bucket_run(negative_offset, negative_counts))
+      match min {
+        Some(value) => message.set_min(value)
+        None => ()
+      }
+      match max {
+        Some(value) => message.set_max(value)
+        None => ()
+      }
+    }
+    _ => abort("an exponential histogram point carries exponential buckets")
+  }
+  fill(
+    message.exemplars,
+    exemplars(data.exemplars),
+    messages(() => Exemplar::new()),
+  )
+  if data.flags != 0 {
+    message.set_flags(data.flags.reinterpret_as_uint())
+  }
+  fill(
+    message.attributes,
+    key_values(data.attributes),
+    messages(() => KeyValue::new()),
+  )
+  message
+}
+
+///|
+/// One side of an exponential histogram: where its first bucket sits, and one count
+/// per bucket in use.
+fn bucket_run(
+  offset : Int32,
+  counts : Array[Int64],
+) -> ExponentialHistogramDataPoint_Buckets {
+  let message = ExponentialHistogramDataPoint_Buckets::new()
+  message.set_offset(offset)
+  fill(
+    message.bucket_counts,
+    counts.map(count => count.reinterpret_as_uint64()),
+    @reflect.scalar_element(
+      value => @reflect.Uint64(value),
+      value => value.uint(),
+      () => 0UL,
+    ),
   )
   message
 }

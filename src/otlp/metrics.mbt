@@ -40,6 +40,24 @@ pub(all) enum Point {
     min~ : Double?,
     max~ : Double?
   )
+  /// An exponential histogram: buckets whose width grows with the value, so a
+  /// measurement near zero can be told apart as finely as one near a million. A
+  /// bucket at index `i` covers `(2^(i/2^scale), 2^((i+1)/2^scale)]`, and only the
+  /// buckets in use are carried — `offset` is the index of the first one. The
+  /// negative side is mirrored, and measurements of exactly zero are counted
+  /// separately.
+  ExponentialBuckets(
+    scale~ : Int32,
+    zero_count~ : Int64,
+    positive_offset~ : Int32,
+    positive_counts~ : Array[Int64],
+    negative_offset~ : Int32,
+    negative_counts~ : Array[Int64],
+    sum~ : Double,
+    count~ : Int64,
+    min~ : Double?,
+    max~ : Double?
+  )
   Quantiles(quantiles~ : Array[(Double, Double)], sum~ : Double, count~ : Int64)
 }
 
@@ -100,6 +118,7 @@ pub(all) enum MetricKind {
   Gauge
   Sum(temporality~ : Temporality, monotonic~ : Bool)
   Histogram(temporality~ : Temporality)
+  ExponentialHistogram(temporality~ : Temporality)
   Summary
 }
 
@@ -200,6 +219,15 @@ fn write_metric(w : JsonWriter, metric : Metric) -> Unit {
       w.raw(temporality_code(temporality).to_string())
       w.close_object()
     }
+    ExponentialHistogram(temporality~) => {
+      w.name("exponentialHistogram")
+      w.open_object()
+      w.name("dataPoints")
+      write_data_points(w, metric.points)
+      w.name("aggregationTemporality")
+      w.raw(temporality_code(temporality).to_string())
+      w.close_object()
+    }
     Summary => {
       w.name("summary")
       write_points(w, metric.points)
@@ -283,6 +311,45 @@ fn write_data_point(w : JsonWriter, data : DataPoint) -> Unit {
         None => ()
       }
     }
+    ExponentialBuckets(
+      scale~,
+      zero_count~,
+      positive_offset~,
+      positive_counts~,
+      negative_offset~,
+      negative_counts~,
+      sum~,
+      count~,
+      min~,
+      max~
+    ) => {
+      w.name("scale")
+      w.raw(scale.to_string())
+      w.name("zeroCount")
+      w.int64(zero_count)
+      w.name("positive")
+      write_exponential_buckets(w, positive_offset, positive_counts)
+      w.name("negative")
+      write_exponential_buckets(w, negative_offset, negative_counts)
+      w.name("count")
+      w.int64(count)
+      w.name("sum")
+      w.double(sum)
+      match min {
+        Some(value) => {
+          w.name("min")
+          w.double(value)
+        }
+        None => ()
+      }
+      match max {
+        Some(value) => {
+          w.name("max")
+          w.double(value)
+        }
+        None => ()
+      }
+    }
     Quantiles(quantiles~, sum~, count~) => {
       w.name("count")
       w.int64(count)
@@ -313,6 +380,29 @@ fn write_data_point(w : JsonWriter, data : DataPoint) -> Unit {
     w.name("flags")
     w.raw(data.flags.to_string())
   }
+  w.close_object()
+}
+
+///|
+/// One side of an exponential histogram: the index of its first bucket and one count
+/// per bucket in use.
+///
+/// A side with nothing in it still goes out as an empty pair, because the two sides
+/// are what a reader adds up and an absent one would have to be guessed as empty.
+fn write_exponential_buckets(
+  w : JsonWriter,
+  offset : Int32,
+  counts : Array[Int64],
+) -> Unit {
+  w.open_object()
+  w.name("offset")
+  w.raw(offset.to_string())
+  w.name("bucketCounts")
+  w.open_array()
+  for count in counts {
+    w.int64(count)
+  }
+  w.close_array()
   w.close_object()
 }
 

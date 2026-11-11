@@ -152,6 +152,7 @@ pub(all) enum MetricKind {
   Gauge
   Sum(temporality~ : Temporality, monotonic~ : Bool)
   Histogram(temporality~ : Temporality)
+  ExponentialHistogram(temporality~ : Temporality)
   Summary
 }
 pub fn MetricKind::equal(Self, Self) -> Bool
@@ -204,6 +205,7 @@ pub(all) enum Point {
   AsDouble(Double)
   AsInt(Int64)
   Buckets(bounds~ : Array[Double], counts~ : Array[Int64], sum~ : Double, count~ : Int64, min~ : Double?, max~ : Double?)
+  ExponentialBuckets(scale~ : Int32, zero_count~ : Int64, positive_offset~ : Int32, positive_counts~ : Array[Int64], negative_offset~ : Int32, negative_counts~ : Array[Int64], sum~ : Double, count~ : Int64, min~ : Double?, max~ : Double?)
   Quantiles(quantiles~ : Array[(Double, Double)], sum~ : Double, count~ : Int64)
 }
 pub fn Point::equal(Self, Self) -> Bool

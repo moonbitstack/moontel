@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 ///|
-/// Which of the four synchronous instruments a name belongs to.
+/// Which instrument a name belongs to.
+///
+/// The first four are written to as the program runs. The three `Observable` ones are
+/// read when the metrics are collected: the program registers a callback, and the
+/// callback reports the values that are true at that moment. An exponential histogram
+/// is a histogram whose buckets adapt to the measurements rather than being fixed.
 ///
 /// The OTLP exporter has its own kinds because a reader sees a sum, a gauge, a
 /// histogram or a summary; this one says what the producer is allowed to do. A
@@ -14,6 +19,10 @@ pub(all) enum InstrumentKind {
   UpDownCounter
   Histogram
   Gauge
+  ObservableCounter
+  ObservableUpDownCounter
+  ObservableGauge
+  ExponentialHistogram
 }
 
 ///|
@@ -155,3 +164,30 @@ fn validate_bounds(bounds : Array[Double], name : String) -> Unit raise Refused 
 fn finite(value : Double) -> Bool {
   value >= -1.7976931348623157e308 && value <= 1.7976931348623157e308
 }
+
+///|
+/// Which measurements are kept as exemplars.
+///
+/// An exemplar is a sample of what a number was made of: the trace id and span id of
+/// one request that landed in that bucket, so a reader can jump from "the ninth
+/// bucket doubled" to the request behind it.
+///
+/// The default is `TraceBased`, which is the metrics SDK's default and the only
+/// filter that keeps the promise the jump makes: an exemplar from a trace that was
+/// not sampled names a span no backend holds, and one with no context at all names
+/// nothing.
+#derive(Eq, Debug)
+pub(all) enum ExemplarFilter {
+  /// Keep every measurement, with or without a trace context.
+  AlwaysOn
+  /// Keep none.
+  AlwaysOff
+  /// Keep a measurement only when it arrived inside a sampled trace.
+  TraceBased
+}
+
+///|
+pub extend ExemplarFilter with Eq::{equal, not_equal}
+
+///|
+pub extend ExemplarFilter with Debug::{to_repr}

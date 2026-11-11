@@ -17,6 +17,10 @@ pub let empty_attributes : Attributes
 
 pub fn empty_counts(Array[Double]) -> Array[Int64]
 
+pub fn exponential_bucket_count(@otlp.Point) -> Int32
+
+pub fn exponential_index(Double, Int32) -> Int32
+
 pub fn gen_ai_client_attributes(provider~ : String, operation~ : String, request_model~ : String, response_model? : String, agent_name? : String, conversation_id? : String) -> Attributes
 
 pub let gen_ai_metric_keys : Array[String]
@@ -25,7 +29,13 @@ pub let instrument_name_limit : Int32
 
 pub fn is_valid_name(String) -> Bool
 
+pub let max_exponential_buckets : Int32
+
+pub let max_exponential_scale : Int32
+
 pub let meter_limits : MeterLimits
+
+pub let min_exponential_scale : Int32
 
 // Errors
 #derive(Eq, @debug.Debug)
@@ -41,6 +51,18 @@ pub fn Refused::not_equal(Self, Self) -> Bool
 pub fn Refused::to_repr(Self) -> @debug.Repr
 
 // Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum Aggregation {
+  Sum
+  LastValue
+  ExplicitBuckets(bounds~ : Array[Double])
+  ExponentialBuckets(scale~ : Int32, max_buckets~ : Int32)
+  Drop
+}
+pub fn Aggregation::equal(Self, Self) -> Bool
+pub fn Aggregation::not_equal(Self, Self) -> Bool
+pub fn Aggregation::to_repr(Self) -> @debug.Repr
+
 #derive(Eq, @debug.Debug)
 pub(all) struct Attributes {
   entries : Array[(String, @trace.Value)]
@@ -62,6 +84,22 @@ pub struct Counter {
 pub fn Counter::add(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
 pub fn Counter::inc(Self, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
 
+#derive(Eq, @debug.Debug)
+pub(all) enum ExemplarFilter {
+  AlwaysOn
+  AlwaysOff
+  TraceBased
+}
+pub fn ExemplarFilter::equal(Self, Self) -> Bool
+pub fn ExemplarFilter::not_equal(Self, Self) -> Bool
+pub fn ExemplarFilter::to_repr(Self) -> @debug.Repr
+
+pub struct ExponentialHistogram {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn ExponentialHistogram::record(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
 pub struct Gauge {
   provider : MeterProvider
   index : Int32
@@ -80,11 +118,15 @@ pub struct Instrument {
   unit : String
   kind : InstrumentKind
   bounds : Array[Double]
+  max_buckets : Int32
   limits : MeterLimits
   temporality : @otlp.Temporality
+  exemplar : ExemplarFilter
+  current : () -> @trace.TraceContext?
   now : () -> Int64
   start : Int64
-  series : @ref.Ref[Array[Series]]
+  observe : ((Observer) -> Unit)?
+  streams : Array[Stream]
   dropped : @ref.Ref[Int32]
 }
 
@@ -94,6 +136,10 @@ pub(all) enum InstrumentKind {
   UpDownCounter
   Histogram
   Gauge
+  ObservableCounter
+  ObservableUpDownCounter
+  ObservableGauge
+  ExponentialHistogram
 }
 pub fn InstrumentKind::equal(Self, Self) -> Bool
 pub fn InstrumentKind::not_equal(Self, Self) -> Bool
@@ -104,8 +150,12 @@ pub struct Meter {
   scope : @otlp.Scope
 }
 pub fn Meter::counter(Self, String, description? : String, unit? : String) -> Counter raise Refused
+pub fn Meter::exponential_histogram(Self, String, description? : String, unit? : String, scale? : Int32, max_buckets? : Int32) -> ExponentialHistogram raise Refused
 pub fn Meter::gauge(Self, String, description? : String, unit? : String) -> Gauge raise Refused
 pub fn Meter::histogram(Self, String, description? : String, unit? : String, bounds? : Array[Double]) -> Histogram raise Refused
+pub fn Meter::observable_counter(Self, String, description? : String, unit? : String, observe~ : (Observer) -> Unit) -> ObservableCounter raise Refused
+pub fn Meter::observable_gauge(Self, String, description? : String, unit? : String, observe~ : (Observer) -> Unit) -> ObservableGauge raise Refused
+pub fn Meter::observable_up_down_counter(Self, String, description? : String, unit? : String, observe~ : (Observer) -> Unit) -> ObservableUpDownCounter raise Refused
 pub fn Meter::scope(Self) -> @otlp.Scope
 pub fn Meter::up_down_counter(Self, String, description? : String, unit? : String) -> UpDownCounter raise Refused
 
@@ -126,17 +176,43 @@ pub struct MeterProvider {
   now : () -> Int64
   temporality : @otlp.Temporality
   limits : MeterLimits
+  exemplar : ExemplarFilter
+  current : () -> @trace.TraceContext?
+  views : Array[View]
   start : Int64
   instruments : @ref.Ref[Array[Instrument]]
 }
 pub fn MeterProvider::collect(Self, at~ : Int64) -> Array[@otlp.Metric]
 pub fn MeterProvider::dropped(Self) -> Int32
 pub fn MeterProvider::emit(Self, at~ : Int64) -> Array[@otlp.Metric]
+pub fn MeterProvider::exemplar_filter(Self) -> ExemplarFilter
 pub fn MeterProvider::len(Self) -> Int32
 pub fn MeterProvider::limits(Self) -> MeterLimits
 pub fn MeterProvider::meter(Self, name~ : String, version? : String, attributes? : Array[(String, @trace.Value)]) -> Meter
-pub fn MeterProvider::new(sink~ : &@otlp.MetricSink, now~ : () -> Int64, temporality? : @otlp.Temporality, limits? : MeterLimits, start? : Int64) -> Self
+pub fn MeterProvider::new(sink~ : &@otlp.MetricSink, now~ : () -> Int64, temporality? : @otlp.Temporality, limits? : MeterLimits, exemplar? : ExemplarFilter, current? : () -> @trace.TraceContext?, views? : Array[View], start? : Int64) -> Self
 pub fn MeterProvider::temporality(Self) -> @otlp.Temporality
+pub fn MeterProvider::views(Self) -> Array[View]
+
+pub struct ObservableCounter {
+  provider : MeterProvider
+  index : Int32
+}
+
+pub struct ObservableGauge {
+  provider : MeterProvider
+  index : Int32
+}
+
+pub struct ObservableUpDownCounter {
+  provider : MeterProvider
+  index : Int32
+}
+
+pub struct Observer {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn Observer::observe(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
 
 pub struct Series {
   attributes : Attributes
@@ -144,6 +220,15 @@ pub struct Series {
   start : Int64
   point : @otlp.Point
   exemplars : Array[@otlp.Exemplar]
+  reported : Double?
+}
+
+pub struct Stream {
+  name : String
+  description : String
+  aggregation : Aggregation
+  attribute_keys : Array[String]?
+  series : Array[Series]
 }
 
 pub struct UpDownCounter {
@@ -151,6 +236,20 @@ pub struct UpDownCounter {
   index : Int32
 }
 pub fn UpDownCounter::add(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
+#derive(Eq, @debug.Debug)
+pub(all) struct View {
+  instrument : String
+  kind : InstrumentKind?
+  name : String?
+  description : String?
+  attribute_keys : Array[String]?
+  aggregation : Aggregation?
+}
+pub fn View::equal(Self, Self) -> Bool
+pub fn View::new(instrument? : String, kind? : InstrumentKind, name? : String, description? : String, attribute_keys? : Array[String], aggregation? : Aggregation) -> Self
+pub fn View::not_equal(Self, Self) -> Bool
+pub fn View::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

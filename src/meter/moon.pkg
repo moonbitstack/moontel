@@ -1,7 +1,8 @@
-// The OTel-style meter: the four synchronous instruments, their aggregations,
-// and the provider that collects them into OTLP metrics. It reads no clock and
-// opens no socket: times come from the caller, and finished metrics leave
-// through the `MetricSink` the `otlp` package leaves open.
+// The OTel-style meter: the instruments written as the program runs and the ones
+// that report at collection time, the aggregations they feed, the views that decide
+// what reaches the wire, and the provider that collects all of it into OTLP metrics.
+// It reads no clock and opens no socket: times come from the caller, and finished
+// metrics leave through the `MetricSink` the `otlp` package leaves open.
 //
 // The OTLP shapes are not defined a second time here. An instrument accumulates
 // an `@otlp.Point`, and collection only wraps those points in `@otlp.Metric`, so
@@ -10,6 +11,7 @@ import {
   "moonbitstack/moontel/trace",
   "moonbitstack/moontel/otlp",
   "moonbitstack/moontel/semconv",
+  "moonbitlang/core/math",
 }
 
 // An async test drives a real exporter. The async runtime reaches this package
