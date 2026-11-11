@@ -1,0 +1,17 @@
+// The four OTel instruments recorded by the meter and sent to a collector:
+// `moon run src/examples/06-meter --target native -- http://localhost:4318`.
+// `dump` prints the OTLP/JSON body instead, for the live-check job.
+pkgtype(kind: "executable")
+
+supported_targets = "+native+wasm"
+
+import {
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/otlp/http",
+  "moonbitstack/moontel/meter",
+  "moonbitstack/moontel/semconv",
+  "moonbitstack/moonseed",
+  "moonbitstack/moonseed/system",
+  "moonbitlang/async",
+  "moonbitlang/core/env",
+}

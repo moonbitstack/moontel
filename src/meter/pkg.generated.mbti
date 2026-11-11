@@ -1,0 +1,157 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moontel/meter"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/trace",
+}
+
+// Values
+pub fn bucket_index(Array[Double], Double) -> Int32
+
+pub let default_buckets : Array[Double]
+
+pub let empty_attributes : Attributes
+
+pub fn empty_counts(Array[Double]) -> Array[Int64]
+
+pub fn gen_ai_client_attributes(provider~ : String, operation~ : String, request_model~ : String, response_model? : String, agent_name? : String, conversation_id? : String) -> Attributes
+
+pub let gen_ai_metric_keys : Array[String]
+
+pub let instrument_name_limit : Int32
+
+pub fn is_valid_name(String) -> Bool
+
+pub let meter_limits : MeterLimits
+
+// Errors
+#derive(Eq, @debug.Debug)
+pub(all) suberror Refused {
+  EmptyName
+  InvalidName(name~ : String)
+  LongName(name~ : String, got~ : Int32, limit~ : Int32)
+  Bounds(name~ : String, at~ : Int32)
+  Conflict(name~ : String, got~ : InstrumentKind, want~ : InstrumentKind)
+}
+pub fn Refused::equal(Self, Self) -> Bool
+pub fn Refused::not_equal(Self, Self) -> Bool
+pub fn Refused::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct Attributes {
+  entries : Array[(String, @trace.Value)]
+}
+pub fn Attributes::equal(Self, Self) -> Bool
+pub fn Attributes::get(Self, String) -> @trace.Value?
+pub fn Attributes::identity(Self) -> String
+pub fn Attributes::len(Self) -> Int32
+pub fn Attributes::new(entries? : Array[(String, @trace.Value)]) -> Self
+pub fn Attributes::not_equal(Self, Self) -> Bool
+pub fn Attributes::to_array(Self) -> Array[(String, @trace.Value)]
+pub fn Attributes::to_repr(Self) -> @debug.Repr
+pub fn Attributes::with_attribute(Self, String, @trace.Value) -> Self
+
+pub struct Counter {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn Counter::add(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+pub fn Counter::inc(Self, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
+pub struct Gauge {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn Gauge::set(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
+pub struct Histogram {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn Histogram::record(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
+pub struct Instrument {
+  name : String
+  description : String
+  unit : String
+  kind : InstrumentKind
+  bounds : Array[Double]
+  limits : MeterLimits
+  temporality : @otlp.Temporality
+  now : () -> Int64
+  start : Int64
+  series : @ref.Ref[Array[Series]]
+  dropped : @ref.Ref[Int32]
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum InstrumentKind {
+  Counter
+  UpDownCounter
+  Histogram
+  Gauge
+}
+pub fn InstrumentKind::equal(Self, Self) -> Bool
+pub fn InstrumentKind::not_equal(Self, Self) -> Bool
+pub fn InstrumentKind::to_repr(Self) -> @debug.Repr
+
+pub struct Meter {
+  provider : MeterProvider
+  scope : @otlp.Scope
+}
+pub fn Meter::counter(Self, String, description? : String, unit? : String) -> Counter raise Refused
+pub fn Meter::gauge(Self, String, description? : String, unit? : String) -> Gauge raise Refused
+pub fn Meter::histogram(Self, String, description? : String, unit? : String, bounds? : Array[Double]) -> Histogram raise Refused
+pub fn Meter::scope(Self) -> @otlp.Scope
+pub fn Meter::up_down_counter(Self, String, description? : String, unit? : String) -> UpDownCounter raise Refused
+
+#derive(Eq, @debug.Debug)
+pub(all) struct MeterLimits {
+  attributes : Int32
+  attribute_value_length : Int32?
+  series : Int32
+  exemplars : Int32
+}
+pub fn MeterLimits::equal(Self, Self) -> Bool
+pub fn MeterLimits::new(attributes? : Int32, attribute_value_length? : Int32?, series? : Int32, exemplars? : Int32) -> Self
+pub fn MeterLimits::not_equal(Self, Self) -> Bool
+pub fn MeterLimits::to_repr(Self) -> @debug.Repr
+
+pub struct MeterProvider {
+  sink : &@otlp.MetricSink
+  now : () -> Int64
+  temporality : @otlp.Temporality
+  limits : MeterLimits
+  start : Int64
+  instruments : @ref.Ref[Array[Instrument]]
+}
+pub fn MeterProvider::collect(Self, at~ : Int64) -> Array[@otlp.Metric]
+pub fn MeterProvider::dropped(Self) -> Int32
+pub fn MeterProvider::emit(Self, at~ : Int64) -> Array[@otlp.Metric]
+pub fn MeterProvider::len(Self) -> Int32
+pub fn MeterProvider::limits(Self) -> MeterLimits
+pub fn MeterProvider::meter(Self, name~ : String, version? : String, attributes? : Array[(String, @trace.Value)]) -> Meter
+pub fn MeterProvider::new(sink~ : &@otlp.MetricSink, now~ : () -> Int64, temporality? : @otlp.Temporality, limits? : MeterLimits, start? : Int64) -> Self
+pub fn MeterProvider::temporality(Self) -> @otlp.Temporality
+
+pub struct Series {
+  attributes : Attributes
+  key : String
+  start : Int64
+  point : @otlp.Point
+  exemplars : Array[@otlp.Exemplar]
+}
+
+pub struct UpDownCounter {
+  provider : MeterProvider
+  index : Int32
+}
+pub fn UpDownCounter::add(Self, Double, attributes? : Attributes, at? : Int64, context? : @trace.TraceContext) -> Unit
+
+// Type aliases
+
+// Traits

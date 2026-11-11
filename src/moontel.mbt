@@ -77,3 +77,26 @@ pub using @log {
   type Severity,
   type SpanEvents,
 }
+
+///|
+/// The OTel-style meter and its four instruments. `@meter.Refused` is not
+/// re-exported: the facade already carries the trace package's `Refused`, and a
+/// name that raises is read through the package that owns it.
+pub using @meter {
+  type Attributes,
+  type Counter,
+  type Gauge,
+  type Histogram,
+  type InstrumentKind,
+  type Meter,
+  type MeterLimits,
+  type MeterProvider,
+  type UpDownCounter,
+  default_buckets,
+  empty_attributes,
+  gen_ai_client_attributes,
+  gen_ai_metric_keys,
+  instrument_name_limit,
+  is_valid_name,
+  meter_limits,
+}

@@ -1,7 +1,7 @@
-// The library in one import: `trace`, `propagate`, `asgi` and `log` re-exported, so
-// a program that wants all four spells the module name once. A caller that wants
-// only the span model imports `moonbitstack/moontel/trace` and pulls in neither the
-// ASGI types nor the async runtime behind them.
+// The library in one import: `trace`, `propagate`, `asgi`, `log` and `meter`
+// re-exported, so a program that wants all five spells the module name once. A
+// caller that wants only the span model imports `moonbitstack/moontel/trace` and
+// pulls in neither the ASGI types nor the async runtime behind them.
 //
 // Two packages are deliberately left out. `semconv` is a few hundred names, which
 // would bury the twenty below; `otlp` writes request bodies and needs a transport,
@@ -11,6 +11,7 @@ import {
   "moonbitstack/moontel/propagate",
   "moonbitstack/moontel/asgi",
   "moonbitstack/moontel/log",
+  "moonbitstack/moontel/meter",
 }
 
 // The cross-check at the root replays a recorded run of another implementation, so

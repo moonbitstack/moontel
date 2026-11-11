@@ -1,0 +1,21 @@
+// The OTel-style meter: the four synchronous instruments, their aggregations,
+// and the provider that collects them into OTLP metrics. It reads no clock and
+// opens no socket: times come from the caller, and finished metrics leave
+// through the `MetricSink` the `otlp` package leaves open.
+//
+// The OTLP shapes are not defined a second time here. An instrument accumulates
+// an `@otlp.Point`, and collection only wraps those points in `@otlp.Metric`, so
+// the JSON and protobuf encoders see exactly what the exporters already send.
+import {
+  "moonbitstack/moontel/trace",
+  "moonbitstack/moontel/otlp",
+  "moonbitstack/moontel/semconv",
+}
+
+// An async test drives a real exporter. The async runtime reaches this package
+// only through `otlp`, so the test import names it explicitly: without it the
+// test driver brings in a second runtime and the two thread pools collide.
+import {
+  "moonbitlang/async",
+  "moonbitlang/core/encoding/utf8",
+} for "wbtest"

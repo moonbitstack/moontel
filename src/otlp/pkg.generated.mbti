@@ -158,9 +158,20 @@ pub fn MetricKind::equal(Self, Self) -> Bool
 pub fn MetricKind::not_equal(Self, Self) -> Bool
 pub fn MetricKind::to_repr(Self) -> @debug.Repr
 
+pub struct MetricRecorder {
+  metrics : @ref.Ref[Array[Metric]]
+}
+pub fn MetricRecorder::accept(Self, Metric) -> Unit
+pub fn MetricRecorder::len(Self) -> Int32
+pub fn MetricRecorder::metrics(Self) -> Array[Metric]
+pub fn MetricRecorder::new() -> Self
+pub fn MetricRecorder::take(Self) -> Array[Metric]
+pub impl MetricSink for MetricRecorder
+
 pub struct MetricsExporter {
   outbox : Outbox[Metric]
 }
+pub fn MetricsExporter::accept(Self, Metric) -> Unit
 pub async fn MetricsExporter::flush(Self) -> Report
 pub fn MetricsExporter::new(transport~ : &Transport, endpoint? : String, headers? : Array[(String, String)], resource? : Resource, scope? : Scope, policy? : BatchPolicy, encoding? : &Encoding, limits? : BodyLimits, backoff? : Backoff, attempts? : Int32, now~ : () -> Int64, rand~ : (Int32) -> Bytes, pause? : async (Int64) -> Unit) -> Self
 pub fn MetricsExporter::record(Self, Metric) -> Unit
@@ -168,6 +179,7 @@ pub async fn MetricsExporter::run(Self) -> Unit
 pub fn MetricsExporter::stats(Self) -> Stats
 pub async fn MetricsExporter::tick(Self) -> Report
 pub fn MetricsExporter::waiting(Self) -> Int32
+pub impl MetricSink for MetricsExporter
 
 pub struct Outbox[T] {
   transport : &Transport
@@ -300,6 +312,10 @@ pub(open) trait Encoding {
   fn logs(Self, Array[@log.LogRecord], Resource, Scope) -> Bytes
   fn metrics(Self, Array[Metric], Resource, Scope) -> Bytes
   fn rejected(Self, Bytes) -> Int32?
+}
+
+pub(open) trait MetricSink {
+  fn accept(Self, Metric) -> Unit
 }
 
 pub(open) trait Transport {

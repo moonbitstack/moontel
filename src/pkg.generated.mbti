@@ -4,6 +4,7 @@ package "moonbitstack/moontel"
 import {
   "moonbitstack/moontel/asgi",
   "moonbitstack/moontel/log",
+  "moonbitstack/moontel/meter",
   "moonbitstack/moontel/propagate",
   "moonbitstack/moontel/trace",
 }
@@ -17,9 +18,13 @@ pub let baggage_header : String
 
 pub let baggage_member_limit : Int32
 
+pub let default_buckets : Array[Double]
+
 pub let discard : @trace.Discard
 
 pub let dropped_nothing : @trace.Dropped
+
+pub let empty_attributes : @meter.Attributes
 
 pub let empty_baggage : @propagate.Baggage
 
@@ -27,7 +32,17 @@ pub let empty_trace_state : @trace.TraceState
 
 pub fn extract(Array[(String, String)]) -> @propagate.Extracted
 
+pub fn gen_ai_client_attributes(provider~ : String, operation~ : String, request_model~ : String, response_model? : String, agent_name? : String, conversation_id? : String) -> @meter.Attributes
+
+pub let gen_ai_metric_keys : Array[String]
+
 pub fn inject(Array[(String, String)], @propagate.Extracted) -> Array[(String, String)]
+
+pub let instrument_name_limit : Int32
+
+pub fn is_valid_name(String) -> Bool
+
+pub let meter_limits : @meter.MeterLimits
 
 pub fn method_and_path(String, String) -> String
 
@@ -62,7 +77,11 @@ pub let tracestate_limit : Int32
 // Type aliases
 pub using @trace {type Always}
 
+pub using @meter {type Attributes}
+
 pub using @propagate {type Baggage}
+
+pub using @meter {type Counter}
 
 pub using @trace {type Decision}
 
@@ -76,6 +95,12 @@ pub using @propagate {type Extracted}
 
 pub using @log {type Fanout}
 
+pub using @meter {type Gauge}
+
+pub using @meter {type Histogram}
+
+pub using @meter {type InstrumentKind}
+
 pub using @trace {type Limits}
 
 pub using @trace {type Link}
@@ -85,6 +110,12 @@ pub using @log {type LogRecord}
 pub using @log {type Logger}
 
 pub using @propagate {type Member}
+
+pub using @meter {type Meter}
+
+pub using @meter {type MeterLimits}
+
+pub using @meter {type MeterProvider}
 
 pub using @trace {type Never}
 
@@ -117,6 +148,8 @@ pub using @trace {type TraceContext}
 pub using @trace {type TraceState}
 
 pub using @asgi {type Tracing}
+
+pub using @meter {type UpDownCounter}
 
 pub using @trace {type Value}
 
