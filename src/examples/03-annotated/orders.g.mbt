@@ -17,9 +17,7 @@ fn place_traced(
   defer span.finish(at=now())
   let run :() -> Int32 raise = () => place(item)
   match (
-    try {
-      Ok(run())
-    } catch{
+    try Ok(run()) catch {
       e => Err(e)
     }
   ) {
