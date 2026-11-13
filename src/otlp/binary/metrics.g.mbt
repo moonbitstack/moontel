@@ -3606,7 +3606,7 @@ pub impl @reflect.Message for ExponentialHistogramDataPoint with fn has(self, fi
     11 => self.exemplars.length() > 0
     12 => @reflect.is_set(self.min)
     13 => @reflect.is_set(self.max)
-    14 => self.zero_threshold != 0.0
+    14 => !@reflect.is_plain_zero(self.zero_threshold)
     _ => false
   }
 }
@@ -4129,7 +4129,7 @@ pub impl @reflect.Message for SummaryDataPoint with fn has(self, field : @reflec
     2 => self.start_time_unix_nano != 0UL
     3 => self.time_unix_nano != 0UL
     4 => self.count != 0UL
-    5 => self.sum != 0.0
+    5 => !@reflect.is_plain_zero(self.sum)
     6 => self.quantile_values.length() > 0
     8 => self.flags != 0U
     _ => false
@@ -4348,8 +4348,8 @@ pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn range_ext
 pub impl @reflect.Message for SummaryDataPoint_ValueAtQuantile with fn has(self, field : @reflect.FieldDescriptor) -> Bool {
   let _ = self
   match field.number {
-    1 => self.quantile != 0.0
-    2 => self.value != 0.0
+    1 => !@reflect.is_plain_zero(self.quantile)
+    2 => !@reflect.is_plain_zero(self.value)
     _ => false
   }
 }
