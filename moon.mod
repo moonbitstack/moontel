@@ -1,6 +1,6 @@
 name = "moonbitstack/moontel"
 
-version = "0.2.1"
+version = "0.2.2"
 
 readme = "README.md"
 
@@ -70,7 +70,7 @@ import {
   "moonbitstack/moonfetch@0.2.0",
   "moonbitstack/moonlog@0.2.0",
   "moonbitstack/moonzip@0.4.0",
-  "moonbitstack/moonp8s@0.1.2",
+  "moonbitstack/moonp8s@0.2.0",
   "moonbitstack/moonjson@0.5.0",
   "moonbitstack/moonrpc@0.22.1",
   "moonbitstack/moonhttp@0.16.0",

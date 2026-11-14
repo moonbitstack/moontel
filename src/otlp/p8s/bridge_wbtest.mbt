@@ -73,6 +73,45 @@ test "a histogram becomes one count per bucket and one more count than bounds" {
 }
 
 ///|
+test "a histogram with native buckets becomes an exponential histogram, one index lower" {
+  let registry = @metric.Registry::new()
+  let sizes = registry.histogram(
+    "request_size",
+    "Sizes.",
+    native=@metric.native,
+  )
+  // Schema 3: 1 is bucket 0, 2 is bucket 8, -1 is bucket 0 on the negative side.
+  sizes.observe(1.0)
+  sizes.observe(2.0)
+  sizes.observe(2.0)
+  sizes.observe(-1.0)
+  sizes.observe(0.0)
+  let metric = named(bridge(registry.collect(at=0.0), at=0L), "request_size").unwrap()
+  assert_eq(metric.kind, @otlp.ExponentialHistogram(temporality=Cumulative))
+  match metric.points[0].point {
+    @otlp.ExponentialBuckets(
+      scale~,
+      zero_count~,
+      positive_offset~,
+      positive_counts~,
+      negative_offset~,
+      negative_counts~,
+      count~,
+      ..
+    ) => {
+      assert_eq(scale, 3)
+      assert_eq(zero_count, 1L)
+      assert_eq(positive_offset, -1)
+      assert_eq(positive_counts, [1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 2L])
+      assert_eq(negative_offset, -1)
+      assert_eq(negative_counts, [1L])
+      assert_eq(count, 5L)
+    }
+    other => fail("expected exponential buckets, got \{other.to_repr()}")
+  }
+}
+
+///|
 test "a summary keeps its quantiles" {
   let registry = @metric.Registry::new()
   let summary = @metric.Summary::new(quantiles=[(0.5, 0.05)])

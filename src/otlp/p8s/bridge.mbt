@@ -86,7 +86,15 @@ fn convert(
   let kind = match family.kind {
     @metric.Counter => @otlp.Sum(temporality=Cumulative, monotonic=true)
     @metric.Gauge => @otlp.Gauge
-    @metric.Histogram => @otlp.Histogram(temporality=Cumulative)
+    // A histogram with native buckets is an exponential histogram in OTLP: the same
+    // buckets, indexed one lower. Its classic buckets, if it keeps them too, have no
+    // place in that instrument and are left behind.
+    @metric.Histogram =>
+      if family.metrics.iter().any(point => point.value is Native(_)) {
+        @otlp.ExponentialHistogram(temporality=Cumulative)
+      } else {
+        @otlp.Histogram(temporality=Cumulative)
+      }
     @metric.Summary => @otlp.Summary
     @metric.Info => @otlp.Sum(temporality=Cumulative, monotonic=false)
     @metric.StateSet => @otlp.Sum(temporality=Cumulative, monotonic=false)
@@ -123,6 +131,25 @@ fn convert(
           point: @otlp.Buckets(
             bounds~,
             counts~,
+            sum~,
+            count~,
+            min=None,
+            max=None,
+          ),
+        })
+      }
+      @metric.Native(sparse~, sum~, count~, ..) => {
+        let (positive_offset, positive_counts) = dense(sparse.positive)
+        let (negative_offset, negative_counts) = dense(sparse.negative)
+        points.push({
+          ..base,
+          point: @otlp.ExponentialBuckets(
+            scale=sparse.schema,
+            zero_count=sparse.zero_count,
+            positive_offset~,
+            positive_counts~,
+            negative_offset~,
+            negative_counts~,
             sum~,
             count~,
             min=None,
@@ -184,6 +211,20 @@ fn bucket_counts(
   }
   counts.push(total - previous)
   (bounds, counts)
+}
+
+///|
+/// Native buckets as OTLP lays them out: an offset and a run of counts with the empty
+/// buckets in between filled in. Prometheus's bucket `k` covers (2^((k-1)/2^s), 2^(k/2^s)]
+/// and OTLP's index `i` covers (2^(i/2^s), 2^((i+1)/2^s)], so the index is one lower.
+fn dense(buckets : Array[(Int32, Int64)]) -> (Int32, Array[Int64]) {
+  guard buckets.length() > 0 else { return (0, []) }
+  let first = buckets[0].0
+  let counts = Array::make(buckets[buckets.length() - 1].0 - first + 1, 0L)
+  for bucket in buckets {
+    counts[bucket.0 - first] = bucket.1
+  }
+  (first - 1, counts)
 }
 
 ///|
