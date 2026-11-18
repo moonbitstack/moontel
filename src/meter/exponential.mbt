@@ -74,7 +74,7 @@ fn exponential_record(
       sum~,
       count~,
       min~,
-      max~
+      max~,
     ) => {
       let mut scale = scale
       let mut zero_count = zero_count

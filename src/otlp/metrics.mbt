@@ -38,7 +38,7 @@ pub(all) enum Point {
     sum~ : Double,
     count~ : Int64,
     min~ : Double?,
-    max~ : Double?
+    max~ : Double?,
   )
   /// An exponential histogram: buckets whose width grows with the value, so a
   /// measurement near zero can be told apart as finely as one near a million. A
@@ -56,7 +56,7 @@ pub(all) enum Point {
     sum~ : Double,
     count~ : Int64,
     min~ : Double?,
-    max~ : Double?
+    max~ : Double?,
   )
   Quantiles(quantiles~ : Array[(Double, Double)], sum~ : Double, count~ : Int64)
 }
@@ -321,7 +321,7 @@ fn write_data_point(w : JsonWriter, data : DataPoint) -> Unit {
       sum~,
       count~,
       min~,
-      max~
+      max~,
     ) => {
       w.name("scale")
       w.raw(scale.to_string())

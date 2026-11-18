@@ -85,7 +85,9 @@ async fn hop(
           None => ()
         }
       }
-      let answer = @json.Json::object(Map([("results", @json.Json::array(results))]))
+      let answer = @json.Json::object(
+        Map([("results", @json.Json::array(results))]),
+      )
       send(
         @spec.HttpResponseStart(
           status=200,
@@ -157,13 +159,10 @@ fn headers_of(action : @json.Json) -> Array[(String, String)] {
 
 ///|
 /// Forward one call and answer with what came back, in the shape the suite reads.
-async fn forward(
-  url : String,
-  headers : Array[(String, String)],
-) -> @json.Json {
-  let outcome = try {
-    Ok(@moonfetch.post(url[:], body=@moonfetch.Body::Text("[]"), headers~))
-  } catch {
+async fn forward(url : String, headers : Array[(String, String)]) -> @json.Json {
+  let outcome = Ok(
+    @moonfetch.post(url[:], body=@moonfetch.Body::Text("[]"), headers~),
+  ) catch {
     error => Err("\{error}")
   }
   let fields : Map[String, @json.Json] = Map([])
@@ -215,10 +214,7 @@ async fn read_body(receive : @spec.Receive) -> String {
 ///|
 /// The lifespan of a server that has nothing to start or stop: it still has to answer,
 /// or the server waits on it.
-async fn serve_lifespan(
-  receive : @spec.Receive,
-  send : @spec.Send,
-) -> Unit {
+async fn serve_lifespan(receive : @spec.Receive, send : @spec.Send) -> Unit {
   match receive() {
     @spec.LifespanStartup => send(@spec.LifespanStartupComplete)
     _ => ()

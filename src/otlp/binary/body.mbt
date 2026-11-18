@@ -579,7 +579,7 @@ fn exponential_point(data : @otlp.DataPoint) -> ExponentialHistogramDataPoint {
       sum~,
       count~,
       min~,
-      max~
+      max~,
     ) => {
       message.set_scale(scale)
       message.set_zero_count(zero_count.reinterpret_as_uint64())
